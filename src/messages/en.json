@@ -1,0 +1,442 @@
+{
+  "common": {
+    "next": "Next",
+    "previous": "Previous",
+    "save": "Save",
+    "saving": "Saving...",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "back": "Back",
+    "confirm": "Confirm",
+    "required": "Required",
+    "optional": "Optional",
+    "deleting": "Deleting..."
+  },
+  "auth": {
+    "signIn": {
+      "title": "Sign in to your account",
+      "subtitle": "Or",
+      "createAccount": "create a new account",
+      "email": "Email address",
+      "password": "Password",
+      "forgotPassword": "Forgot password?",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "errors": {
+        "invalidCredentials": "Invalid credentials. Please check your email and password.",
+        "emailNotConfirmed": "Please check your email for a confirmation link.",
+        "loginFailed": "An error occurred while signing in.",
+        "generic": "An error occurred. Please try again."
+      }
+    },
+    "signUp": {
+      "title": "Create a new account",
+      "subtitle": "sign in to your existing account",
+      "confirmPassword": "Confirm password",
+      "submit": "Create account",
+      "submitting": "Creating account...",
+      "success": "Account created!",
+      "successMessage": "Your account has been successfully created. You will be redirected to the sign-in page...",
+      "errors": {
+        "emailExists": "This email address is already registered. Please try signing in.",
+        "weakPassword": "The password does not meet the requirements.",
+        "invalidEmail": "Please enter a valid email address."
+      },
+      "terms": "By creating an account, you agree to our",
+      "termsLink": "Terms of Service",
+      "and": "and",
+      "privacyLink": "Privacy Policy"
+    },
+    "errors": {
+      "required": "Email and password are required",
+      "invalidCredentials": "Invalid credentials",
+      "emailNotConfirmed": "Email not confirmed",
+      "loginFailed": "Sign in failed",
+      "noUser": "No user or session found",
+      "generic": "An error occurred"
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to your funeral CRM",
+      "description": "To serve you optimally, we need some information about your funeral business. This information is crucial for the correct functioning of the system."
+    },
+    "step1": {
+      "title": "Step 1: Company information",
+      "description": "Tell us something about your funeral business and yourself.",
+      "companyName": "Company name",
+      "companyNamePlaceholder": "Funeral Home De Vrede",
+      "fullName": "Your full name",
+      "fullNamePlaceholder": "John de Vries",
+      "phone": "Phone number",
+      "phonePlaceholder": "06-12345678",
+      "website": "Website (optional)",
+      "websitePlaceholder": "https://www.funeralhome.nl",
+      "companyDescription": "Brief description of your company",
+      "descriptionPlaceholder": "Tell us about your funeral business, specializations, and service area..."
+    },
+    "step2": {
+      "title": "Step 2: Address information",
+      "description": "Where is your funeral business located?",
+      "address": "Street and house number",
+      "addressPlaceholder": "Main Street 123",
+      "postalCode": "Postal code",
+      "postalCodePlaceholder": "1234 AB",
+      "city": "City",
+      "cityPlaceholder": "Amsterdam"
+    },
+    "step3": {
+      "title": "Step 3: Business data",
+      "description": "Finally, we need some official information.",
+      "kvkNumber": "Chamber of Commerce number",
+      "kvkNumberPlaceholder": "12345678",
+      "vatNumber": "VAT number (optional)",
+      "vatNumberPlaceholder": "NL123456789B01"
+    },
+    "info": {
+      "title": "Important information",
+      "description": "This information is necessary for the correct functioning of your CRM system. You can adjust this information later in your profile settings."
+    },
+    "complete": "Complete onboarding",
+    "saving": "Saving data...",
+    "errors": {
+      "saveFailed": "An error occurred while saving your data. Please try again."
+    }
+  },
+  "funerals": {
+    "section": {
+      "title": "Funerals",
+      "description": "Overview of recent funerals"
+    },
+    "empty": {
+      "title": "No funerals yet",
+      "cta": "Create first funeral",
+      "description": "You can configure custom funerals on the funerals page."
+    },
+    "card": {
+      "title": "Funeral",
+      "client": "Client",
+      "dateOfBirth": "Date of birth",
+      "dateOfDeath": "Date of death",
+      "adress": "Address"
+    }
+  },
+  "intake": {
+    "title": "Intake",
+    "description": "Fill out the intake information.",
+    "deceased": {
+      "first_names": "First names",
+      "preferred_name": "Preferred name",
+      "last_name": "Last name",
+      "date_of_birth": "Date of birth",
+      "place_of_birth": "Place of birth",
+      "gender": "Gender",
+      "date_of_death": "Date of death",
+      "social_security_number": "SSN",
+      "address": {
+        "street": "Street",
+        "house_number": "House number",
+        "house_number_addition": "Addition",
+        "postal_code": "Postal code",
+        "city": "City"
+      },
+      "coffin_registration_number": "Coffin registration number"
+    },
+    "client": {
+      "preferred_name": "Preferred name",
+      "last_name": "Last name",
+      "gender": "Gender",
+      "date_of_birth": "Date of birth",
+      "place_of_birth": "Place of birth",
+      "address": {
+        "street": "Street",
+        "house_number": "House number",
+        "house_number_addition": "Addition",
+        "postal_code": "Postal code",
+        "city": "City"
+      },
+      "phone_number": "Phone number"
+    },
+    "funeral": {
+      "location": "Location",
+      "signing_date": "Signing date",
+      "funeral_director": "Funeral director"
+    },
+    "actions": {
+      "finish": "Save",
+      "edit": "Edit"
+    },
+    "common": {
+      "gender": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      }
+    },
+    "sections": {
+      "deceased": {
+        "personal": "Personal details",
+        "address": "Address",
+        "death": "Death",
+        "other": "Other"
+      },
+      "client": {
+        "personal": "Personal details",
+        "address": "Address",
+        "contact": "Contact"
+      },
+      "funeral": {
+        "details": "Funeral details"
+      }
+    },
+    "steps": {
+      "deceased": {
+        "title": "Deceased",
+        "description": "Core details of the deceased"
+      },
+      "address_contact": {
+        "title": "Address & Contact",
+        "description": "Address of the deceased and contact person"
+      },
+      "funeral": {
+        "title": "Funeral details",
+        "description": "Location, date and funeral director"
+      },
+      "review": {
+        "title": "Review & Save",
+        "description": "Review all data before saving. You can still edit per section."
+      }
+    }
+  },
+  "validation": {
+    "required": "is required",
+    "minLength": "must contain at least {min} characters",
+    "minDigits": "must contain at least {min} digits",
+    "invalidUrl": "Please enter a valid website URL",
+    "email": {
+      "invalid": "Please enter a valid email address"
+    },
+    "password": {
+      "minLength": "Password must contain at least 6 characters",
+      "maxLength": "Password may contain at most 100 characters"
+    },
+    "phone": {
+      "invalid": "Please enter a valid phone number"
+    },
+    "postalCode": {
+      "invalid": "Please enter a valid postal code (1234 AB)",
+      "required": "Postal code is required",
+      "minLength": "Postal code must contain at least 4 characters"
+    },
+    "kvkNumber": {
+      "invalid": "Chamber of Commerce number must contain 8 digits",
+      "required": "Chamber of Commerce number is required",
+      "minLength": "Chamber of Commerce number must contain at least 8 digits"
+    },
+    "btwNumber": {
+      "invalid": "VAT number must have format NL123456789B01"
+    },
+    "website": {
+      "invalid": "Please enter a valid website URL"
+    },
+    "companyName": {
+      "required": "Company name is required",
+      "minLength": "Company name must contain at least 2 characters"
+    },
+    "fullName": {
+      "required": "Full name is required",
+      "minLength": "Full name must contain at least 2 characters"
+    },
+    "preferredName": {
+      "required": "Preferred name is required"
+    },
+    "lastName": {
+      "required": "Last name is required"
+    },
+    "firstNames": {
+      "required": "First names are required"
+    },
+    "supplierName": {
+      "required": "Supplier name is required"
+    },
+    "deceased": {
+      "required": "Select a deceased person"
+    },
+    "client": {
+      "required": "Select a client"
+    },
+    "funeral": {
+      "required": "Select a funeral"
+    },
+    "fileName": {
+      "required": "File name is required"
+    },
+    "fileSize": {
+      "positive": "File size must be positive"
+    },
+    "storagePath": {
+      "required": "Storage path is required"
+    },
+    "invoiceNumber": {
+      "required": "Invoice number is required"
+    },
+    "totalAmount": {
+      "positive": "Total amount must be positive"
+    },
+    "version": {
+      "positive": "Version must be a positive integer"
+    },
+    "color": {
+      "hexFormat": "Color must have hex format (#RRGGBB)"
+    },
+    "description": {
+      "required": "Description is required",
+      "minLength": "Description must contain at least 10 characters"
+    },
+    "address": {
+      "required": "Address is required",
+      "minLength": "Address must contain at least 5 characters"
+    },
+    "city": {
+      "required": "City is required",
+      "minLength": "City must contain at least 2 characters"
+    }
+  },
+  "funerals": {
+    "tabs": {
+      "gegevens": "Details",
+      "scenario": "Funeral Scenario",
+      "kosten": "Costs",
+      "notities": "Notes"
+    }
+  },
+  "breadcrumbs": {
+    "dashboard": "Dashboard",
+    "funerals": "Funerals",
+    "suppliers": "Suppliers",
+    "uitvaart": "Funeral",
+    "gegevens": "Details",
+    "scenario": "Funeral Scenario",
+    "notities": "Notes",
+    "kosten": "Costs"
+  },
+  "notes": {
+    "title": "Notes",
+    "addNote": "Add Note",
+    "editNote": "Edit Note",
+    "deleteNote": "Delete Note",
+    "createNote": "Create Note",
+    "updateNote": "Update Note",
+    "content": "Content",
+    "isImportant": "Important Note",
+    "titlePlaceholder": "Enter a title for the note",
+    "contentPlaceholder": "Enter the content of the note",
+    "important": "Important",
+    "deleteWarning": "Are you sure you want to delete this note? This action cannot be undone.",
+    "empty": {
+      "title": "No Notes",
+      "description": "No notes have been added to this funeral yet. Add a note to record important information."
+    }
+  },
+  "costs": {
+    "title": "Costs",
+    "addCost": "Add Cost",
+    "editCost": "Edit Cost",
+    "deleteCost": "Delete Cost",
+    "updateCost": "Update Cost",
+    "addToBudget": "Add to Budget",
+    "addToPriceList": "Add to Price List",
+    "selectExisting": "Select Existing",
+    "addNew": "Add New",
+    "selectFromPricelist": "Select from Price List",
+    "addNewProduct": "Add New Product",
+    "addNewSupplier": "Add New Supplier",
+    "noProductsFound": "No products found",
+    "searchPlaceholder": "Search item in price list or do it manually",
+    "supplierName": "Supplier or Service Provider Name",
+    "productName": "Item Type",
+    "description": "Description",
+    "quantity": "Quantity",
+    "price": "Price",
+    "extraField": "Extra Field",
+    "notes": "Notes",
+    "chooseSupplier": "Choose Item",
+    "productNamePlaceholder": "Type the title of the item here",
+    "descriptionPlaceholder": "Type the title of the item here",
+    "quantityPlaceholder": "Type quantity",
+    "pricePlaceholder": "Type price",
+    "extraFieldPlaceholder": "Type the title of the item here",
+    "notesPlaceholder": "Type the remark about the item here",
+    "totalCost": "Total Cost",
+    "unitPrice": "Unit Price",
+    "deleteWarning": "Are you sure you want to delete this cost? This action cannot be undone.",
+    "addSuccess": "Cost successfully added",
+    "addError": "Error adding cost",
+    "updateSuccess": "Cost successfully updated",
+    "updateError": "Error updating cost",
+    "deleteSuccess": "Cost successfully deleted",
+    "deleteError": "Error deleting cost",
+    "empty": {
+      "title": "No Costs",
+      "description": "No costs have been added to this funeral yet. Add costs to build the budget."
+    }
+  },
+  "suppliers": {
+    "name": "Company Name",
+    "contactPerson": "Contact Person",
+    "phoneNumber": "Phone Number",
+    "email": "Email Address",
+    "address": "Address",
+    "postalCode": "Postal Code",
+    "city": "City",
+    "type": "Supplier Type",
+    "notes": "Notes",
+    "namePlaceholder": "Enter company name",
+    "contactPersonPlaceholder": "Enter contact person",
+    "phoneNumberPlaceholder": "Enter phone number",
+    "emailPlaceholder": "Enter email address",
+    "addressPlaceholder": "Enter address",
+    "postalCodePlaceholder": "Enter postal code",
+    "cityPlaceholder": "Enter city",
+    "typePlaceholder": "E.g. flowers, coffin, venue, catering",
+    "notesPlaceholder": "Enter notes",
+    "addSupplier": "Add Supplier"
+  },
+  "validation": {
+    "required": "This field is required",
+    "title": {
+      "maxLength": "Title must not exceed 200 characters"
+    },
+    "content": {
+      "maxLength": "Content must not exceed 5000 characters"
+    },
+    "uuid": {
+      "invalid": "Invalid UUID"
+    },
+    "productName": {
+      "maxLength": "Product name must not exceed 200 characters"
+    },
+    "supplierName": {
+      "maxLength": "Supplier name must not exceed 200 characters"
+    },
+    "description": {
+      "maxLength": "Description must not exceed 500 characters"
+    },
+    "quantity": {
+      "min": "Quantity must be at least 0.01",
+      "max": "Quantity must not exceed 999999"
+    },
+    "unitPrice": {
+      "min": "Price must be at least 0",
+      "max": "Price must not exceed 999999"
+    },
+    "extraField": {
+      "maxLength": "Extra field must not exceed 200 characters"
+    },
+    "notes": {
+      "maxLength": "Notes must not exceed 500 characters"
+    }
+  }
+}

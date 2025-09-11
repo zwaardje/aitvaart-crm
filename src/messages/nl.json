@@ -1,0 +1,443 @@
+{
+  "common": {
+    "next": "Volgende",
+    "previous": "Vorige",
+    "save": "Opslaan",
+    "saving": "Opslaan...",
+    "loading": "Laden...",
+    "error": "Er is een fout opgetreden",
+    "retry": "Probeer opnieuw",
+    "cancel": "Annuleren",
+    "back": "Terug",
+    "confirm": "Bevestigen",
+    "required": "Verplicht",
+    "optional": "Optioneel",
+    "deleting": "Verwijderen..."
+  },
+  "auth": {
+    "signIn": {
+      "title": "Inloggen op uw account",
+      "subtitle": "Of",
+      "createAccount": "maak een nieuw account aan",
+      "email": "Email adres",
+      "password": "Wachtwoord",
+      "forgotPassword": "Wachtwoord vergeten?",
+      "submit": "Inloggen",
+      "submitting": "Inloggen...",
+      "errors": {
+        "invalidCredentials": "Ongeldige inloggegevens. Controleer uw email en wachtwoord.",
+        "emailNotConfirmed": "Controleer uw email voor een bevestigingslink.",
+        "loginFailed": "Er is een fout opgetreden bij het inloggen.",
+        "generic": "Er is een fout opgetreden. Probeer het opnieuw."
+      }
+    },
+    "signUp": {
+      "title": "Maak een nieuw account aan",
+      "subtitle": "log in op uw bestaande account",
+      "confirmPassword": "Bevestig wachtwoord",
+      "submit": "Account aanmaken",
+      "submitting": "Account aanmaken...",
+      "success": "Account aangemaakt!",
+      "successMessage": "Uw account is succesvol aangemaakt. U wordt doorgestuurd naar de inlogpagina...",
+      "errors": {
+        "emailExists": "Dit email adres is al geregistreerd. Probeer in te loggen.",
+        "weakPassword": "Het wachtwoord voldoet niet aan de vereisten.",
+        "invalidEmail": "Voer een geldig email adres in."
+      },
+      "terms": "Door een account aan te maken, gaat u akkoord met onze",
+      "termsLink": "Algemene Voorwaarden",
+      "and": "en",
+      "privacyLink": "Privacybeleid"
+    },
+    "errors": {
+      "required": "Email en wachtwoord zijn verplicht",
+      "invalidCredentials": "Ongeldige inloggegevens",
+      "emailNotConfirmed": "Email niet bevestigd",
+      "loginFailed": "Inloggen mislukt",
+      "noUser": "Geen gebruiker of sessie gevonden",
+      "generic": "Er is een fout opgetreden"
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welkom bij uw uitvaart CRM",
+      "description": "Om u optimaal van dienst te kunnen zijn, hebben we enkele gegevens van uw uitvaartonderneming nodig. Deze informatie is cruciaal voor het correct functioneren van het systeem."
+    },
+    "step1": {
+      "title": "Stap 1: Bedrijfsinformatie",
+      "description": "Vertel ons iets over uw uitvaartonderneming en uzelf.",
+      "companyName": "Bedrijfsnaam",
+      "companyNamePlaceholder": "Uitvaartonderneming De Vrede",
+      "fullName": "Uw volledige naam",
+      "fullNamePlaceholder": "Jan de Vries",
+      "phone": "Telefoonnummer",
+      "phonePlaceholder": "06-12345678",
+      "website": "Website (optioneel)",
+      "websitePlaceholder": "https://www.uitvaartonderneming.nl",
+      "companyDescription": "Korte beschrijving van uw bedrijf",
+      "descriptionPlaceholder": "Vertel iets over uw uitvaartonderneming, specialisaties, en werkgebied..."
+    },
+    "step2": {
+      "title": "Stap 2: Adresgegevens",
+      "description": "Waar is uw uitvaartonderneming gevestigd?",
+      "address": "Straat en huisnummer",
+      "addressPlaceholder": "Hoofdstraat 123",
+      "postalCode": "Postcode",
+      "postalCodePlaceholder": "1234 AB",
+      "city": "Plaats",
+      "cityPlaceholder": "Amsterdam"
+    },
+    "step3": {
+      "title": "Stap 3: Bedrijfsgegevens",
+      "description": "Tot slot hebben we nog enkele officiële gegevens nodig.",
+      "kvkNumber": "KVK nummer",
+      "kvkNumberPlaceholder": "12345678",
+      "vatNumber": "BTW nummer (optioneel)",
+      "vatNumberPlaceholder": "NL123456789B01"
+    },
+    "info": {
+      "title": "Belangrijke informatie",
+      "description": "Deze gegevens zijn noodzakelijk voor het correct functioneren van uw CRM systeem. U kunt deze informatie later nog aanpassen in uw profielinstellingen."
+    },
+    "complete": "Onboarding voltooien",
+    "saving": "Gegevens opslaan...",
+    "errors": {
+      "saveFailed": "Er is een fout opgetreden bij het opslaan van uw gegevens. Probeer het opnieuw."
+    }
+  },
+  "funerals": {
+    "section": {
+      "title": "Uitvaarten",
+      "description": "Overzicht van recente uitvaarten"
+    },
+    "empty": {
+      "title": "Nog geen uitvaarten",
+      "cta": "Maak eerste uitvaart",
+      "description": "U kunt uitvaarten aanmaken op de uitvaarten pagina."
+    },
+    "card": {
+      "title": "Uitvaart",
+      "client": "Cliënt",
+      "dateOfBirth": "Geboortedatum",
+      "dateOfDeath": "Overlijdensdatum",
+      "adress": "Adres"
+    }
+  },
+  "intake": {
+    "title": "Intake",
+    "description": "Vul de gegevens in voor de intake.",
+    "deceased": {
+      "first_names": "Voornamen",
+      "preferred_name": "Roepnaam",
+      "last_name": "Achternaam",
+      "date_of_birth": "Geboortedatum",
+      "place_of_birth": "Geboorteplaats",
+      "gender": "Geslacht",
+      "date_of_death": "Overlijdensdatum",
+      "social_security_number": "BSN",
+      "address": {
+        "street": "Straat",
+        "house_number": "Huisnummer",
+        "house_number_addition": "Toevoeging",
+        "postal_code": "Postcode",
+        "city": "Plaats"
+      },
+      "coffin_registration_number": "Kistregistratienummer"
+    },
+    "client": {
+      "preferred_name": "Roepnaam",
+      "last_name": "Achternaam",
+      "gender": "Geslacht",
+      "date_of_birth": "Geboortedatum",
+      "place_of_birth": "Geboorteplaats",
+      "address": {
+        "street": "Straat",
+        "house_number": "Huisnummer",
+        "house_number_addition": "Toevoeging",
+        "postal_code": "Postcode",
+        "city": "Plaats"
+      },
+      "phone_number": "Telefoonnummer"
+    },
+    "funeral": {
+      "location": "Locatie",
+      "signing_date": "Ondertekening datum",
+      "funeral_director": "Uitvaartverzorger"
+    },
+    "actions": {
+      "finish": "Opslaan",
+      "edit": "Bewerken"
+    },
+    "common": {
+      "gender": {
+        "male": "Man",
+        "female": "Vrouw",
+        "other": "Anders"
+      }
+    },
+    "sections": {
+      "deceased": {
+        "personal": "Persoonsgegevens",
+        "address": "Adres",
+        "death": "Overlijden",
+        "other": "Overige"
+      },
+      "client": {
+        "personal": "Persoonlijke gegevens",
+        "address": "Adres",
+        "contact": "Contact"
+      },
+      "funeral": {
+        "details": "Uitvaartdetails"
+      }
+    },
+    "steps": {
+      "deceased": {
+        "title": "Overledene",
+        "description": "Kerngegevens van de overledene"
+      },
+      "address_contact": {
+        "title": "Adres & Contact",
+        "description": "Adres van de overledene en contactpersoon"
+      },
+      "funeral": {
+        "title": "Uitvaartdetails",
+        "description": "Locatie, datum en uitvaartverzorger"
+      },
+      "review": {
+        "title": "Controleren & Opslaan",
+        "description": "Controleer de gegevens en sla op. Je kunt per sectie nog bewerken."
+      }
+    }
+  },
+  "validation": {
+    "required": "is verplicht",
+    "minLength": "moet minimaal {min} karakters bevatten",
+    "minDigits": "moet minimaal {min} cijfers bevatten",
+    "invalidUrl": "Voer een geldige website URL in",
+    "email": {
+      "invalid": "Voer een geldig email adres in"
+    },
+    "password": {
+      "minLength": "Wachtwoord moet minimaal 6 karakters bevatten",
+      "maxLength": "Wachtwoord mag maximaal 100 karakters bevatten"
+    },
+    "phone": {
+      "invalid": "Voer een geldig telefoonnummer in"
+    },
+    "postalCode": {
+      "invalid": "Voer een geldige postcode in (1234 AB)",
+      "required": "Postcode is verplicht",
+      "minLength": "Postcode moet minimaal 4 karakters bevatten"
+    },
+    "kvkNumber": {
+      "invalid": "KVK nummer moet 8 cijfers bevatten",
+      "required": "KVK nummer is verplicht",
+      "minLength": "KVK nummer moet minimaal 8 cijfers bevatten"
+    },
+    "btwNumber": {
+      "invalid": "BTW nummer moet formaat NL123456789B01 hebben"
+    },
+    "website": {
+      "invalid": "Voer een geldige website URL in"
+    },
+    "companyName": {
+      "required": "Bedrijfsnaam is verplicht",
+      "minLength": "Bedrijfsnaam moet minimaal 2 karakters bevatten"
+    },
+    "fullName": {
+      "required": "Volledige naam is verplicht",
+      "minLength": "Volledige naam moet minimaal 2 karakters bevatten"
+    },
+    "preferredName": {
+      "required": "Voornaam is verplicht"
+    },
+    "lastName": {
+      "required": "Achternaam is verplicht"
+    },
+    "firstNames": {
+      "required": "Voornamen zijn verplicht"
+    },
+    "supplierName": {
+      "required": "Leveranciersnaam is verplicht"
+    },
+    "deceased": {
+      "required": "Selecteer een overledene"
+    },
+    "client": {
+      "required": "Selecteer een cliënt"
+    },
+    "funeral": {
+      "required": "Selecteer een uitvaart"
+    },
+    "fileName": {
+      "required": "Bestandsnaam is verplicht"
+    },
+    "fileSize": {
+      "positive": "Bestandsgrootte moet positief zijn"
+    },
+    "storagePath": {
+      "required": "Opslagpad is verplicht"
+    },
+    "invoiceNumber": {
+      "required": "Factuurnummer is verplicht"
+    },
+    "totalAmount": {
+      "positive": "Totaalbedrag moet positief zijn"
+    },
+    "version": {
+      "positive": "Versie moet een positief geheel getal zijn"
+    },
+    "color": {
+      "hexFormat": "Kleur moet hex formaat hebben (#RRGGBB)"
+    },
+    "description": {
+      "required": "Beschrijving is verplicht",
+      "minLength": "Beschrijving moet minimaal 10 karakters bevatten"
+    },
+    "address": {
+      "required": "Adres is verplicht",
+      "minLength": "Adres moet minimaal 5 karakters bevatten"
+    },
+    "city": {
+      "required": "Plaats is verplicht",
+      "minLength": "Plaats moet minimaal 2 karakters bevatten"
+    }
+  },
+  "funerals": {
+    "tabs": {
+      "gegevens": "Gegevens",
+      "scenario": "Uitvaartscenario",
+      "kosten": "Kosten", 
+      "notities": "Notities"
+    }
+  },
+  "breadcrumbs": {
+    "dashboard": "Dashboard",
+    "funerals": "Uitvaarten",
+    "suppliers": "Leveranciers",
+    "uitvaart": "Uitvaart",
+    "gegevens": "Gegevens",
+    "scenario": "Uitvaartscenario",
+    "notities": "Notities",
+    "kosten": "Kosten"
+  },
+  "notes": {
+    "title": "Notities",
+    "addNote": "Notitie toevoegen",
+    "editNote": "Notitie bewerken",
+    "deleteNote": "Notitie verwijderen",
+    "createNote": "Notitie aanmaken",
+    "updateNote": "Notitie bijwerken",
+    "title": "Titel",
+    "content": "Inhoud",
+    "isImportant": "Belangrijke notitie",
+    "titlePlaceholder": "Voer een titel in voor de notitie",
+    "contentPlaceholder": "Voer de inhoud van de notitie in",
+    "important": "Belangrijk",
+    "deleteWarning": "Weet je zeker dat je deze notitie wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+    "empty": {
+      "title": "Geen notities",
+      "description": "Er zijn nog geen notities toegevoegd aan deze uitvaart. Voeg een notitie toe om belangrijke informatie vast te leggen."
+    }
+  },
+  "costs": {
+    "title": "Kosten",
+    "addCost": "Kosten toevoegen",
+    "editCost": "Kosten bewerken",
+    "deleteCost": "Kosten verwijderen",
+    "updateCost": "Kosten bijwerken",
+    "addToBudget": "Toevoegen aan begroting",
+    "addToPriceList": "Zet in prijslijst",
+    "selectExisting": "Selecteer bestaand",
+    "addNew": "Voeg nieuw toe",
+    "selectFromPricelist": "Selecteer uit prijslijst",
+    "addNewProduct": "Voeg nieuw product toe",
+    "addNewSupplier": "Nieuwe leverancier toevoegen",
+    "noProductsFound": "Geen producten gevonden",
+    "searchPlaceholder": "Zoek item in prijslijst of doe het handmatig",
+    "supplierName": "Naam leverancier of dienstverlener",
+    "productName": "Item type",
+    "description": "Omschrijving",
+    "quantity": "Aantal",
+    "price": "Prijs",
+    "extraField": "Extra veld",
+    "notes": "Opmerking",
+    "chooseSupplier": "Kies item",
+    "productNamePlaceholder": "Typ hier de titel van het item",
+    "descriptionPlaceholder": "Typ hier de titel van het item",
+    "quantityPlaceholder": "Typ aantal",
+    "pricePlaceholder": "Typ prijs",
+    "extraFieldPlaceholder": "Typ hier de titel van het item",
+    "notesPlaceholder": "Typ hier de opmerking over het item",
+    "totalCost": "Totale kosten",
+    "unitPrice": "Stuksprijs",
+    "deleteWarning": "Weet je zeker dat je deze kosten wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+    "addSuccess": "Kosten succesvol toegevoegd",
+    "addError": "Fout bij het toevoegen van kosten",
+    "updateSuccess": "Kosten succesvol bijgewerkt",
+    "updateError": "Fout bij het bijwerken van kosten",
+    "deleteSuccess": "Kosten succesvol verwijderd",
+    "deleteError": "Fout bij het verwijderen van kosten",
+    "empty": {
+      "title": "Geen kosten",
+      "description": "Er zijn nog geen kosten toegevoegd aan deze uitvaart. Voeg kosten toe om de begroting op te bouwen."
+    }
+  },
+  "suppliers": {
+    "name": "Bedrijfsnaam",
+    "contactPerson": "Contactpersoon",
+    "phoneNumber": "Telefoonnummer",
+    "email": "E-mailadres",
+    "address": "Adres",
+    "postalCode": "Postcode",
+    "city": "Plaats",
+    "type": "Type leverancier",
+    "notes": "Opmerkingen",
+    "namePlaceholder": "Voer bedrijfsnaam in",
+    "contactPersonPlaceholder": "Voer contactpersoon in",
+    "phoneNumberPlaceholder": "Voer telefoonnummer in",
+    "emailPlaceholder": "Voer e-mailadres in",
+    "addressPlaceholder": "Voer adres in",
+    "postalCodePlaceholder": "Voer postcode in",
+    "cityPlaceholder": "Voer plaats in",
+    "typePlaceholder": "Bijv. bloemen, kist, locatie, catering",
+    "notesPlaceholder": "Voer opmerkingen in",
+    "addSupplier": "Leverancier toevoegen"
+  },
+  "validation": {
+    "required": "Dit veld is verplicht",
+    "title": {
+      "maxLength": "Titel mag maximaal 200 karakters bevatten"
+    },
+    "content": {
+      "maxLength": "Inhoud mag maximaal 5000 karakters bevatten"
+    },
+    "uuid": {
+      "invalid": "Ongeldige UUID"
+    },
+    "productName": {
+      "maxLength": "Productnaam mag maximaal 200 karakters bevatten"
+    },
+    "supplierName": {
+      "maxLength": "Leveranciersnaam mag maximaal 200 karakters bevatten"
+    },
+    "description": {
+      "maxLength": "Omschrijving mag maximaal 500 karakters bevatten"
+    },
+    "quantity": {
+      "min": "Aantal moet minimaal 0.01 zijn",
+      "max": "Aantal mag maximaal 999999 zijn"
+    },
+    "unitPrice": {
+      "min": "Prijs moet minimaal 0 zijn",
+      "max": "Prijs mag maximaal 999999 zijn"
+    },
+    "extraField": {
+      "maxLength": "Extra veld mag maximaal 200 karakters bevatten"
+    },
+    "notes": {
+      "maxLength": "Opmerkingen mogen maximaal 500 karakters bevatten"
+    }
+  }
+}
