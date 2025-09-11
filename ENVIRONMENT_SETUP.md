@@ -12,6 +12,15 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
+### Stream Video SDK Configuration
+
+```bash
+# Stream Video SDK (voor voice assistant)
+NEXT_PUBLIC_STREAM_API_KEY=your_stream_api_key
+STREAM_API_KEY=your_stream_api_key
+STREAM_API_SECRET=your_stream_api_secret
+```
+
 ### NextAuth Configuration
 
 ```bash
@@ -60,6 +69,14 @@ EMAIL_FROM=noreply@yourdomain.com
 4. Ga naar **Settings** > **API**
 5. Kopieer de **Project URL** en **anon public** key
 6. Voor de service role key, ga naar **Settings** > **API** > **Service Role** (let op: deze is gevoelig!)
+
+### Stream Video SDK
+
+1. Ga naar [getstream.io](https://getstream.io)
+2. Maak een account en log in
+3. Ga naar je dashboard en selecteer "Video & Audio"
+4. Kopieer je **API Key** en **API Secret** uit de credentials sectie
+5. Gebruik dezelfde API Key voor zowel `NEXT_PUBLIC_STREAM_API_KEY` als `STREAM_API_KEY`
 
 ### NextAuth Secret
 

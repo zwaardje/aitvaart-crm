@@ -4,6 +4,7 @@ import { z } from "zod";
 const clientEnv = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
+  NEXT_PUBLIC_STREAM_API_KEY: z.string().min(1),
 });
 
 const serverEnv = z.object({
@@ -18,12 +19,18 @@ const serverEnv = z.object({
   EMAIL_SERVER_USER: z.string().optional(),
   EMAIL_SERVER_PASSWORD: z.string().optional(),
   EMAIL_FROM: z.string().email().optional(),
+  // Stream Video SDK
+  STREAM_API_KEY: z.string().min(1).optional(), // Verander van min(20) naar min(1)
+  STREAM_API_SECRET: z.string().min(1).optional(), // Verander van min(20) naar min(1)
+  // OpenAI
+  OPENAI_API_KEY: z.string().min(1).optional(), // Verander van min(20) naar min(1)
 });
 
 // Parse client environment variables (required)
 const clientEnvParsed = clientEnv.parse({
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  NEXT_PUBLIC_STREAM_API_KEY: process.env.NEXT_PUBLIC_STREAM_API_KEY,
 });
 
 // Parse server environment variables (optional for development)
@@ -39,6 +46,11 @@ const serverEnvParsed = serverEnv.safeParse({
   EMAIL_SERVER_USER: process.env.EMAIL_SERVER_USER,
   EMAIL_SERVER_PASSWORD: process.env.EMAIL_SERVER_PASSWORD,
   EMAIL_FROM: process.env.EMAIL_FROM,
+  // Stream Video SDK
+  STREAM_API_KEY: process.env.STREAM_API_KEY,
+  STREAM_API_SECRET: process.env.STREAM_API_SECRET,
+  // OpenAI
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY,
 });
 
 export const env = {

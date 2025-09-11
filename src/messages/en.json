@@ -309,7 +309,8 @@
       "gegevens": "Details",
       "scenario": "Funeral Scenario",
       "kosten": "Costs",
-      "notities": "Notes"
+      "notities": "Notes",
+      "documenten": "Documents"
     }
   },
   "breadcrumbs": {
@@ -320,7 +321,8 @@
     "gegevens": "Details",
     "scenario": "Funeral Scenario",
     "notities": "Notes",
-    "kosten": "Costs"
+    "kosten": "Costs",
+    "documenten": "Documents"
   },
   "notes": {
     "title": "Notes",

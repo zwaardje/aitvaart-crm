@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui";
 import { FuneralContacts } from "@/components/funerals/FuneralContacts";
 import { DeceasedCard } from "@/components/funerals/DeceasedCard";
+import { StreamVoiceAssistantWrapper } from "@/components/voice/StreamVoiceAssistant";
+import { useVoiceCommands } from "@/hooks/useVoiceCommands";
 
 export default function FuneralDetailsPage({
   params,
@@ -14,6 +16,13 @@ export default function FuneralDetailsPage({
 }) {
   const t = useTranslations("funerals");
   const { funeral, isLoading } = useFuneral(params.id);
+  const { processVoiceCommand } = useVoiceCommands(params.id);
+
+  const handleVoiceCommand = async (command: string, data?: any) => {
+    const result = await processVoiceCommand(command);
+    console.log("Voice command result:", result);
+    // You could show a toast notification here
+  };
 
   return (
     <Content>
@@ -26,6 +35,11 @@ export default function FuneralDetailsPage({
 
       {!isLoading && funeral && (
         <div className="pt-6 space-y-4 w-full">
+          <StreamVoiceAssistantWrapper
+            funeralId={params.id}
+            onCommand={handleVoiceCommand}
+          />
+
           <DeceasedCard deceased={funeral.deceased as any} />
 
           <FuneralContacts funeralId={params.id} />

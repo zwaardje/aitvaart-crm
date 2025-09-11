@@ -11,7 +11,7 @@ import { schemas, CostFormData, SupplierFormData } from "@/lib/validation";
 import {
   useCosts,
   useCreateCost,
-  useSuppliers,
+  useSuppliersForCosts,
   useSupplierPricelists,
   useCreatePricelistItem,
 } from "@/hooks";
@@ -51,7 +51,7 @@ export function CostForm({ funeralId, onSuccess }: CostFormProps) {
     suppliers,
     createSupplier,
     refetch: refetchSuppliers,
-  } = useSuppliers();
+  } = useSuppliersForCosts();
   const { pricelists } = useSupplierPricelists();
   const { createPricelistItem } = useCreatePricelistItem();
 

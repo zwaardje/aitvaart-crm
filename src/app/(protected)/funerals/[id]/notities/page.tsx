@@ -5,6 +5,8 @@ import { useFuneral } from "@/hooks/useFunerals";
 import { Notes } from "@/components/funerals/Notes";
 import { useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui";
+import { StreamVoiceAssistantWrapper } from "@/components/voice/StreamVoiceAssistant";
+import { useVoiceCommands } from "@/hooks/useVoiceCommands";
 
 export default function FuneralNotesPage({
   params,
@@ -13,6 +15,12 @@ export default function FuneralNotesPage({
 }) {
   const t = useTranslations("funerals");
   const { funeral, isLoading } = useFuneral(params.id);
+  const { processVoiceCommand } = useVoiceCommands(params.id);
+
+  const handleVoiceCommand = async (command: string, data?: any) => {
+    const result = await processVoiceCommand(command);
+    console.log("Voice command result:", result);
+  };
 
   return (
     <Content>
@@ -25,6 +33,10 @@ export default function FuneralNotesPage({
 
       {!isLoading && funeral && (
         <div className="space-y-4 w-full">
+          <StreamVoiceAssistantWrapper
+            funeralId={params.id}
+            onCommand={handleVoiceCommand}
+          />
           <Notes funeralId={params.id} />
         </div>
       )}

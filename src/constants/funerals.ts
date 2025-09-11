@@ -1,4 +1,9 @@
-export type FuneralTabKey = "gegevens" | "scenario" | "kosten" | "notities";
+export type FuneralTabKey =
+  | "gegevens"
+  | "scenario"
+  | "kosten"
+  | "notities"
+  | "documenten";
 
 export interface FuneralTabDef {
   key: FuneralTabKey;
@@ -11,4 +16,9 @@ export const FUNERAL_TABS: FuneralTabDef[] = [
   { key: "scenario", label: "funerals.tabs.scenario", segment: "/scenario" },
   { key: "kosten", label: "funerals.tabs.kosten", segment: "/kosten" },
   { key: "notities", label: "funerals.tabs.notities", segment: "/notities" },
+  {
+    key: "documenten",
+    label: "funerals.tabs.documenten",
+    segment: "/documenten",
+  },
 ];

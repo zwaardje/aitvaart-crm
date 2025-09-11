@@ -8,7 +8,7 @@ import { FormTextarea } from "./FormTextarea";
 import { FormSelect } from "./FormSelect";
 import { SubmitButton } from "./SubmitButton";
 import { schemas, CostUpdateFormData } from "@/lib/validation";
-import { useCosts, useSuppliers } from "@/hooks";
+import { useCosts, useSuppliersForCosts } from "@/hooks";
 import { Button } from "@/components/ui/Button";
 import {
   Dialog,
@@ -34,7 +34,7 @@ export function CostEditForm({ cost, onSuccess }: CostEditFormProps) {
   const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
   const { updateCost, refetch } = useCosts(cost.funeral_id);
-  const { suppliers } = useSuppliers();
+  const { suppliers } = useSuppliersForCosts();
 
   const handleSubmit = async (data: CostUpdateFormData) => {
     try {

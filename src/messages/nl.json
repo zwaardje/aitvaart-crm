@@ -309,7 +309,8 @@
       "gegevens": "Gegevens",
       "scenario": "Uitvaartscenario",
       "kosten": "Kosten", 
-      "notities": "Notities"
+      "notities": "Notities",
+      "documenten": "Documenten"
     }
   },
   "breadcrumbs": {
@@ -320,7 +321,8 @@
     "gegevens": "Gegevens",
     "scenario": "Uitvaartscenario",
     "notities": "Notities",
-    "kosten": "Kosten"
+    "kosten": "Kosten",
+    "documenten": "Documenten"
   },
   "notes": {
     "title": "Notities",

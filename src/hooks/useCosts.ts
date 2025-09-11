@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCurrentUserId } from "@/lib/auth-utils";
 import { useGenericEntity, useSingleEntity } from "./useGenericEntity";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
@@ -120,7 +120,10 @@ export function useCreateCost() {
 }
 
 // Hook for suppliers (for dropdown)
-export function useSuppliers() {
+export function useSuppliersForCosts() {
+  const queryClient = useQueryClient();
+  const userId = useCurrentUserId();
+
   const suppliersQuery = useQuery({
     queryKey: ["suppliers"],
     queryFn: async () => {
@@ -136,10 +139,39 @@ export function useSuppliers() {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
+  // Create supplier mutation
+  const createSupplierMutation = useMutation({
+    mutationFn: async (
+      supplierData: Omit<
+        Database["public"]["Tables"]["suppliers"]["Insert"],
+        "entrepreneur_id"
+      >
+    ) => {
+      if (!userId) throw new Error("No user logged in");
+
+      const supabase = getSupabaseBrowser();
+      const { data, error } = await supabase
+        .from("suppliers")
+        .insert({
+          ...supplierData,
+          entrepreneur_id: userId,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["suppliers"] });
+    },
+  });
+
   return {
     suppliers: suppliersQuery.data || [],
     isLoading: suppliersQuery.isLoading,
     error: suppliersQuery.error,
     refetch: suppliersQuery.refetch,
+    createSupplier: createSupplierMutation.mutate,
   };
 }
