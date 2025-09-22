@@ -81,3 +81,95 @@
     font-style: normal;
   }
 }
+
+/* Audio Visualizer Styles */
+.audio-visualizer {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+  transform: scale(var(--volumeter-scale, 1));
+  filter: brightness(var(--volumeter-brightness, 1));
+}
+
+.audio-visualizer__aura {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.audio-visualizer__aura::before,
+.audio-visualizer__aura::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  animation: fluid-pulse ease-in-out infinite;
+  filter: blur(40px);
+}
+
+.audio-visualizer__aura::before {
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle at 30% 30%, #0055ffdd, #1af0ffcc, transparent 70%);
+  animation-delay: -0.5s;
+  animation-duration: 3s;
+}
+
+.audio-visualizer__aura_listening::before {
+  background: radial-gradient(circle at 30% 30%, #f759dbdd, #f74069cc, transparent 70%);
+  animation-duration: 2.5s;
+}
+
+.audio-visualizer__aura_ai_speaking::before {
+  background: radial-gradient(circle at 30% 30%, #00ff88dd, #00d4aacc, transparent 70%);
+  animation-duration: 2s;
+}
+
+.audio-visualizer__aura::after {
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle at 70% 70%, #1af0ffdd, #0055ffcc, transparent 60%);
+  animation-duration: 4s;
+}
+
+.audio-visualizer__aura_listening::after {
+  background: radial-gradient(circle at 70% 70%, #f74069dd, #f759dbcc, transparent 60%);
+  animation-duration: 3.5s;
+}
+
+.audio-visualizer__aura_ai_speaking::after {
+  background: radial-gradient(circle at 70% 70%, #00d4aadd, #00ff88cc, transparent 60%);
+  animation-duration: 2.8s;
+}
+
+@keyframes fluid-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8) rotate(0deg);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translate(-50%, -50%) scale(1.1) rotate(90deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(0.9) rotate(180deg);
+    opacity: 1;
+  }
+  75% {
+    transform: translate(-50%, -50%) scale(1.05) rotate(270deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.8) rotate(360deg);
+    opacity: 0.6;
+  }
+}

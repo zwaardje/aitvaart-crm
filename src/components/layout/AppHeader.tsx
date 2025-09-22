@@ -1,18 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { Link as NextLink } from "next/link";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   RiSettings3Line,
   RiLogoutBoxLine,
   RiUser3Line,
-  RiDashboardLine,
-  RiStoreLine,
-  RiHeartLine,
   RiMenuLine,
+  RiArrowLeftLine,
+  RiInformationLine,
 } from "@remixicon/react";
 import {
-  Link,
   Button,
   Avatar,
   AvatarImage,
@@ -44,14 +43,25 @@ interface AppHeaderProps {
   breadcrumbs?: Breadcrumb[];
   logo?: React.ReactNode;
   className?: string;
+  deceasedName?: string;
+  pageTitle?: string;
+  showBackButton?: boolean;
+  onBackClick?: () => void;
+  onMenuClick?: () => void;
 }
 
 export function AppHeader({
   breadcrumbs = [],
   logo,
   className,
+  deceasedName,
+  pageTitle,
+  showBackButton = false,
+  onBackClick,
+  onMenuClick,
 }: AppHeaderProps) {
   const { user, signOut, isLoading } = useAuth();
+  const router = useRouter();
 
   const initials = (user?.email || "?")
     .split(" ")
@@ -60,112 +70,106 @@ export function AppHeader({
     .slice(0, 2)
     .toUpperCase();
 
-  return (
-    <header className={cn("w-full border-b bg-card py-2", className)}>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-8 min-w-0">
-          <div className="shrink-0">
-            <a href="/dashboard">{logo ? logo : "Aitvaart CRM"}</a>
-          </div>
+  const handleBackClick = () => {
+    if (onBackClick) {
+      onBackClick();
+    } else {
+      router.back();
+    }
+  };
 
-          <nav className="hidden md:flex items-center gap-1">
-            <Link
-              href="/funerals"
-              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-            >
-              Uitvaarten
-            </Link>
-            <Link
-              href="/suppliers"
-              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-            >
-              Leveranciers
-            </Link>
-          </nav>
+  const displayTitle = deceasedName || pageTitle || "Aitvaart CRM";
+
+  return (
+    <header className={cn("w-full border-b bg-card relative z-40", className)}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4 min-w-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={showBackButton ? handleBackClick : onMenuClick}
+            className="shrink-0 h-10 w-10 rounded-lg bg-gray-100 hover:bg-gray-200"
+          >
+            {showBackButton ? (
+              <RiArrowLeftLine className="h-5 w-5" />
+            ) : (
+              <RiMenuLine className="h-5 w-5" />
+            )}
+          </Button>
+
+          <div className="flex-1 text-center">
+            <h1 className="text-lg font-semibold text-gray-900 truncate">
+              {displayTitle}
+            </h1>
+          </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="md:hidden">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Navigation menu"
-                >
-                  <RiMenuLine className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="start">
-                <DropdownMenuLabel>Navigatie</DropdownMenuLabel>
-                <DropdownMenuGroup>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="flex items-center">
-                      <RiDashboardLine className="mr-2 h-4 w-4" /> Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/funerals" className="flex items-center">
-                      <RiHeartLine className="mr-2 h-4 w-4" /> Uitvaarten
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/suppliers" className="flex items-center">
-                      <RiStoreLine className="mr-2 h-4 w-4" /> Leveranciers
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {isLoading ? (
-              <>
-                <Skeleton className="h-8 w-8 rounded-full" />
-                <div className="hidden sm:block text-sm">
-                  <Skeleton className="h-4 w-24" />
-                </div>
-              </>
-            ) : (
-              <>
-                <Avatar className="h-8 w-8">
-                  <AvatarImage
-                    src={user?.image ?? undefined}
-                    alt={user?.name ?? user?.email ?? "user"}
-                  />
-                  <AvatarFallback>{initials}</AvatarFallback>
-                </Avatar>
-                <div className="hidden sm:block text-sm">
-                  <div className="font-medium leading-none truncate max-w-[12rem]">
-                    {user?.name || user?.email || "Gebruiker"}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+        <div className="flex items-center gap-2 relative">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Account menu">
-                <RiUser3Line className="h-5 w-5" />
+              <Button
+                variant="ghost"
+                className="flex items-center gap-2 h-10 px-2"
+              >
+                {isLoading ? (
+                  <>
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                    <div className="hidden sm:block text-sm">
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage
+                        src={undefined}
+                        alt={user?.email ?? "user"}
+                      />
+                      <AvatarFallback>{initials}</AvatarFallback>
+                    </Avatar>
+                    <div className="hidden sm:block text-sm">
+                      <div className="font-medium leading-none truncate max-w-[12rem]">
+                        {user?.email || "Gebruiker"}
+                      </div>
+                    </div>
+                  </>
+                )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-64" align="end">
-              <DropdownMenuLabel>Account</DropdownMenuLabel>
+            <DropdownMenuContent
+              className="w-56 z-50"
+              align="end"
+              sideOffset={8}
+              side="bottom"
+              avoidCollisions={true}
+              collisionPadding={8}
+            >
+              <DropdownMenuLabel className="font-semibold text-gray-900">
+                Account
+              </DropdownMenuLabel>
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
-                  <Link href="/settings/profile" className="flex items-center">
+                  <Link
+                    href="/settings/profile"
+                    className="flex items-center cursor-pointer"
+                  >
                     <RiUser3Line className="mr-2 h-4 w-4" /> Profiel
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/settings" className="flex items-center">
+                  <Link
+                    href="/settings"
+                    className="flex items-center cursor-pointer"
+                  >
                     <RiSettings3Line className="mr-2 h-4 w-4" /> Settings
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut} className="flex items-center">
+              <DropdownMenuItem
+                onClick={signOut}
+                className="flex items-center cursor-pointer text-red-600 focus:text-red-600"
+              >
                 <RiLogoutBoxLine className="mr-2 h-4 w-4" /> Logout
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -17,32 +17,36 @@ interface SubmenuProps {
 export function Submenu({ items, className }: SubmenuProps) {
   return (
     <nav
-      className={cn(
-        "w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80",
-        className
-      )}
+      className={cn("w-full bg-gray-50 border-b border-gray-200", className)}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex space-x-1">
-          {items.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "relative inline-flex items-center px-4 py-3 text-sm font-medium transition-all duration-200",
-                "border-b-2 border-transparent hover:border-muted-foreground/20",
-                "hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2",
-                item.isActive
-                  ? "text-primary border-primary bg-primary/5"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {item.label}
-              {item.isActive && (
-                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary rounded-full" />
-              )}
-            </Link>
-          ))}
+        <div
+          className={cn(
+            "overflow-x-auto scrollbar-hide py-2",
+            // Hide scrollbar for all browsers
+            "[&::-webkit-scrollbar]:hidden",
+            "[-ms-overflow-style:none]",
+            "[scrollbar-width:none]",
+            // Smooth scrolling
+            "scroll-smooth"
+          )}
+        >
+          <div className="flex space-x-1 min-w-max">
+            {items.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "relative inline-flex items-center px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg whitespace-nowrap flex-shrink-0",
+                  item.isActive
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </nav>

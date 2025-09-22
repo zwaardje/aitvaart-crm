@@ -3,36 +3,28 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/card";
-import {
-  RiMicLine,
-  RiMicOffLine,
-  RiVolumeUpLine,
-  RiCloseLine,
-} from "@remixicon/react";
-import { useTranslations } from "next-intl";
+import { RiMicLine, RiVolumeUpLine } from "@remixicon/react";
+import { Spinner } from "@/components/ui/spinner/Spinner";
 import {
   StreamVideo,
   StreamVideoClient,
   Call,
-  CallControls,
   SpeakerLayout,
   StreamCall,
   useCallStateHooks,
   useCall,
   useStreamVideoClient,
 } from "@stream-io/video-react-sdk";
+import { AudioVisualizer } from "./AudioVisualizer";
 
 interface StreamVoiceAssistantProps {
-  funeralId: string;
-  onCommand?: (command: string, data?: any) => void;
+  autoStart?: boolean;
 }
 
 // Main component that manages the Stream client
 export function StreamVoiceAssistant({
-  funeralId,
-  onCommand,
+  autoStart = false,
 }: StreamVoiceAssistantProps) {
-  const t = useTranslations();
   const [client, setClient] = useState<StreamVideoClient | null>(null);
   const [call, setCall] = useState<Call | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -52,10 +44,6 @@ export function StreamVoiceAssistant({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          funeralId,
-          action: "connect",
-        }),
       });
 
       if (!response.ok) {
@@ -67,15 +55,38 @@ export function StreamVoiceAssistant({
 
       const result = await response.json();
       console.log("Backend response:", result);
+      console.log(
+        "Token received:",
+        result.token ? "Token present" : "Token missing"
+      );
+      console.log(
+        "API Key received:",
+        result.apiKey ? "API Key present" : "API Key missing"
+      );
 
-      // Create Stream client
-      const streamClient = new StreamVideoClient({
-        apiKey: process.env.NEXT_PUBLIC_STREAM_API_KEY!,
-        token: result.token,
+      // Create or get existing Stream client
+      console.log("Creating Stream client with:", {
+        apiKey: result.apiKey ? "Present" : "Missing",
+        token: result.token ? "Present" : "Missing",
+        tokenLength: result.token ? result.token.length : 0,
+        debug: result.debug,
+      });
+
+      if (!result.apiKey) {
+        throw new Error("API Key not received from backend");
+      }
+
+      if (!result.token) {
+        throw new Error("Token not received from backend");
+      }
+
+      const streamClient = StreamVideoClient.getOrCreateInstance({
+        apiKey: result.apiKey,
         user: {
           id: "user",
           name: "User",
         },
+        token: result.token,
       });
 
       setClient(streamClient);
@@ -92,214 +103,179 @@ export function StreamVoiceAssistant({
     } finally {
       setIsLoading(false);
     }
-  }, [funeralId]);
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (client) {
+      if (client && isConnected) {
         client.disconnectUser();
       }
     };
-  }, [client]);
+  }, [client, isConnected]);
+
+  // Auto-start functionality
+  useEffect(() => {
+    if (!client && !isConnected && !isLoading) {
+      initializeClient();
+    }
+  }, [client, isConnected, isLoading, initializeClient]);
+
+  // Create call when client is ready
+  useEffect(() => {
+    if (client && !call) {
+      // Get call ID from the backend response
+      fetch("/api/voice-assistant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((res) => res.json())
+        .then((result) => {
+          const newCall = client.call("default", result.callId);
+          setCall(newCall);
+        })
+        .catch((err) => {
+          console.error("Failed to get call ID:", err);
+          setError("Failed to get call ID");
+        });
+    }
+  }, [client, call]);
 
   if (!isConnected || !client) {
     return (
-      <Card className="p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">Voice Assistant</h3>
-          <div className="flex items-center space-x-2">
-            <div
-              className={`w-3 h-3 rounded-full ${
-                isConnected ? "bg-green-500" : "bg-gray-400"
-              } ${isLoading ? "animate-pulse" : ""}`}
-            />
-            <span className="text-sm text-gray-600">
-              {isConnected ? "Verbonden" : "Niet verbonden"}
-            </span>
-          </div>
-        </div>
-
-        {!isConnected && (
-          <Button
-            onClick={initializeClient}
-            disabled={isLoading}
-            className="w-full mb-4"
-          >
-            <RiVolumeUpLine className="h-4 w-4 mr-2" />
-            {isLoading ? "Verbinden..." : "Verbind met Voice Assistant"}
-          </Button>
-        )}
-
-        {error && (
-          <div className="bg-red-50 p-3 rounded-lg mt-4">
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
-
-        <div className="mt-4 text-xs text-gray-500">
-          <p>
-            Tip: Zorg dat je Stream API keys correct zijn ingesteld in je{" "}
-            <code className="font-mono">.env.local</code> bestand.
+      <div className="h-full w-full flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Spinner />
+          <p className="text-sm text-gray-600">
+            {isLoading
+              ? "Verbinden met voice assistant..."
+              : "Initialiseren..."}
           </p>
+          {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
-      </Card>
+      </div>
     );
   }
 
   return (
     <StreamVideo client={client}>
-      <CallInterface
-        funeralId={funeralId}
-        onCommand={onCommand}
-        hasAI={hasAI}
-      />
+      <CallInterface call={call} hasAI={hasAI} />
     </StreamVideo>
   );
 }
 
 // Call interface component that handles the actual call
 function CallInterface({
-  funeralId,
-  onCommand,
+  call: propCall,
   hasAI,
 }: {
-  funeralId: string;
-  onCommand?: (command: string, data?: any) => void;
+  call: Call | null;
   hasAI: boolean;
 }) {
-  const [call, setCall] = useState<Call | null>(null);
+  const [call, setCall] = useState<Call | null>(propCall);
   const [isInCall, setIsInCall] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [callId, setCallId] = useState<string | null>(null);
-  const [lastCommand, setLastCommand] = useState<string | null>(null);
-
+  const [aiTranscript, setAiTranscript] = useState<string>("");
+  const [isAiSpeaking, setIsAiSpeaking] = useState(false);
   const client = useStreamVideoClient();
 
-  // Process voice command
-  const processVoiceCommand = useCallback(
-    async (transcript: string) => {
-      try {
-        console.log("Processing voice command:", transcript);
-
-        const response = await fetch("/api/voice-assistant", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            funeralId,
-            action: "process_command",
-            transcript,
-          }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error("Voice command error:", {
-            status: response.status,
-            statusText: response.statusText,
-            errorData,
-          });
-          throw new Error(
-            errorData.error || `Failed to process command (${response.status})`
-          );
-        }
-
-        const result = await response.json();
-        console.log("Command result:", result);
-
-        setLastCommand(result.message);
-
-        // Call the onCommand callback if provided
-        if (onCommand && result.action !== "unknown") {
-          onCommand(result.action, result.data);
-        }
-
-        return result;
-      } catch (err) {
-        console.error("Error processing voice command:", err);
-        setError("Fout bij verwerken van voice command");
-        return null;
-      }
-    },
-    [funeralId, onCommand]
-  );
+  // Monitor AI speaking status - moved inside StreamCall context
 
   // Join call
   const joinCall = useCallback(async () => {
-    if (!client) return;
+    if (!client || !call) return;
 
     try {
       setIsLoading(true);
       setError(null);
 
-      // Get call ID from backend
-      const response = await fetch("/api/voice-assistant", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          funeralId,
-          action: "connect",
-        }),
-      });
+      console.log("Joining call:", call.id);
+      console.log("Call type:", call.type);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to get call ID");
+      // Join the call with retry logic
+      let retryCount = 0;
+      const maxRetries = 3;
+
+      while (retryCount < maxRetries) {
+        try {
+          await call.join({ create: false });
+          console.log("Joined call successfully");
+          break;
+        } catch (joinError: any) {
+          retryCount++;
+          console.error(`Join attempt ${retryCount} failed:`, joinError);
+
+          if (retryCount >= maxRetries) {
+            throw joinError;
+          }
+
+          // Wait before retry
+          await new Promise((resolve) =>
+            setTimeout(resolve, 1000 * retryCount)
+          );
+        }
       }
 
-      const result = await response.json();
-      const newCallId = result.callId;
-      setCallId(newCallId);
-
-      // Create call object
-      const newCall = client.call("default", newCallId);
-      setCall(newCall);
-
-      // Join the call
-      await newCall.join({ create: false });
-      console.log("Joined call successfully");
-
       // Enable microphone
-      await newCall.microphone.enable();
+      await call.microphone.enable();
       console.log("Microphone enabled");
+
+      // Enable speakers for audio output
+      await call.speaker.setVolume(1.0);
+      console.log("Speakers volume set");
 
       setIsInCall(true);
       console.log("Call state updated to in-call");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to join call:", err);
-      setError(
-        "Kon niet deelnemen aan gesprek: " +
-          (err instanceof Error ? err.message : "Unknown error")
-      );
+
+      let errorMessage = "Kon niet deelnemen aan gesprek";
+      if (err.message?.includes("WS connection")) {
+        errorMessage +=
+          ": WebSocket verbinding mislukt. Controleer je internetverbinding.";
+      } else if (err.message?.includes("token")) {
+        errorMessage += ": Token probleem. Probeer opnieuw te verbinden.";
+      } else {
+        errorMessage += ": " + (err.message || "Unknown error");
+      }
+
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
-  }, [client, funeralId]);
+  }, [client, call]);
 
   // Leave call
   const leaveCall = useCallback(async () => {
     if (!call) return;
 
     try {
-      console.log("Leaving call...");
+      setIsLoading(true);
+      setError(null);
       await call.leave();
       setIsInCall(false);
-      setCall(null);
-      setCallId(null);
-      console.log("Left call successfully");
+      setAiTranscript("");
     } catch (err) {
-      console.error("Failed to leave call:", err);
-      // Still set to not in call even if leave fails
-      setIsInCall(false);
-      setCall(null);
-      setCallId(null);
+      console.error("Error leaving call:", err);
+      setError(err instanceof Error ? err.message : "Failed to leave call");
+    } finally {
+      setIsLoading(false);
     }
   }, [call]);
+
+  useEffect(() => {
+    if (propCall) {
+      setCall(propCall);
+    }
+  }, [propCall]);
+
+  // Auto-join call
+  useEffect(() => {
+    if (call && !isInCall && !isLoading) {
+      joinCall();
+    }
+  }, [call, isInCall, isLoading, joinCall]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -312,199 +288,115 @@ function CallInterface({
 
   if (!isInCall) {
     return (
-      <Card className="p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">Voice Assistant</h3>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-green-500" />
-            <span className="text-sm text-gray-600">
-              Verbonden {hasAI ? "met AI" : "(basis)"}
-            </span>
-          </div>
+      <div className="h-full w-full flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Spinner />
+          <p className="text-sm text-gray-600">
+            {isLoading ? "Deelnemen aan gesprek..." : "Wachten op call..."}
+          </p>
+          {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
-
-        <div className="space-y-4">
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-blue-700">
-              🎤 Klik op "Deelnemen aan gesprek" om te beginnen met praten tegen
-              de assistant.
-            </p>
-            {hasAI && (
-              <p className="text-sm text-green-700 mt-2">
-                ✅ AI voice assistant is beschikbaar!
-              </p>
-            )}
-            {!hasAI && (
-              <p className="text-sm text-orange-700 mt-2">
-                ⚠️ Alleen basis audio - geen AI voice assistant
-              </p>
-            )}
-          </div>
-
-          <Button
-            onClick={joinCall}
-            disabled={isLoading}
-            className="w-full mb-2"
-          >
-            <RiMicLine className="h-4 w-4 mr-2" />
-            {isLoading ? "Verbinden..." : "Deelnemen aan gesprek"}
-          </Button>
-
-          {error && (
-            <div className="bg-red-50 p-3 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
-            </div>
-          )}
-
-          <div className="mt-4 text-xs text-gray-500">
-            <p>
-              Tip: Spreek duidelijk en wacht even na je vraag voor een antwoord.
-            </p>
-          </div>
-        </div>
-      </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">Voice Assistant</h3>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-sm text-gray-600">
-            In gesprek {hasAI ? "met AI" : "(basis)"}
-          </span>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <div className="bg-green-50 p-3 rounded-lg">
-          <p className="text-sm text-green-700">
-            🎤 Je bent nu verbonden! Spreek vrij tegen de assistant.
-          </p>
-          {hasAI && (
-            <p className="text-sm text-green-600 mt-1">
-              ✅ AI voice assistant is actief - je hoort antwoorden via je
-              speakers
-            </p>
-          )}
-          {!hasAI && (
-            <p className="text-sm text-orange-600 mt-1">
-              ⚠️ Alleen basis audio - geen AI antwoorden beschikbaar
-            </p>
-          )}
-        </div>
-
-        {lastCommand && (
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-blue-700">
-              <strong>Laatste actie:</strong> {lastCommand}
-            </p>
-          </div>
-        )}
-
-        {/* Stream Video Components */}
-        {call && (
-          <StreamCall call={call}>
-            <div className="space-y-2">
-              <SpeakerLayout />
-              <CallControls />
-              <VoiceCommandHandler
-                onVoiceCommand={processVoiceCommand}
-                hasAI={hasAI}
-              />
-            </div>
-          </StreamCall>
-        )}
-
-        <div className="space-y-2">
-          <Button onClick={leaveCall} variant="outline" className="w-full">
-            <RiCloseLine className="h-4 w-4 mr-2" />
-            Verlaat gesprek
-          </Button>
-
-          <Button
-            onClick={() =>
-              processVoiceCommand(
-                "voeg notitie toe: test notitie via voice assistant"
-              )
-            }
-            variant="outline"
-            className="w-full text-xs"
-          >
-            <RiMicLine className="h-3 w-3 mr-1" />
-            Test Database Update
-          </Button>
-        </div>
-
-        <div className="mt-4 text-xs text-gray-500">
-          <p>Call ID: {callId}</p>
-          <p className="mt-1">
-            {hasAI
-              ? "Tip: Spreek duidelijk en wacht even na je vraag voor een AI antwoord."
-              : "Tip: Audio streaming is actief, maar geen AI voice assistant beschikbaar."}
-          </p>
-        </div>
-      </div>
-    </Card>
+    <div className="space-y-4 w-full h-full">
+      {call && (
+        <StreamCall call={call}>
+          <CallUI
+            hasAI={hasAI}
+            aiTranscript={aiTranscript}
+            setAiTranscript={setAiTranscript}
+            isAiSpeaking={isAiSpeaking}
+            setIsAiSpeaking={setIsAiSpeaking}
+          />
+        </StreamCall>
+      )}
+    </div>
   );
 }
 
-// Voice Command Handler Component
-function VoiceCommandHandler({
-  onVoiceCommand,
+// Call UI component that uses call state hooks
+function CallUI({
   hasAI,
+  aiTranscript,
+  setAiTranscript,
+  isAiSpeaking,
+  setIsAiSpeaking,
 }: {
-  onVoiceCommand: (transcript: string) => void;
   hasAI: boolean;
+  aiTranscript: string;
+  setAiTranscript: (transcript: string) => void;
+  isAiSpeaking: boolean;
+  setIsAiSpeaking: (speaking: boolean) => void;
 }) {
-  const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState("");
+  // Hooks for call state - now inside StreamCall context
+  const { useIsCallLive, useParticipants, useLocalParticipant } =
+    useCallStateHooks();
+  const isCallLive = useIsCallLive();
+  const participants = useParticipants();
+  const localParticipant = useLocalParticipant();
 
-  // Simple voice input simulation for now
-  // In a real implementation, this would integrate with Stream's voice recognition
-  const handleVoiceInput = () => {
-    if (!hasAI) {
-      alert(
-        "AI voice assistant is not available. Use the test button instead."
+  // Monitor AI speaking status
+  useEffect(() => {
+    const checkAiSpeaking = () => {
+      const aiParticipant = participants.find(
+        (p) => p.userId === "ai_assistant"
       );
-      return;
-    }
+      const speaking = !!aiParticipant;
+      setIsAiSpeaking(speaking);
+    };
 
-    const userInput = prompt("Type your voice command (simulated):");
-    if (userInput) {
-      onVoiceCommand(userInput);
-    }
-  };
+    const interval = setInterval(checkAiSpeaking, 100);
+    return () => clearInterval(interval);
+  }, [participants, setIsAiSpeaking]);
 
   return (
-    <div className="p-3 bg-gray-50 rounded-lg">
-      <p className="text-sm text-gray-600 mb-2">
-        {hasAI ? "AI Voice Assistant Active" : "Voice Assistant Not Available"}
-      </p>
-      <Button
-        onClick={handleVoiceInput}
-        disabled={!hasAI}
-        variant="outline"
-        className="w-full text-sm"
-      >
-        <RiMicLine className="h-4 w-4 mr-2" />
-        {hasAI ? "Simulate Voice Command" : "AI Not Available"}
-      </Button>
-      <p className="text-xs text-gray-500 mt-2">
-        {hasAI
-          ? "Click to simulate a voice command (e.g., 'voeg notitie toe: test')"
-          : "AI voice assistant is not configured. Check your OpenAI API key."}
-      </p>
+    <div className="space-y-4">
+      {/* Audio Visualizer */}
+      <div className="flex justify-center py-4">
+        <AudioVisualizer />
+      </div>
+
+      <div className="space-y-2">
+        <SpeakerLayout participantsBarPosition="bottom" />
+
+        {/* AI Transcript Display */}
+        <AITranscript transcript={aiTranscript} isSpeaking={isAiSpeaking} />
+      </div>
+    </div>
+  );
+}
+
+// AI Transcript component to display AI speech visually
+function AITranscript({
+  transcript,
+  isSpeaking,
+}: {
+  transcript: string;
+  isSpeaking: boolean;
+}) {
+  if (!transcript && !isSpeaking) return null;
+
+  return (
+    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="flex items-start space-x-3">
+        <RiVolumeUpLine className="h-5 w-5 text-blue-600 shrink-0" />
+        <p className="text-sm text-blue-800 flex-1">
+          {transcript}{" "}
+          {isSpeaking && (
+            <span className="inline-block h-2 w-2 bg-blue-500 rounded-full animate-pulse ml-1" />
+          )}
+        </p>
+      </div>
     </div>
   );
 }
 
 // Wrapper component for compatibility
 export function StreamVoiceAssistantWrapper({
-  funeralId,
-  onCommand,
+  autoStart = false,
 }: StreamVoiceAssistantProps) {
-  return <StreamVoiceAssistant funeralId={funeralId} onCommand={onCommand} />;
+  return <StreamVoiceAssistant autoStart={autoStart} />;
 }
