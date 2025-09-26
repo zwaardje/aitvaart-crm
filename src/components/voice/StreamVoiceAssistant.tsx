@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/card";
-import { RiMicLine, RiVolumeUpLine } from "@remixicon/react";
+
 import { Spinner } from "@/components/ui/spinner/Spinner";
 import {
   StreamVideo,
@@ -12,10 +10,9 @@ import {
   SpeakerLayout,
   StreamCall,
   useCallStateHooks,
-  useCall,
   useStreamVideoClient,
 } from "@stream-io/video-react-sdk";
-import { AudioVisualizer } from "./AudioVisualizer";
+import { CloudAudioVisualizer } from "./CloudAudioVisualizer";
 
 interface StreamVoiceAssistantProps {
   autoStart?: boolean;
@@ -338,6 +335,9 @@ function CallUI({
   const participants = useParticipants();
   const localParticipant = useLocalParticipant();
 
+  // Text input state
+  const [isSendingText, setIsSendingText] = useState(false);
+
   // Monitor AI speaking status
   useEffect(() => {
     const checkAiSpeaking = () => {
@@ -352,18 +352,50 @@ function CallUI({
     return () => clearInterval(interval);
   }, [participants, setIsAiSpeaking]);
 
+  // Handle text message sending
+  const handleTextMessage = async (message: string) => {
+    if (!isCallLive || isSendingText) return;
+
+    try {
+      setIsSendingText(true);
+
+      // Send text message to backend API
+      const response = await fetch("/api/voice-assistant/text-message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message,
+          callId: "current-call", // We'll need to get the actual call ID
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send text message");
+      }
+
+      const result = await response.json();
+      console.log("Text message sent successfully:", result);
+
+      // Update AI transcript with the response
+      if (result.result?.message) {
+        setAiTranscript(result.result.message);
+      }
+    } catch (error) {
+      console.error("Error sending text message:", error);
+      // Could show error to user here
+    } finally {
+      setIsSendingText(false);
+    }
+  };
+
   return (
-    <div className="space-y-4">
-      {/* Audio Visualizer */}
-      <div className="flex justify-center py-4">
-        <AudioVisualizer />
-      </div>
+    <div className="h-full w-full flex flex-col justify-center items-center">
+      <CloudAudioVisualizer />
 
-      <div className="space-y-2">
+      <div className="hidden">
         <SpeakerLayout participantsBarPosition="bottom" />
-
-        {/* AI Transcript Display */}
-        <AITranscript transcript={aiTranscript} isSpeaking={isAiSpeaking} />
       </div>
     </div>
   );
@@ -382,7 +414,7 @@ function AITranscript({
   return (
     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
       <div className="flex items-start space-x-3">
-        <RiVolumeUpLine className="h-5 w-5 text-blue-600 shrink-0" />
+        <div className="h-5 w-5 text-blue-600 shrink-0">🔊</div>
         <p className="text-sm text-blue-800 flex-1">
           {transcript}{" "}
           {isSpeaking && (

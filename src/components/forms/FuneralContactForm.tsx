@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { schemas } from "@/lib/validation";
 import { Form } from "./Form";
@@ -8,6 +9,14 @@ import { FormInput } from "./FormInput";
 import { FormSwitch } from "./FormSwitch";
 import { SubmitButton } from "./SubmitButton";
 import { Button, DialogClose, DialogFooter } from "@/components/ui";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { RiAddLine } from "@remixicon/react";
 
 export const funeralContactFormSchema = z.object({
   preferred_name: z.string().min(1, "Voornaam verplicht"),
@@ -24,17 +33,33 @@ interface FuneralContactFormProps {
   onSubmit: (data: FuneralContactFormValues) => void | Promise<void>;
   submitLabel?: string;
   defaultValues?: FuneralContactFormValues;
+  withDialog?: boolean;
 }
 
 export function FuneralContactForm({
   defaultValues,
   onSubmit,
   submitLabel = "Opslaan",
+  withDialog = false,
 }: FuneralContactFormProps) {
-  return (
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSubmit = async (data: FuneralContactFormValues) => {
+    try {
+      await onSubmit(data);
+      if (withDialog) {
+        setIsOpen(false);
+      }
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      throw error;
+    }
+  };
+
+  const formContent = (
     <Form
       schema={funeralContactFormSchema}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       defaultValues={
         defaultValues ?? {
           preferred_name: "",
@@ -81,4 +106,30 @@ export function FuneralContactForm({
       </DialogFooter>
     </Form>
   );
+
+  if (withDialog) {
+    return (
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            aria-label="Toevoegen"
+            title="Toevoegen"
+            size="sm"
+          >
+            <RiAddLine className="h-3 w-3" />
+            Toevoegen
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Nieuw contact</DialogTitle>
+          </DialogHeader>
+          {formContent}
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  return formContent;
 }

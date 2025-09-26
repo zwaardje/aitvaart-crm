@@ -167,8 +167,29 @@
     "actions": {
       "finish": "Opslaan",
       "edit": "Bewerken"
+  },
+  "search": {
+    "search": "Zoeken",
+    "placeholder": "Zoek in notities, kosten, begravenissen en contacten...",
+    "searching": "Zoeken",
+    "results": "resultaten",
+    "noResults": "Geen resultaten gevonden",
+    "error": "Er is een fout opgetreden tijdens het zoeken",
+    "showing": "Toont",
+    "of": "van",
+    "sort": {
+      "relevance": "Relevantie",
+      "newest": "Nieuwste eerst",
+      "oldest": "Oudste eerst"
     },
-    "common": {
+    "entity": {
+      "note": "Notitie",
+      "cost": "Kosten",
+      "contact": "Contact",
+      "funeral": "Begrafenis"
+    }
+  },
+  "common": {
       "gender": {
         "male": "Man",
         "female": "Vrouw",

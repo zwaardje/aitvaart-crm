@@ -52,12 +52,12 @@ export function NoteEditForm({ note, onSuccess }: NoteEditFormProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm">
-          <RiEditLine className="h-4 w-4" />
+        <Button variant="ghost" size="sm" icon>
+          <RiEditLine className="h-3 w-3" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="">
           <DialogTitle>{t("notes.editNote")}</DialogTitle>
         </DialogHeader>
 
@@ -89,7 +89,7 @@ export function NoteEditForm({ note, onSuccess }: NoteEditFormProps) {
             <FormCheckbox name="is_important" label={t("notes.isImportant")} />
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="flex justify-between gap-2 pt-4 w-full">
             <Button
               type="button"
               variant="outline"

@@ -81,7 +81,7 @@ export function AppHeader({
   const displayTitle = deceasedName || pageTitle || "Aitvaart CRM";
 
   return (
-    <header className={cn("w-full border-b bg-card relative z-40", className)}>
+    <header className={cn("w-full relative z-40 bg-gray-100", className)}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
         <div className="flex items-center gap-4 min-w-0">
           <Button

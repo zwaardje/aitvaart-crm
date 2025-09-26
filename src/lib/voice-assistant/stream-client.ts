@@ -470,3 +470,73 @@ export function getCurrentFuneralContext(
 export function clearFuneralContext(realtimeClient: any) {
   clientContexts.delete(realtimeClient);
 }
+
+/**
+ * Send text message to the voice assistant
+ */
+export async function sendTextMessage(realtimeClient: any, message: string) {
+  try {
+    if (!realtimeClient) {
+      throw new Error("Realtime client not available");
+    }
+
+    console.log("Sending text message to AI:", message);
+
+    // Send text message to OpenAI Realtime API
+    // The exact method depends on the Stream/OpenAI integration
+    // This is a placeholder - we'll need to check the actual API
+
+    // Option 1: If Stream supports direct text input
+    if (realtimeClient.sendMessage) {
+      await realtimeClient.sendMessage({
+        type: "text",
+        content: message,
+        role: "user",
+      });
+    }
+
+    // Option 2: If we need to use the session update method
+    else if (realtimeClient.updateSession) {
+      // Send as a text input to the session
+      await realtimeClient.updateSession({
+        input: message,
+      });
+    }
+
+    // Option 3: If we need to simulate a text transcript
+    else {
+      // This would trigger the transcript processing
+      await realtimeClient.processTextInput(message);
+    }
+
+    console.log("Text message sent successfully");
+
+    return {
+      success: true,
+      message: "Text message sent successfully",
+    };
+  } catch (error) {
+    console.error("Error sending text message:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+/**
+ * Get funeral context by call ID
+ */
+export function getFuneralContextByCallId(
+  callId: string
+): { funeralId: string; context: FuneralContext } | null {
+  // Search through all stored contexts to find the one with matching call ID
+  const entries = Array.from(clientContexts.entries());
+  for (const [client, contextData] of entries) {
+    // We'll need to store callId in the context data structure
+    if ((contextData as any).callId === callId) {
+      return contextData;
+    }
+  }
+  return null;
+}

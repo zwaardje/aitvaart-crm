@@ -1,3 +1,5 @@
+"use client";
+
 import {
   useCallStateHooks,
   type StreamVideoParticipant,
@@ -6,7 +8,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 
 const listeningCooldownMs = 1000;
 
-export function AudioVisualizer() {
+export function CloudAudioVisualizer() {
   const { useParticipants } = useCallStateHooks();
   const participants = useParticipants();
   const [activity, setActivity] = useState<
@@ -33,13 +35,13 @@ export function AudioVisualizer() {
       setActivity("listening");
     } else if (isAISpeaking) {
       setActivity("ai_speaking");
-    } else if (!speaker && activity === "listening") {
+    } else if (activity === "listening") {
       const timeout = setTimeout(
         () => setActivity("speaking"),
         listeningCooldownMs
       );
       return () => clearTimeout(timeout);
-    } else if (!speaker && activity === "ai_speaking") {
+    } else if (activity === "ai_speaking") {
       const timeout = setTimeout(
         () => setActivity("speaking"),
         listeningCooldownMs
@@ -48,68 +50,51 @@ export function AudioVisualizer() {
     }
   }, [speaker, activity, isUserSpeaking, isAISpeaking]);
 
-  // Calculate scale based on volume for dynamic sizing
-  const volumeScale = Math.min(1 + volume * 0.3, 1.2);
-  const brightness = Math.max(Math.min(1 + volume * 0.2, 1.3), 0.8);
+  // Calculate scale and opacity based on volume
+  const volumeScale = Math.min(1 + volume * 0.5, 1.8);
+  const opacity = Math.max(Math.min(0.3 + volume * 0.7, 1), 0.2);
 
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <div className="relative w-60 h-60 flex items-center justify-center">
-        {/* Original audio visualizer for volume-based scaling */}
-        <div
-          className="audio-visualizer absolute inset-0"
-          style={
-            {
-              "--volumeter-scale": volumeScale,
-              "--volumeter-brightness": brightness,
-              transform: `scale(${volumeScale})`,
-              opacity: brightness,
-            } as CSSProperties
-          }
-        >
+    <div className="cloud-container relative w-full h-full flex items-center justify-center overflow-hidden">
+      {/* Generate multiple cloud particles */}
+      {Array.from({ length: 40 }).map((_, i) => {
+        const delay = i * 0.03; // Staggered animation delay
+        const size = 30 + Math.random() * 60; // Random particle size
+
+        // When idle (not speaking), position particles closer to center to form a ball
+        const isIdle = !isUserSpeaking && !isAISpeaking;
+        const centerX = 50; // Center X position
+        const centerY = 50; // Center Y position
+
+        // Base spread when idle, grows with volume when speaking
+        const baseSpread = isIdle ? 20 : 15; // Smaller base when idle
+        const volumeSpread = isIdle ? 0 : volume * 60; // Grow with volume when speaking
+        const totalSpread = baseSpread + volumeSpread;
+
+        // Calculate position with bias towards center
+        const randomX = Math.random() * totalSpread - totalSpread / 2;
+        const randomY = Math.random() * totalSpread - totalSpread / 2;
+        const positionX = centerX + randomX;
+        const positionY = centerY + randomY;
+
+        return (
           <div
-            className={`audio-visualizer__aura audio-visualizer__aura_${activity}`}
+            key={i}
+            className={`cloud-particle cloud-particle-${activity}`}
+            style={
+              {
+                width: `${size}px`,
+                height: `${size}px`,
+                left: `${Math.max(0, Math.min(100, positionX))}%`,
+                top: `${Math.max(0, Math.min(100, positionY))}%`,
+                animationDelay: `${delay}s`,
+                transform: `scale(${volumeScale})`,
+                opacity: opacity * (0.3 + Math.random() * 0.7),
+              } as CSSProperties
+            }
           />
-        </div>
-
-        <div
-          className={`circle circle-speaker ${
-            isUserSpeaking ? "opacity-100" : "opacity-0"
-          }`}
-          style={{
-            transform: `translate(-50%, -50%) scale(${volumeScale})`,
-            opacity: isUserSpeaking ? brightness : 0,
-            animation: `rotateCircle ${6}s infinite ease-in-out, rotateShape ${6}s infinite ease-in-out`,
-            zIndex: 3,
-          }}
-        />
-
-        {/* AI circle - Violet */}
-        <div
-          className={`circle circle-ai ${
-            isAISpeaking ? "opacity-100" : "opacity-0"
-          }`}
-          style={{
-            transform: `translate(-50%, -50%) scale(${volumeScale})`,
-            opacity: isAISpeaking ? brightness : 0,
-            animation: `rotateCircle ${6}s infinite reverse ease-in-out, rotateShape ${6}s infinite reverse ease-in-out`,
-            zIndex: 2,
-          }}
-        />
-
-        {/* Idle circle - Gray (when neither is speaking) */}
-        <div
-          className={`circle circle-idle ${
-            !isUserSpeaking && !isAISpeaking ? "opacity-100" : "opacity-0"
-          }`}
-          style={{
-            transform: `translate(-50%, -50%) scale(${volumeScale})`,
-            opacity: !isUserSpeaking && !isAISpeaking ? brightness * 0.7 : 0,
-            animation: `rotateCircle ${8}s infinite ease-in-out, rotateShape ${8}s infinite ease-in-out`,
-            zIndex: 1,
-          }}
-        />
-      </div>
+        );
+      })}
     </div>
   );
 }

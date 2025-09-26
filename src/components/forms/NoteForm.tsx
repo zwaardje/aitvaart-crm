@@ -52,8 +52,8 @@ export function NoteForm({ funeralId, onSuccess }: NoteFormProps) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          <RiAddLine className="h-4 w-4 mr-2" />
-          {t("notes.addNote")}
+          <RiAddLine className="h-4 w-4" />
+          Nieuw
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
@@ -88,7 +88,7 @@ export function NoteForm({ funeralId, onSuccess }: NoteFormProps) {
             <FormCheckbox name="is_important" label={t("notes.isImportant")} />
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="flex gap-2 pt-4 justify-between">
             <Button
               type="button"
               variant="outline"

@@ -5,16 +5,17 @@ import { NoteForm, NoteEditForm, NoteDeleteForm } from "@/components/forms";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
   Skeleton,
   Badge,
+  GenericCard,
 } from "@/components/ui";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { RiAlertLine, RiFileTextLine } from "@remixicon/react";
 import type { Database } from "@/types/database";
-
+import { SearchBar } from "@/components/ui/SearchBar";
+import { useState, useCallback, useMemo } from "react";
+import type { SearchResult } from "@/hooks/useSearch";
 type FuneralNote = Database["public"]["Tables"]["funeral_notes"]["Row"] & {
   creator: Database["public"]["Tables"]["profiles"]["Row"] | null;
 };
@@ -26,8 +27,26 @@ interface NotesProps {
 export function Notes({ funeralId }: NotesProps) {
   const { notes, isLoading } = useNotes(funeralId);
   const t = useTranslations("notes");
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
 
-  const isEmpty = !notes || notes.length === 0;
+  // Show search results if available, otherwise show all notes
+  const displayNotes = useMemo(() => {
+    return searchResults.length > 0
+      ? (searchResults
+          .filter((result) => result.entity_type === "note")
+          .map((result) => notes?.find((note) => note.id === result.entity_id))
+          .filter(Boolean) as FuneralNote[])
+      : notes || [];
+  }, [searchResults, notes]);
+
+  const isEmpty = !displayNotes || displayNotes.length === 0;
+
+  const handleResultsChange = useCallback((results: SearchResult[]) => {
+    setSearchResults(results);
+  }, []);
+
+  // Memoize entityTypes to prevent infinite re-renders
+  const entityTypes = useMemo(() => ["note"] as const, []);
 
   if (isLoading) {
     return (
@@ -47,8 +66,11 @@ export function Notes({ funeralId }: NotesProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">{t("title")}</h3>
+      <div className="flex gap-2 items-center justify-between">
+        <SearchBar
+          onResultsChange={handleResultsChange}
+          entityTypes={entityTypes}
+        />
         <NoteForm funeralId={funeralId} />
       </div>
 
@@ -68,48 +90,47 @@ export function Notes({ funeralId }: NotesProps) {
         </Card>
       ) : (
         <div className="space-y-3">
-          {notes.map((note: FuneralNote) => (
-            <Card key={note.id} className="relative">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      {note.title}
-                      {note.is_important && (
-                        <Badge variant="destructive" className="text-xs">
-                          <RiAlertLine className="h-3 w-3 mr-1" />
-                          {t("important")}
-                        </Badge>
-                      )}
-                    </CardTitle>
-                    <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
-                      <span>
-                        {format(
-                          new Date(note.created_at!),
-                          "dd MMM yyyy 'om' HH:mm"
-                        )}
-                      </span>
-                      {note.creator && (
-                        <span>
-                          {note.creator.full_name || note.creator.company_name}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <NoteEditForm note={note} />
-                    <NoteDeleteForm note={note} />
-                  </div>
+          {displayNotes.map((note: FuneralNote) => (
+            <GenericCard
+              key={note.id}
+              title={note.title}
+              subtitle={format(
+                new Date(note.created_at!),
+                "dd MMM yyyy 'om' HH:mm"
+              )}
+              content={
+                <p className="text-gray-700 whitespace-pre-wrap text-sm">
+                  {note.content}
+                </p>
+              }
+              actions={
+                <>
+                  <NoteEditForm note={note} />
+                  <NoteDeleteForm note={note} />
+                </>
+              }
+              footer={
+                <div className="flex items-center justify-between w-full">
+                  <span>
+                    {note.creator && (
+                      <div className="flex items-center text-gray-500 text-xs">
+                        Notitie toegevoegd door:{" "}
+                        {note.creator.full_name || note.creator.company_name}
+                      </div>
+                    )}
+                  </span>
+                  {note.is_important && (
+                    <Badge
+                      variant="destructive"
+                      className="text-xs font-normal"
+                    >
+                      <RiAlertLine className="h-3 w-3 mr-1" />
+                      Belangrijk
+                    </Badge>
+                  )}
                 </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="prose prose-sm max-w-none">
-                  <p className="text-gray-700 whitespace-pre-wrap">
-                    {note.content}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+              }
+            />
           ))}
         </div>
       )}

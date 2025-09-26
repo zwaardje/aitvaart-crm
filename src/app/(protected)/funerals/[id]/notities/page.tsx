@@ -17,11 +17,6 @@ export default function FuneralNotesPage({
   const { funeral, isLoading } = useFuneral(params.id);
   const { processVoiceCommand } = useVoiceCommands(params.id);
 
-  const handleVoiceCommand = async (command: string, data?: any) => {
-    const result = await processVoiceCommand(command);
-    console.log("Voice command result:", result);
-  };
-
   return (
     <Content>
       {isLoading && (
@@ -33,10 +28,6 @@ export default function FuneralNotesPage({
 
       {!isLoading && funeral && (
         <div className="space-y-4 w-full">
-          <StreamVoiceAssistantWrapper
-            funeralId={params.id}
-            onCommand={handleVoiceCommand}
-          />
           <Notes funeralId={params.id} />
         </div>
       )}

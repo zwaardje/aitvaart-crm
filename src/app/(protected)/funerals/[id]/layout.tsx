@@ -4,13 +4,9 @@ import { FUNERAL_TABS } from "@/constants/funerals";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useFuneral } from "@/hooks/useFunerals";
-import { Skeleton, Card } from "@/components/ui";
-import { Link } from "@/components/ui";
 import { useMemo } from "react";
 import React from "react";
-import { SectionHeader, AppHeader, Submenu } from "@/components/layout";
-import { Button } from "@/components/ui/Button";
-import { RiAddLine } from "@remixicon/react";
+import { Submenu } from "@/components/layout";
 import { Content } from "@/components/layout";
 
 export default function FuneralLayout({
@@ -90,7 +86,9 @@ export default function FuneralLayout({
       <Submenu items={items} />
 
       <Content>
-        <div className="p-6 space-y-6 w-full">{children}</div>
+        <div className="px-3 lg:px-6 space-y-3  lg:space-y-6 w-full">
+          {children}
+        </div>
       </Content>
     </>
   );

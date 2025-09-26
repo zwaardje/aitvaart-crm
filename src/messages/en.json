@@ -167,8 +167,29 @@
     "actions": {
       "finish": "Save",
       "edit": "Edit"
+  },
+  "search": {
+    "search": "Search",
+    "placeholder": "Search in notes, costs, funerals and contacts...",
+    "searching": "Searching",
+    "results": "results",
+    "noResults": "No results found",
+    "error": "An error occurred while searching",
+    "showing": "Showing",
+    "of": "of",
+    "sort": {
+      "relevance": "Relevance",
+      "newest": "Newest first",
+      "oldest": "Oldest first"
     },
-    "common": {
+    "entity": {
+      "note": "Note",
+      "cost": "Cost",
+      "contact": "Contact",
+      "funeral": "Funeral"
+    }
+  },
+  "common": {
       "gender": {
         "male": "Male",
         "female": "Female",

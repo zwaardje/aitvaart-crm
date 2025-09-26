@@ -31,7 +31,11 @@ export function FormTextarea({
 
   return (
     <div className={cn("space-y-1", className)}>
-      {label && <Label htmlFor={inputId}>{label}</Label>}
+      {label && (
+        <Label className="text-xs text-muted-foreground" htmlFor={inputId}>
+          {label}
+        </Label>
+      )}
       <Textarea
         id={inputId}
         {...register(name, validation)}

@@ -8,6 +8,161 @@
   }
 }
 
+/* Audio Visualizer Custom Colors and Animations */
+:root {
+  --color-violet: 0, 20, 255;
+  --color-orange: 255, 120, 0;
+  --color-black: 10, 10, 10;
+  --color-white: 255, 255, 255;
+  --rotation-duration: 6s;
+  --dynamic-border-radius: 55%;
+}
+
+/* Formato esfera + sombra */
+.circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150px;
+  height: 150px;
+  border-radius: var(--dynamic-border-radius);
+  box-shadow: 0 0 20px 10px rgba(var(--color-orange), 0.05);
+  animation: rotateShape var(--rotation-duration) infinite ease-in-out;
+}
+
+/* Speaker circle - Blue */
+.circle-speaker {
+  background: radial-gradient(circle, rgba(var(--color-black), 0) 0%, rgba(var(--color-black), 0) 67%, rgba(59, 130, 246, 1) 75%, rgba(59, 130, 246, 1) 100%);
+}
+
+/* AI circle - Violet */
+.circle-ai {
+  background: radial-gradient(circle, rgba(var(--color-black), 0) 0%, rgba(var(--color-black), 0) 67%, rgba(var(--color-violet), 1) 75%, rgba(var(--color-violet), 1) 100%);
+}
+
+/* Idle circle - Gray */
+.circle-idle {
+  background: radial-gradient(circle, rgba(var(--color-black), 0) 0%, rgba(var(--color-black), 0) 67%, rgba(107, 114, 128, 1) 75%, rgba(107, 114, 128, 1) 100%);
+}
+
+/* Animação de rotação - alleen rotatie en border-radius, geen scale */
+@keyframes rotateShape {
+  0% {
+    border-radius: var(--dynamic-border-radius);
+  }
+  50% {
+    border-radius: 45% 55% 50% 50%;
+  }
+  100% {
+    border-radius: var(--dynamic-border-radius);
+  }
+}
+
+/* Rotatie animatie voor de cirkel */
+@keyframes rotateCircle {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Cloud Audio Visualizer */
+.cloud-container {
+  position: relative;
+  overflow: hidden;
+  width: 92%;
+  height: 74%;
+  margin: auto;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+}
+
+.cloud-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transition: all 0.3s ease-out;
+}
+
+/* Speaker particles - Blue with gentle movement */
+.cloud-particle-listening {
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.8) 0%, rgba(59, 130, 246, 0.4) 50%, transparent 100%);
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.3);
+  animation: cloudFloatListening 8s infinite ease-in-out;
+}
+
+/* AI particles - Violet with gentle reverse movement */
+.cloud-particle-ai_speaking {
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.8) 0%, rgba(139, 92, 246, 0.4) 50%, transparent 100%);
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.3);
+  animation: cloudFloatAI 10s infinite ease-in-out reverse;
+}
+
+/* Idle particles - Gray with very slow movement */
+.cloud-particle-speaking {
+  background: radial-gradient(circle, rgba(107, 114, 128, 0.6) 0%, rgba(107, 114, 128, 0.3) 50%, transparent 100%);
+  box-shadow: 0 0 15px rgba(107, 114, 128, 0.2);
+  animation: cloudFloatIdle 15s infinite ease-in-out;
+}
+
+/* Cloud floating animations - gentle and slow */
+@keyframes cloudFloatListening {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    border-radius: 50%;
+  }
+  25% {
+    transform: translate(-8px, -12px) rotate(45deg) scale(1.1);
+    border-radius: 60% 40% 55% 45%;
+  }
+  50% {
+    transform: translate(12px, -6px) rotate(90deg) scale(1.15);
+    border-radius: 45% 55% 50% 50%;
+  }
+  75% {
+    transform: translate(-6px, 10px) rotate(135deg) scale(1.1);
+    border-radius: 55% 45% 60% 40%;
+  }
+}
+
+@keyframes cloudFloatAI {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    border-radius: 50%;
+  }
+  33% {
+    transform: translate(15px, -8px) rotate(60deg) scale(1.12);
+    border-radius: 65% 35% 55% 45%;
+  }
+  66% {
+    transform: translate(-12px, 14px) rotate(120deg) scale(1.18);
+    border-radius: 35% 65% 45% 55%;
+  }
+}
+
+@keyframes cloudFloatIdle {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    border-radius: 50%;
+  }
+  25% {
+    transform: translate(-2px, -2px) rotate(45deg) scale(1.02);
+    border-radius: 50%;
+  }
+  50% {
+    transform: translate(0, 0) rotate(90deg) scale(1.05);
+    border-radius: 50%;
+  }
+  75% {
+    transform: translate(2px, 2px) rotate(135deg) scale(1.02);
+    border-radius: 50%;
+  }
+}
+
+
 
 
 @layer base {

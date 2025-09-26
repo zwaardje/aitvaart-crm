@@ -43,7 +43,7 @@ const DialogContent = React.forwardRef<
       className={cn(
         fullscreen
           ? "fixed inset-2 sm:inset-4 z-50 grid w-auto h-auto max-w-none translate-x-0 translate-y-0 gap-0 border bg-background p-4 sm:p-6 shadow-lg overflow-y-auto rounded-lg"
-          : "fixed left-1/2 top-1/2 z-50 grid w-full max-w-[calc(100vw-2rem)] sm:max-w-3xl translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 max-h-[85vh] overflow-y-auto sm:rounded-lg",
+          : "fixed bottom-0 left-0 right-0 sm:left-1/2 sm:top-1/2 sm:right-auto sm:bottom-auto z-50 grid w-full sm:w-auto sm:max-w-3xl translate-y-0 sm:translate-x-[-50%] sm:translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95 max-h-[calc(100vh-env(keyboard-inset-height,0px))] sm:max-h-[85vh] overflow-y-auto rounded-t-lg sm:rounded-lg",
         className
       )}
       {...props}

@@ -13,3 +13,4 @@ export * from "./useNotes";
 export * from "./useCosts";
 export * from "./useSupplierPricelists";
 export * from "./useScenarios";
+export * from "./useSearch";

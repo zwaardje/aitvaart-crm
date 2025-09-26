@@ -34,12 +34,7 @@ export default function FuneralDetailsPage({
       )}
 
       {!isLoading && funeral && (
-        <div className="pt-6 space-y-4 w-full">
-          <StreamVoiceAssistantWrapper
-            funeralId={params.id}
-            onCommand={handleVoiceCommand}
-          />
-
+        <div className="space-y-4 w-full">
           <DeceasedCard deceased={funeral.deceased as any} />
 
           <FuneralContacts funeralId={params.id} />

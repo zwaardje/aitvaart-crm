@@ -11,8 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/Alert";
-import { RiDeleteBinLine, RiAlertLine } from "@remixicon/react";
+import { RiDeleteBinLine } from "@remixicon/react";
 import type { Database } from "@/types/database";
 
 type FuneralNote = Database["public"]["Tables"]["funeral_notes"]["Row"];
@@ -45,15 +44,11 @@ export function NoteDeleteForm({ note, onSuccess }: NoteDeleteFormProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-red-600 hover:text-red-700"
-        >
-          <RiDeleteBinLine className="h-4 w-4" />
+        <Button variant="ghost" size="sm" icon>
+          <RiDeleteBinLine />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md overflow-y-auto h-full">
         <DialogHeader>
           <DialogTitle>Weet je het zeker?</DialogTitle>
         </DialogHeader>
@@ -61,14 +56,12 @@ export function NoteDeleteForm({ note, onSuccess }: NoteDeleteFormProps) {
         <div className="space-y-6">
           <div>
             <p className="text-sm text-gray-500 mb-2">
-              Deze actie kan niet ongedaan worden gemaakt.
-            </p>
-            <p className="text-sm text-gray-500">
-              Hiermee wordt uw item definitief verwijderd.
+              Deze actie kan niet ongedaan worden gemaakt. Hiermee wordt uw item
+              definitief verwijderd.
             </p>
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between w-full">
             <Button
               type="button"
               variant="outline"
@@ -82,7 +75,7 @@ export function NoteDeleteForm({ note, onSuccess }: NoteDeleteFormProps) {
               type="button"
               onClick={handleDelete}
               disabled={isDeleting}
-              className="bg-gray-900 text-white hover:bg-gray-800"
+              variant="destructive"
             >
               Verwijder
             </Button>

@@ -17,6 +17,7 @@ export {
 } from "./FuneralContactForm";
 export { DeceasedForm, deceasedFormSchema } from "./DeceasedForm";
 export { FuneralContactDeleteForm } from "./FuneralContactDeleteForm";
+export { FuneralContactEditForm } from "./FuneralContactEditForm";
 export { NoteForm } from "./NoteForm";
 export { NoteEditForm } from "./NoteEditForm";
 export { NoteDeleteForm } from "./NoteDeleteForm";

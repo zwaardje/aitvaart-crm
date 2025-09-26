@@ -32,7 +32,11 @@ export function FormCheckbox({
   return (
     <div className={cn("flex flex-row items-center gap-2", className)}>
       <Checkbox id={inputId} {...register(name, validation)} {...rest} />
-      {label && <Label htmlFor={inputId}>{label}</Label>}
+      {label && (
+        <Label className="text-xs" htmlFor={inputId}>
+          {label}
+        </Label>
+      )}
       {error && <ErrorMessage message={error} />}
       {hint && !error && <p className="text-sm text-gray-500">{hint}</p>}
     </div>

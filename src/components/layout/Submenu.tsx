@@ -16,18 +16,14 @@ interface SubmenuProps {
 
 export function Submenu({ items, className }: SubmenuProps) {
   return (
-    <nav
-      className={cn("w-full bg-gray-50 border-b border-gray-200", className)}
-    >
+    <nav className={cn("w-full bg-gray-50 border-b bg-gray-100", className)}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div
           className={cn(
             "overflow-x-auto scrollbar-hide py-2",
-            // Hide scrollbar for all browsers
             "[&::-webkit-scrollbar]:hidden",
             "[-ms-overflow-style:none]",
             "[scrollbar-width:none]",
-            // Smooth scrolling
             "scroll-smooth"
           )}
         >
@@ -37,7 +33,7 @@ export function Submenu({ items, className }: SubmenuProps) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "relative inline-flex items-center px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg whitespace-nowrap flex-shrink-0",
+                  "relative inline-flex items-center px-2 py-2 text-sm font-medium transition-all duration-200 rounded-sm whitespace-nowrap flex-shrink-0 text-xs",
                   item.isActive
                     ? "bg-white text-gray-900 shadow-sm"
                     : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"

@@ -26,19 +26,6 @@ interface DeceasedCardProps {
 export function DeceasedCard({ deceased }: DeceasedCardProps) {
   const [open, setOpen] = React.useState(false);
 
-  const updateMutation = useMutation({
-    mutationFn: async (updates: Partial<Deceased>) => {
-      if (!deceased?.id) return;
-      const supabase = getSupabaseBrowser();
-      const { error } = await supabase
-        .from("deceased")
-        .update({ ...updates, updated_at: new Date().toISOString() })
-        .eq("id", deceased.id);
-      if (error) throw error;
-    },
-    onSuccess: () => setOpen(false),
-  });
-
   if (!deceased) return null;
 
   return (
