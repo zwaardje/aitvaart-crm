@@ -4,7 +4,6 @@ const nextConfig = {
     serverComponentsExternalPackages: ['@supabase/supabase-js']
   },
   images: {
-    domains: ['localhost'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -14,6 +13,9 @@ const nextConfig = {
       },
     ],
   },
+  // Optimize for Vercel
+  output: 'standalone',
+  poweredByHeader: false,
 }
 
 module.exports = nextConfig

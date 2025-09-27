@@ -23,14 +23,7 @@ Deze implementatie voegt een uitgebreide full text search functionaliteit toe aa
 
 ### Components
 
-- `src/components/ui/Search.tsx` - Hoofdsearch component (inline en modal varianten)
-- `src/components/ui/SearchBar.tsx` - Zoekbalk met sorteeropties
-- `src/components/ui/SearchResults.tsx` - Resultaatweergave (normaal en compact)
-- `src/components/ui/SearchHeader.tsx` - Compacte search voor headers
-
-### Pages
-
-- `src/app/(protected)/search/page.tsx` - Dedicated search pagina
+- `src/components/ui/SearchBar.tsx` - Zoekbalk met sorteeropties en resultaten
 
 ### Translations
 
@@ -54,20 +47,19 @@ supabase db push
 ### Basis Search Component
 
 ```tsx
-import { Search } from "@/components/ui";
+import { SearchBar } from "@/components/ui";
 
 function MyComponent() {
-  const handleResultClick = (result) => {
-    // Navigate based on entity type
-    router.push(`/funerals/${result.entity_id}`);
+  const handleResultsChange = (results) => {
+    // Handle search results
+    console.log("Search results:", results);
   };
 
   return (
-    <Search
-      onResultClick={handleResultClick}
-      variant="inline" // or "modal"
+    <SearchBar
+      onResultsChange={handleResultsChange}
       placeholder="Zoek in alles..."
-      maxResults={50}
+      limit={50}
     />
   );
 }

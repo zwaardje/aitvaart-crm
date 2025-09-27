@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils";
 interface GenericCardProps {
   title: string;
   subtitle?: string;
-  content: ReactNode;
+  icon?: ReactNode;
+  content?: ReactNode;
   footer?: ReactNode;
   actions?: ReactNode;
   className?: string;
@@ -16,6 +17,7 @@ interface GenericCardProps {
 export function GenericCard({
   title,
   subtitle,
+  icon,
   content,
   footer,
   actions,
@@ -26,7 +28,8 @@ export function GenericCard({
       <CardHeader className="pb-3 pl-4 pr-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="flex items-center gap-2 text-sm">
+            <CardTitle className="flex flex-col items-start gap-2 text-sm">
+              {icon}
               {title}
             </CardTitle>
             {subtitle && (
@@ -38,10 +41,11 @@ export function GenericCard({
           {actions && <div className="flex items-center gap-2">{actions}</div>}
         </div>
       </CardHeader>
-
-      <CardContent className="pt-0 pl-4 pr-4">
-        <div className="prose prose-sm max-w-none">{content}</div>
-      </CardContent>
+      {content && (
+        <CardContent className="pt-0 pl-4 pr-4">
+          <div className="prose prose-sm max-w-none">{content}</div>
+        </CardContent>
+      )}
 
       {footer && (
         <CardFooter className="flex items-center justify-between border-t pt-3 pb-3 border-gray-100 bg-gray-50 pl-4 pr-4">

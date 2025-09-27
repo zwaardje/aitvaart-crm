@@ -1,12 +1,12 @@
 "use client";
 
-import { IntakeWizard } from "@/components/funerals/IntakeWizard";
+import { IntakeForm } from "@/components/forms";
 import { Content } from "@/components/layout";
 
 export default function IntakePage() {
   return (
     <Content>
-      <IntakeWizard />
+      <IntakeForm />
     </Content>
   );
 }

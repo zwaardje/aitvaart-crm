@@ -12,7 +12,6 @@ import {
   useCallStateHooks,
   useStreamVideoClient,
 } from "@stream-io/video-react-sdk";
-import { CloudAudioVisualizer } from "./CloudAudioVisualizer";
 
 interface StreamVoiceAssistantProps {
   autoStart?: boolean;
@@ -392,8 +391,6 @@ function CallUI({
 
   return (
     <div className="h-full w-full flex flex-col justify-center items-center">
-      <CloudAudioVisualizer />
-
       <div className="hidden">
         <SpeakerLayout participantsBarPosition="bottom" />
       </div>

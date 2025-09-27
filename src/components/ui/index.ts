@@ -82,3 +82,4 @@ export {
 } from "./command";
 export { SearchBar } from "./SearchBar";
 export { GenericCard } from "./GenericCard";
+export { Tabs, TabsList, TabsTrigger, TabsContent } from "./tabs";

@@ -1,4 +1,5 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import type { Database } from "@/types/database";
@@ -12,7 +13,7 @@ export const createClient = (request: NextRequest) => {
     },
   });
 
-  const supabase = createServerClient(
+  createServerClient(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
@@ -61,6 +62,24 @@ export function getSupabaseServer() {
             // user sessions.
           }
         },
+      },
+    }
+  );
+}
+
+// Admin client for use in API routes that need admin privileges
+export function getSupabaseAdmin() {
+  if (!env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured");
+  }
+
+  return createSupabaseClient<Database>(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
       },
     }
   );
