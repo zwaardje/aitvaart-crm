@@ -1,5 +1,8 @@
 import React from "react";
 import { useTranslations } from "next-intl";
+
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserManager } from "@/components/organization/UserManager";

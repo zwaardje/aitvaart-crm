@@ -1,6 +1,9 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, Suspense } from "react";
+
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,7 +43,7 @@ interface InviteData {
   expiresAt: string;
 }
 
-export default function AcceptInvitePage() {
+function AcceptInvitePageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const t = useTranslations();
@@ -371,5 +374,22 @@ export default function AcceptInvitePage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function AcceptInvitePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <Skeleton className="h-8 w-48 mx-auto mb-4" />
+            <Skeleton className="h-4 w-32 mx-auto" />
+          </div>
+        </div>
+      }
+    >
+      <AcceptInvitePageContent />
+    </Suspense>
   );
 }

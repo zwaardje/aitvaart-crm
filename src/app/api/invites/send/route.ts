@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer, getSupabaseAdmin } from "@/lib/supabase/server";
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   try {
     // Debug environment variables
