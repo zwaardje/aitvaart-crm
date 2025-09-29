@@ -131,7 +131,7 @@ export function SignInForm() {
           )}
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? t("Inloggen...") : t("Inloggen")}
+            {isLoading ? t("auth.signIn.submitting") : t("auth.signIn.submit")}
           </Button>
 
           <div className="text-center">

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +43,7 @@ interface InviteData {
 export default function AcceptInvitePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const t = useTranslations();
   const organizationId = searchParams.get("organization");
   const role = searchParams.get("role");
 
@@ -50,10 +52,15 @@ export default function AcceptInvitePage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  // Define translations outside of useCallback
+  const invalidInviteParams = t("auth.signIn.invalidInviteParams");
+  const acceptInviteError = t("auth.signIn.acceptInviteError");
+  const processInviteError = t("auth.signIn.processInviteError");
+
   const processInvite = useCallback(
     async (user: any) => {
       if (!organizationId || !role) {
-        setError("Ongeldige uitnodiging parameters");
+        setError(invalidInviteParams);
         setLoading(false);
         return;
       }
@@ -79,7 +86,7 @@ export default function AcceptInvitePage() {
         const data = await response.json();
 
         if (!response.ok) {
-          setError(data.error || "Fout bij accepteren van uitnodiging");
+          setError(data.error || acceptInviteError);
           setLoading(false);
           return;
         }
@@ -117,11 +124,18 @@ export default function AcceptInvitePage() {
           router.push("/dashboard");
         }, 2000);
       } catch (error) {
-        setError("Fout bij verwerken van uitnodiging");
+        setError(processInviteError);
         setLoading(false);
       }
     },
-    [organizationId, role, router]
+    [
+      organizationId,
+      role,
+      router,
+      invalidInviteParams,
+      acceptInviteError,
+      processInviteError,
+    ]
   );
 
   const checkAuthStatus = useCallback(async () => {
@@ -256,7 +270,7 @@ export default function AcceptInvitePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <Button onClick={handleSignIn} className="w-full">
-              Inloggen met Google
+              {t("auth.signIn.signInWithGoogle")}
             </Button>
             <Button
               onClick={() => router.push("/")}
@@ -292,7 +306,7 @@ export default function AcceptInvitePage() {
             </h3>
             <p className="text-sm text-gray-600 mb-2">
               {inviteData.organization.description ||
-                "Geen beschrijving beschikbaar"}
+                t("auth.signIn.noDescriptionAvailable")}
             </p>
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Je rol:</span>

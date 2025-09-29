@@ -24,6 +24,11 @@
       "forgotPassword": "Wachtwoord vergeten?",
       "submit": "Inloggen",
       "submitting": "Inloggen...",
+      "signInWithGoogle": "Inloggen met Google",
+      "invalidInviteParams": "Ongeldige uitnodiging parameters",
+      "noDescriptionAvailable": "Geen beschrijving beschikbaar",
+      "acceptInviteError": "Fout bij accepteren van uitnodiging",
+      "processInviteError": "Fout bij verwerken van uitnodiging",
       "errors": {
         "invalidCredentials": "Ongeldige inloggegevens. Controleer uw email en wachtwoord.",
         "emailNotConfirmed": "Controleer uw email voor een bevestigingslink.",
