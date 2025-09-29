@@ -70,19 +70,15 @@ export function SignInForm() {
   };
 
   return (
-    <Card>
-      <CardHeader className="text-center">
-        <CardTitle className="text-3xl">{t("auth.signIn.title")}</CardTitle>
-        <CardDescription>
-          {t("auth.signIn.subtitle")}{" "}
-          <Link href="/auth/signup">{t("auth.signIn.createAccount")}</Link>
-        </CardDescription>
+    <Card className="border-none shadow-none bg-transparent">
+      <CardHeader className="text-center flex flex-col">
+        <CardTitle className="text-xl">{t("auth.signIn.title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <Form
           onSubmit={onSubmit}
           schema={schemas.auth.signIn}
-          className="space-y-6"
+          className="space-y-4"
         >
           <div className="space-y-4">
             <FormField
@@ -108,7 +104,15 @@ export function SignInForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("auth.signIn.password")}</FormLabel>
+                  <div className="flex justify-between items-baseline gap-2">
+                    <FormLabel>{t("auth.signIn.password")}</FormLabel>
+                    <Link
+                      href="/auth/forgot-password"
+                      className="text-xs p-0 h-auto"
+                    >
+                      {t("auth.signIn.forgotPassword")}
+                    </Link>
+                  </div>
                   <FormControl>
                     <Input
                       {...field}
@@ -130,13 +134,18 @@ export function SignInForm() {
             </Alert>
           )}
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? t("auth.signIn.submitting") : t("auth.signIn.submit")}
-          </Button>
+          <div className="flex flex-col justify-between gap-2 items-center">
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading
+                ? t("auth.signIn.submitting")
+                : t("auth.signIn.submit")}
+            </Button>
 
-          <div className="text-center">
-            <Link href="/auth/forgot-password" className="text-sm">
-              {t("auth.signIn.forgotPassword")}
+            <span className="text-sm text-muted-foreground lowercase">
+              {t("auth.signIn.subtitle")}
+            </span>
+            <Link className="p-0 h-auto text-sm" href="/auth/signup">
+              {t("auth.signIn.createAccount")}
             </Link>
           </div>
         </Form>

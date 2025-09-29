@@ -63,7 +63,7 @@ export function ResetPasswordForm() {
   if (success) {
     return (
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-semibold">Wachtwoord aangepast</h2>
+        <h2 className="text-xl font-semibold">Wachtwoord aangepast</h2>
         <p className="text-sm text-muted-foreground">
           U wordt doorgestuurd naar de inlogpagina...
         </p>

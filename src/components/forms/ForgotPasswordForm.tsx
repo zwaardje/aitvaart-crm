@@ -5,6 +5,13 @@ import { Form, FormInput, SubmitButton } from "@/components/forms";
 import { Alert, Link } from "@/components/ui";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import { schemas, type ForgotPasswordFormData } from "@/lib/validation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export function ForgotPasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +58,7 @@ export function ForgotPasswordForm() {
             />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold">Email verzonden!</h2>
+        <h2 className="text-xl font-bold">Email verzonden!</h2>
         <p className="text-sm text-gray-600">
           Controleer uw email voor instructies om uw wachtwoord te resetten.
         </p>
@@ -61,36 +68,49 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <Form
-      onSubmit={onSubmit}
-      schema={schemas.auth.forgotPassword}
-      className="space-y-6"
-    >
-      <div className="space-y-4">
-        <FormInput
-          name="email"
-          label="Email adres"
-          type="email"
-          autoComplete="email"
-          placeholder="Email adres"
-        />
-      </div>
+    <Card className="border-none shadow-none bg-transparent">
+      <CardHeader className="text-center">
+        <CardTitle className="text-xl">Wachtwoord vergeten?</CardTitle>
+        <CardDescription>
+          Voer uw email adres in en wij sturen u een link om uw wachtwoord te
+          resetten.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form
+          onSubmit={onSubmit}
+          schema={schemas.auth.forgotPassword}
+          className="space-y-4"
+        >
+          <div className="space-y-4">
+            <FormInput
+              name="email"
+              label="Email adres"
+              type="email"
+              autoComplete="email"
+              placeholder="Email adres"
+            />
+          </div>
 
-      {error && (
-        <Alert variant="destructive">
-          <div className="text-sm">{error}</div>
-        </Alert>
-      )}
+          {error && (
+            <Alert variant="destructive">
+              <div className="text-sm">{error}</div>
+            </Alert>
+          )}
 
-      <SubmitButton className="w-full" isLoading={isLoading}>
-        {isLoading ? "Verzenden..." : "Reset link verzenden"}
-      </SubmitButton>
+          <div className="flex flex-col justify-between gap-2 items-center">
+            <SubmitButton className="w-full" isLoading={isLoading}>
+              {isLoading ? "Verzenden..." : "Reset link verzenden"}
+            </SubmitButton>
 
-      <div className="text-center">
-        <Link href="/auth/signin" className="text-sm">
-          Terug naar inloggen
-        </Link>
-      </div>
-    </Form>
+            <span className="text-sm text-muted-foreground lowercase">of</span>
+
+            <Link className="p-0 h-auto text-sm" href="/auth/signin">
+              Terug naar inloggen
+            </Link>
+          </div>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }
