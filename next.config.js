@@ -13,9 +13,16 @@ const nextConfig = {
       },
     ],
   },
-  // Optimize for Vercel
-  output: 'standalone',
   poweredByHeader: false,
+  webpack: (config, { isServer }) => {
+    // Handle JSON parsing issues by ignoring problematic modules
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'react-remove-scroll': false,
+    };
+    
+    return config;
+  },
 }
 
 module.exports = nextConfig

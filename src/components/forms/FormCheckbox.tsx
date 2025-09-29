@@ -31,7 +31,7 @@ export function FormCheckbox({
 
   return (
     <div className={cn("flex flex-row items-center gap-2", className)}>
-      <Checkbox id={inputId} {...register(name, validation)} {...rest} />
+      <Checkbox id={inputId} {...register(name, validation)} />
       {label && (
         <Label className="text-xs" htmlFor={inputId}>
           {label}

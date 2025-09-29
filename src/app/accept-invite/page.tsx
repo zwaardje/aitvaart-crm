@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/Button";
@@ -50,27 +50,7 @@ export default function AcceptInvitePage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    // Check if user is already signed in
-    checkAuthStatus();
-  }, []);
-
-  const checkAuthStatus = async () => {
-    const supabase = getSupabaseBrowser();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      // User is already signed in, process the invite
-      await processInvite(user);
-    } else {
-      // User needs to sign in first
-      setLoading(false);
-    }
-  };
-
-  const processInvite = async (user: any) => {
+  const processInvite = useCallback(async (user: any) => {
     if (!organizationId || !role) {
       setError("Ongeldige uitnodiging parameters");
       setLoading(false);
@@ -139,7 +119,27 @@ export default function AcceptInvitePage() {
       setError("Fout bij verwerken van uitnodiging");
       setLoading(false);
     }
-  };
+  }, [organizationId, role, router]);
+
+  const checkAuthStatus = useCallback(async () => {
+    const supabase = getSupabaseBrowser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      // User is already signed in, process the invite
+      await processInvite(user);
+    } else {
+      // User needs to sign in first
+      setLoading(false);
+    }
+  }, [processInvite]);
+
+  useEffect(() => {
+    // Check if user is already signed in
+    checkAuthStatus();
+  }, [checkAuthStatus]);
 
   const handleSignIn = () => {
     const supabase = getSupabaseBrowser();

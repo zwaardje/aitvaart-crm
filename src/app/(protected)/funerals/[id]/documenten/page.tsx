@@ -175,7 +175,7 @@ export default function DocumentsPage({ params }: { params: { id: string } }) {
                     </h3>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <span>{formatFileSize(document.file_size || 0)}</span>
-                      <span>{formatDate(document.created_at)}</span>
+                      <span>{formatDate(document.created_at || new Date().toISOString())}</span>
                       {document.description && (
                         <span className="truncate">{document.description}</span>
                       )}

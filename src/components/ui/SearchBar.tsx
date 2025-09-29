@@ -52,19 +52,21 @@ export function SearchBar({
     limit,
   });
 
+  const entityTypesString = entityTypes?.join(",");
+  
   const filteredResults = useMemo(() => {
     return entityTypes
       ? search.results.filter((result) =>
           entityTypes.includes(result.entity_type)
         )
       : search.results;
-  }, [search.results, entityTypes?.join(",")]);
+  }, [search.results, entityTypes]);
 
   useEffect(() => {
     if (onResultsChange) {
       onResultsChange(filteredResults);
     }
-  }, [filteredResults]);
+  }, [filteredResults, onResultsChange]);
 
   const clearSearch = () => {
     setQuery("");

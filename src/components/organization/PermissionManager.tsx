@@ -254,7 +254,7 @@ export function PermissionManager({
                         Role-based Permissions
                       </h4>
                       <div className="text-sm text-gray-600">
-                        These permissions are inherited from the user's role and
+                        These permissions are inherited from the user&apos;s role and
                         cannot be modified here. To change these, modify the
                         role permissions above.
                       </div>

@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     if (
       !existingProfile ||
-      (profileCheckError && profileCheckError.code === "PGRST116")
+      (profileCheckError && (profileCheckError as any).code === "PGRST116")
     ) {
       // Profile doesn't exist, create it
       const { error: insertError } = await supabaseAdmin

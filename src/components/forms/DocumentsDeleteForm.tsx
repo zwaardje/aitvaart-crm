@@ -37,7 +37,7 @@ export function DocumentsDeleteForm({
           Deze actie kan niet ongedaan worden gemaakt.
         </p>
         <p className="text-sm text-gray-500">
-          Hiermee wordt het document "{document.file_name}" definitief
+          Hiermee wordt het document &quot;{document.file_name}&quot; definitief
           verwijderd.
         </p>
       </div>

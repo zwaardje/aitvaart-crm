@@ -256,7 +256,7 @@ export function VoiceCommandPanel({
           onValueChange={setSearchValue}
         />
         <CommandList>
-          <CommandEmpty>Geen commando's gevonden.</CommandEmpty>
+          <CommandEmpty>Geen commando&apos;s gevonden.</CommandEmpty>
 
           {filteredGroups.map((group, groupIndex) => (
             <Fragment key={group.heading}>
@@ -298,7 +298,7 @@ export function VoiceCommandPanel({
                   <div className="flex-1 min-w-0">
                     <div className="font-medium">Verzend bericht</div>
                     <div className="text-sm text-muted-foreground">
-                      "{searchValue}"
+                      &quot;{searchValue}&quot;
                     </div>
                   </div>
                 </CommandItem>
