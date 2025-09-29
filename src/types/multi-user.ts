@@ -11,14 +11,14 @@ export type Permission = "view" | "edit" | "delete" | "manage";
 
 export interface PermissionDefinition {
   id: string;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
   name: string;
   display_name: string;
-  description?: string;
+  description?: string | null;
   category: string;
-  is_system_permission: boolean;
-  is_active: boolean;
+  is_system_permission: boolean | null;
+  is_active: boolean | null;
 }
 
 export interface PermissionGroup {

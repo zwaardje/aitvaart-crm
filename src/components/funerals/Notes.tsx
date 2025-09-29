@@ -46,7 +46,10 @@ export function Notes({ funeralId }: NotesProps) {
   }, []);
 
   // Memoize entityTypes to prevent infinite re-renders
-  const entityTypes = useMemo(() => ["note"], []);
+  const entityTypes = useMemo(
+    () => ["note"] as ("funeral" | "note" | "cost" | "contact")[],
+    []
+  );
 
   if (isLoading) {
     return (

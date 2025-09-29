@@ -237,8 +237,8 @@ export function PermissionManager({
                     <option value="">Select a user...</option>
                     {members.map((member) => (
                       <option key={member.id} value={member.user_id}>
-                        {member.user?.full_name ||
-                          member.user?.company_name ||
+                        {(member as any).full_name ||
+                          (member as any).company_name ||
                           "Unknown User"}
                         {member.role && ` (${member.role})`}
                       </option>
@@ -254,9 +254,9 @@ export function PermissionManager({
                         Role-based Permissions
                       </h4>
                       <div className="text-sm text-gray-600">
-                        These permissions are inherited from the user&apos;s role and
-                        cannot be modified here. To change these, modify the
-                        role permissions above.
+                        These permissions are inherited from the user&apos;s
+                        role and cannot be modified here. To change these,
+                        modify the role permissions above.
                       </div>
                     </div>
 

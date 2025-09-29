@@ -50,76 +50,79 @@ export default function AcceptInvitePage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const processInvite = useCallback(async (user: any) => {
-    if (!organizationId || !role) {
-      setError("Ongeldige uitnodiging parameters");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/invites/accept", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          organizationId,
-          role,
-          permissions: {
-            can_manage_users: role === "admin" || role === "owner",
-            can_manage_funerals: true,
-            can_manage_clients: true,
-            can_manage_suppliers: true,
-            can_view_financials: role === "admin" || role === "owner",
-            can_manage_settings: role === "owner",
-          },
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || "Fout bij accepteren van uitnodiging");
+  const processInvite = useCallback(
+    async (user: any) => {
+      if (!organizationId || !role) {
+        setError("Ongeldige uitnodiging parameters");
         setLoading(false);
         return;
       }
 
-      // Get organization details for display
-      const supabase = getSupabaseBrowser();
-      const { data: organization } = await supabase
-        .from("organizations")
-        .select("id, name, description")
-        .eq("id", organizationId)
-        .single();
+      try {
+        const response = await fetch("/api/invites/accept", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            organizationId,
+            role,
+            permissions: {
+              can_manage_users: role === "admin" || role === "owner",
+              can_manage_funerals: true,
+              can_manage_clients: true,
+              can_manage_suppliers: true,
+              can_view_financials: role === "admin" || role === "owner",
+              can_manage_settings: role === "owner",
+            },
+          }),
+        });
 
-      setInviteData({
-        id: data.data.id,
-        organization: organization || {
-          id: organizationId,
-          name: "Unknown",
-          description: null,
-        },
-        inviter: { full_name: "System", email: "system@aitvaart.com" },
-        role: role,
-        permissions: {
-          can_manage_users: data.data.can_manage_users || false,
-          can_manage_funerals: data.data.can_manage_funerals || false,
-          can_manage_clients: data.data.can_manage_clients || false,
-          can_manage_suppliers: data.data.can_manage_suppliers || false,
-          can_view_financials: data.data.can_view_financials || false,
-          can_manage_settings: data.data.can_manage_settings || false,
-        },
-        expiresAt: new Date().toISOString(),
-      });
+        const data = await response.json();
 
-      setSuccess(true);
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 2000);
-    } catch (error) {
-      setError("Fout bij verwerken van uitnodiging");
-      setLoading(false);
-    }
-  }, [organizationId, role, router]);
+        if (!response.ok) {
+          setError(data.error || "Fout bij accepteren van uitnodiging");
+          setLoading(false);
+          return;
+        }
+
+        // Get organization details for display
+        const supabase = getSupabaseBrowser();
+        const { data: organization } = await supabase
+          .from("organizations")
+          .select("id, name, description")
+          .eq("id", organizationId)
+          .single();
+
+        setInviteData({
+          id: data.data.id,
+          organization: organization || {
+            id: organizationId,
+            name: "Unknown",
+            description: null,
+          },
+          inviter: { full_name: "System", email: "system@aitvaart.com" },
+          role: role,
+          permissions: {
+            can_manage_users: data.data.can_manage_users || false,
+            can_manage_funerals: data.data.can_manage_funerals || false,
+            can_manage_clients: data.data.can_manage_clients || false,
+            can_manage_suppliers: data.data.can_manage_suppliers || false,
+            can_view_financials: data.data.can_view_financials || false,
+            can_manage_settings: data.data.can_manage_settings || false,
+          },
+          expiresAt: new Date().toISOString(),
+        });
+
+        setSuccess(true);
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 2000);
+      } catch (error) {
+        setError("Fout bij verwerken van uitnodiging");
+        setLoading(false);
+      }
+    },
+    [organizationId, role, router]
+  );
 
   const checkAuthStatus = useCallback(async () => {
     const supabase = getSupabaseBrowser();

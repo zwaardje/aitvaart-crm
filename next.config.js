@@ -13,6 +13,7 @@ const nextConfig = {
       },
     ],
   },
+
   poweredByHeader: false,
   webpack: (config, { isServer }) => {
     // Handle JSON parsing issues by ignoring problematic modules

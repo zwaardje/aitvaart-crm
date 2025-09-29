@@ -9,12 +9,12 @@ export interface PermissionDefinition {
   id: string;
   name: string;
   display_name: string;
-  description?: string;
+  description?: string | null;
   category: string;
-  is_system_permission: boolean;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  is_system_permission: boolean | null;
+  is_active: boolean | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 type PermissionRow = Database["public"]["Tables"]["permissions"]["Row"];

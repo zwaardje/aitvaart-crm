@@ -72,8 +72,8 @@ export default function UsersPage() {
             Access Restricted
           </h2>
           <p className="text-gray-500 mb-4">
-            You don&apos;t have permission to manage users. Only organization owners
-            and admins can access this page.
+            You don&apos;t have permission to manage users. Only organization
+            owners and admins can access this page.
           </p>
           <p className="text-sm text-gray-400">
             Your current role:{" "}
