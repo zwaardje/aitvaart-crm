@@ -170,7 +170,6 @@ export function Funerals() {
               key={f.id}
             >
               <GenericCard
-                variant="compact"
                 title={`${f.deceased?.first_names} ${f.deceased?.last_name}`}
                 actions={
                   <div className="flex items-center gap-2">

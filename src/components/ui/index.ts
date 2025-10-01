@@ -83,3 +83,10 @@ export {
 export { SearchBar } from "./SearchBar";
 export { GenericCard } from "./GenericCard";
 export { Tabs, TabsList, TabsTrigger, TabsContent } from "./tabs";
+export {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./tooltip";
+export { SmartSearchBar, type SmartSearchBarAction } from "./SmartSearchBar";
