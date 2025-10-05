@@ -4,7 +4,8 @@ import { useFuneral } from "@/hooks/useFunerals";
 import { Costs } from "@/components/funerals/Costs";
 import { Skeleton } from "@/components/ui";
 import { useEffect, useState, useCallback } from "react";
-import { RiAddLine } from "@remixicon/react";
+import { RiStoreLine, RiMoneyEuroBoxLine } from "@remixicon/react";
+import { SupplierForm } from "@/components/forms/SupplierForm";
 
 import {
   SmartSearchBar,
@@ -26,7 +27,9 @@ export default function FuneralCostsPage({
   params: Promise<{ id: string }> | { id: string };
 }) {
   const [id, setId] = useState<string>("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<
+    "costs" | "supplier" | undefined
+  >(undefined);
 
   useEffect(() => {
     if (params instanceof Promise) {
@@ -39,18 +42,22 @@ export default function FuneralCostsPage({
   }, [params]);
   const { funeral, isLoading } = useFuneral(id);
 
-  const handleAddContactDialog = useCallback(() => {
-    setIsDialogOpen(true);
-  }, []);
-
   const searchActions = useCallback(
     (): SmartSearchBarAction[] => [
       {
-        id: "settings",
-        label: "Nabestaanden",
-        icon: <RiAddLine className="h-4 w-4" />,
+        id: "costs",
+        label: "Kosten toevoegen",
+        icon: <RiMoneyEuroBoxLine className="h-3 w-3" />,
         onClick: () => {
-          handleAddContactDialog();
+          setIsDialogOpen("costs");
+        },
+      },
+      {
+        id: "supplier",
+        label: "Leveranciers toevoege",
+        icon: <RiStoreLine className="h-3 w-3" />,
+        onClick: () => {
+          setIsDialogOpen("supplier");
         },
       },
     ],
@@ -69,19 +76,35 @@ export default function FuneralCostsPage({
       {!isLoading && funeral && (
         <div className="space-y-4 w-full">
           <SmartSearchBar
-            placeholder="Zoek in dashboard..."
+            onResultsChange={() => {}}
+            placeholder="Zoek in kosten..."
             actions={searchActions()}
             entityTypes={["funeral", "note", "contact"]}
           />
           <Costs funeralId={id} />
         </div>
       )}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog
+        open={isDialogOpen === "costs"}
+        onOpenChange={() => setIsDialogOpen(undefined)}
+      >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Nieuw contact</DialogTitle>
+            <DialogTitle>Voeg kosten toe</DialogTitle>
           </DialogHeader>
           <CostForm funeralId={id} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isDialogOpen === "supplier"}
+        onOpenChange={() => setIsDialogOpen(undefined)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Voeg leverancier toe</DialogTitle>
+          </DialogHeader>
+          <SupplierForm />
         </DialogContent>
       </Dialog>
     </>

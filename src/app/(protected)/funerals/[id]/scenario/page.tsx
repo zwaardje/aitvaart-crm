@@ -1,9 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
-import { Content } from "@/components/layout";
-import { SectionHeader } from "@/components/layout";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import {
   Skeleton,
   Card,
@@ -32,6 +29,11 @@ import {
   RiDeleteBinLine,
   RiCalendarLine,
 } from "@remixicon/react";
+import {
+  SmartSearchBar,
+  SmartSearchBarAction,
+} from "@/components/ui/SmartSearchBar";
+import { Content } from "@/components/layout";
 
 type FuneralScenario = Database["public"]["Tables"]["funeral_scenarios"]["Row"];
 
@@ -40,7 +42,8 @@ interface ScenarioContentProps {
 }
 
 function ScenarioContent({ funeralId }: ScenarioContentProps) {
-  const t = useTranslations();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const { data: scenarios, isLoading } = useScenarios(funeralId);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingScenario, setEditingScenario] =
@@ -89,32 +92,22 @@ function ScenarioContent({ funeralId }: ScenarioContentProps) {
     setDeletingScenario(null);
   };
 
-  return (
-    <div className="space-y-6 w-full">
-      <SectionHeader
-        title="Uitvaartscenario"
-        description="Beheer alle onderdelen van het uitvaartscenario"
-        actions={
-          <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <RiAddLine className="h-4 w-4 mr-2" />
-                Toevoegen
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Item toevoegen</DialogTitle>
-              </DialogHeader>
-              <ScenarioForm
-                funeralId={funeralId}
-                onSuccess={handleAddSuccess}
-              />
-            </DialogContent>
-          </Dialog>
-        }
-      />
+  const searchActions = useCallback(
+    (): SmartSearchBarAction[] => [
+      {
+        id: "settings",
+        label: "Nabestaanden toevoegen",
+        icon: <RiAddLine className="h-3 w-3" />,
+        onClick: () => {
+          setIsDialogOpen(true);
+        },
+      },
+    ],
+    []
+  );
 
+  return (
+    <>
       {isLoading ? (
         <div className="space-y-6">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -133,6 +126,11 @@ function ScenarioContent({ funeralId }: ScenarioContentProps) {
         </div>
       ) : (
         <div className="space-y-6">
+          <SmartSearchBar
+            placeholder="Zoek in scenario..."
+            actions={searchActions()}
+            entityTypes={["funeral", "note", "contact"]}
+          />
           {Object.entries(groupedScenarios).map(
             ([section, sectionScenarios]) => (
               <Card key={section}>
@@ -257,7 +255,7 @@ function ScenarioContent({ funeralId }: ScenarioContentProps) {
           )}
         </div>
       )}
-    </div>
+    </>
   );
 }
 
@@ -279,32 +277,7 @@ export default function ScenarioPage({
   }, [params]);
   return (
     <Content>
-      <Suspense
-        fallback={
-          <div className="p-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <Skeleton className="h-8 w-48 mb-2" />
-                <Skeleton className="h-4 w-96" />
-              </div>
-              <Skeleton className="h-10 w-32" />
-            </div>
-            <div className="grid gap-6">
-              <Card>
-                <CardHeader>
-                  <Skeleton className="h-6 w-48" />
-                </CardHeader>
-                <CardContent>
-                  <Skeleton className="h-4 w-full mb-2" />
-                  <Skeleton className="h-4 w-3/4" />
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        }
-      >
-        <ScenarioContent funeralId={id} />
-      </Suspense>
+      <ScenarioContent funeralId={id} />
     </Content>
   );
 }

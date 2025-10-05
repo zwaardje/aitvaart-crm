@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Content } from "@/components/layout";
 
 export default function FuneralDetailsPage({
   params,
@@ -39,18 +40,14 @@ export default function FuneralDetailsPage({
   }, [params]);
   const { funeral, isLoading } = useFuneral(id);
 
-  const handleAddContactDialog = useCallback(() => {
-    setIsDialogOpen(true);
-  }, []);
-
   const searchActions = useCallback(
     (): SmartSearchBarAction[] => [
       {
         id: "settings",
-        label: "Nabestaanden",
-        icon: <RiAddLine className="h-4 w-4" />,
+        label: "Nabestaanden toevoegen",
+        icon: <RiAddLine className="h-3 w-3" />,
         onClick: () => {
-          handleAddContactDialog();
+          setIsDialogOpen(true);
         },
       },
     ],
@@ -58,7 +55,7 @@ export default function FuneralDetailsPage({
   );
 
   return (
-    <>
+    <Content>
       {isLoading && (
         <div className="space-y-4 w-full">
           <Skeleton className="h-10 w-64" />
@@ -73,7 +70,6 @@ export default function FuneralDetailsPage({
             actions={searchActions()}
             entityTypes={["funeral", "note", "contact"]}
           />
-          <TaskList funeralId={funeral.id} />
           <DeceasedCard deceased={funeral.deceased as any} />
 
           <FuneralContacts funeralId={id} />
@@ -87,6 +83,6 @@ export default function FuneralDetailsPage({
           <FuneralContactForm funeralId={id} />
         </DialogContent>
       </Dialog>
-    </>
+    </Content>
   );
 }

@@ -63,7 +63,6 @@ export function Costs({ funeralId }: CostsProps) {
             </p>
           )}
         </div>
-        <CostForm funeralId={funeralId} />
       </div>
 
       {isEmpty ? (

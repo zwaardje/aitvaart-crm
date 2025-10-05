@@ -66,9 +66,7 @@ export function SmartSearchBar({
           </div>
         )}
 
-        {/* Action Buttons */}
         <div className="flex items-center gap-2 transition-all duration-300 ease-in-out group-focus-within:scale-95 group-focus-within:opacity-80">
-          {/* AI Button */}
           {showAiButton && (
             <Button
               variant="outline"
@@ -89,26 +87,22 @@ export function SmartSearchBar({
                   <RiMoreLine className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                {actions && actions.length > 0 ? (
+              <DropdownMenuContent align="end" className="w-auto">
+                {actions &&
+                  actions.length > 0 &&
                   actions.map((action, index) => (
                     <React.Fragment key={action.id}>
                       {index > 0 && <DropdownMenuSeparator />}
                       <DropdownMenuItem
                         onClick={action.onClick}
                         disabled={action.disabled}
-                        className="flex items-center gap-2 cursor-pointer"
+                        className="flex items-center gap-2 cursor-pointer text-xs"
                       >
                         {action.icon}
                         {action.label}
                       </DropdownMenuItem>
                     </React.Fragment>
-                  ))
-                ) : (
-                  <DropdownMenuItem disabled>
-                    Geen acties beschikbaar
-                  </DropdownMenuItem>
-                )}
+                  ))}
               </DropdownMenuContent>
             </DropdownMenu>
           )}
