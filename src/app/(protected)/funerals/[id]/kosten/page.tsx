@@ -54,7 +54,7 @@ export default function FuneralCostsPage({
       },
       {
         id: "supplier",
-        label: "Leveranciers toevoege",
+        label: "Leveranciers toevoegen",
         icon: <RiStoreLine className="h-3 w-3" />,
         onClick: () => {
           setIsDialogOpen("supplier");

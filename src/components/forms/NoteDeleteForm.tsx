@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 import { useNotes } from "@/hooks";
 import { Button } from "@/components/ui/Button";
 import {
@@ -22,7 +21,6 @@ interface NoteDeleteFormProps {
 }
 
 export function NoteDeleteForm({ note, onSuccess }: NoteDeleteFormProps) {
-  const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { deleteNote, refetch } = useNotes(note.funeral_id);

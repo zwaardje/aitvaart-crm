@@ -24,7 +24,7 @@ export function GenericCard({
   className,
 }: GenericCardProps) {
   return (
-    <Card className={cn("relative", className)}>
+    <Card className={cn("relative rounded-sm", className)}>
       <CardHeader className="pb-3 pl-4 pr-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
