@@ -20,7 +20,7 @@ const SelectTrigger = ({
   className,
   children,
   ...props
-}: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>) => (
+}: React.ComponentProps<typeof SelectPrimitive.Trigger>) => (
   <SelectPrimitive.Trigger
     className={cn(
       "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
@@ -38,7 +38,7 @@ const SelectTrigger = ({
 const SelectScrollUpButton = ({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>) => (
+}: React.ComponentProps<typeof SelectPrimitive.ScrollUpButton>) => (
   <SelectPrimitive.ScrollUpButton
     className={cn(
       "flex cursor-default items-center justify-center py-1",
@@ -53,7 +53,7 @@ const SelectScrollUpButton = ({
 const SelectScrollDownButton = ({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>) => (
+}: React.ComponentProps<typeof SelectPrimitive.ScrollDownButton>) => (
   <SelectPrimitive.ScrollDownButton
     className={cn(
       "flex cursor-default items-center justify-center py-1",
@@ -70,7 +70,7 @@ const SelectContent = ({
   children,
   position = "popper",
   ...props
-}: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>) => (
+}: React.ComponentProps<typeof SelectPrimitive.Content>) => (
   <SelectPrimitive.Portal>
     <SelectPrimitive.Content
       className={cn(
@@ -100,7 +100,7 @@ const SelectContent = ({
 const SelectLabel = ({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>) => (
+}: React.ComponentProps<typeof SelectPrimitive.Label>) => (
   <SelectPrimitive.Label
     className={cn("px-2 py-1.5 text-sm font-semibold", className)}
     {...props}
@@ -111,7 +111,7 @@ const SelectItem = ({
   className,
   children,
   ...props
-}: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>) => (
+}: React.ComponentProps<typeof SelectPrimitive.Item>) => (
   <SelectPrimitive.Item
     className={cn(
       "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
@@ -131,7 +131,7 @@ const SelectItem = ({
 const SelectSeparator = ({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>) => (
+}: React.ComponentProps<typeof SelectPrimitive.Separator>) => (
   <SelectPrimitive.Separator
     className={cn("-mx-1 my-1 h-px bg-muted", className)}
     {...props}

@@ -4,16 +4,21 @@ import { Suspense, useState, use } from "react";
 import { useTranslations } from "next-intl";
 import { Content } from "@/components/layout";
 import { SectionHeader } from "@/components/layout";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/Button";
+import {
+  Skeleton,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui";
+import { Button } from "@/components/ui";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui";
 import {
   ScenarioForm,
   ScenarioEditForm,

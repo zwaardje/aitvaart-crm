@@ -55,17 +55,20 @@ export interface AppLinkProps
   extends AnchorProps,
     VariantProps<typeof linkVariants> {}
 
-export const Link = React.forwardRef<HTMLAnchorElement, AppLinkProps>(
-  ({ className, children, variant, size, type, ...props }, ref) => {
-    return (
-      <NextLink
-        ref={ref}
-        className={cn(linkVariants({ variant, size, type, className }))}
-        {...props}
-      >
-        {children}
-      </NextLink>
-    );
-  }
-);
-Link.displayName = "Link";
+export const Link = ({
+  className,
+  children,
+  variant,
+  size,
+  type,
+  ...props
+}: AppLinkProps) => {
+  return (
+    <NextLink
+      className={cn(linkVariants({ variant, size, type, className }))}
+      {...props}
+    >
+      {children}
+    </NextLink>
+  );
+};

@@ -53,6 +53,7 @@ export {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
+  BreadcrumbEllipsis,
 } from "./breadcrumb";
 export {
   DropdownMenu,

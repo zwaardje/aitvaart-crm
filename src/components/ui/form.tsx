@@ -88,7 +88,7 @@ const FormItem = ({
 const FormLabel = ({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>) => {
+}: React.ComponentProps<typeof LabelPrimitive.Root>) => {
   const { error, formItemId } = useFormField();
 
   return (
@@ -100,9 +100,7 @@ const FormLabel = ({
   );
 };
 
-const FormControl = ({
-  ...props
-}: React.ComponentPropsWithoutRef<typeof Slot>) => {
+const FormControl = ({ ...props }: React.ComponentProps<typeof Slot>) => {
   const { error, formItemId, formDescriptionId, formMessageId } =
     useFormField();
 
