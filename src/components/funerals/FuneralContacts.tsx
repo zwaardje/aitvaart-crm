@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import { useFuneralContacts } from "@/hooks";
 import type { Database } from "@/types/database";
@@ -11,6 +10,7 @@ import {
   FuneralContactDeleteForm,
 } from "@/components/forms";
 import { SectionHeader } from "@/components/layout";
+import { useMemo } from "react";
 
 type ClientRow = Database["public"]["Tables"]["clients"]["Row"];
 type FuneralContactRow =
@@ -30,45 +30,19 @@ type EditForm = CreateForm;
 type Props = { funeralId: string };
 
 export function FuneralContacts({ funeralId }: Props) {
-  const { contacts, isLoading, createContact, updateContact, deleteContact } =
+  const { contacts, isLoading, updateContact, deleteContact } =
     useFuneralContacts(funeralId);
   const typedContacts = (contacts as unknown as ContactWithClient[]) ?? [];
 
-  const onCreate = async (data: CreateForm) => {
-    const supabase = getSupabaseBrowser();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) throw new Error("Geen gebruiker aangemeld");
-
-    if (data.is_primary) {
-      await supabase
-        .from("funeral_contacts")
-        .update({ is_primary: false })
-        .eq("funeral_id", funeralId);
-    }
-
-    const { data: client, error: cErr } = await supabase
-      .from("clients")
-      .insert({
-        entrepreneur_id: user.id,
-        preferred_name: data.preferred_name,
-        last_name: data.last_name,
-        email: data.email || null,
-        phone_number: data.phone_number || null,
-      })
-      .select("id")
-      .single();
-    if (cErr) throw cErr;
-
-    await createContact({
-      funeral_id: funeralId,
-      client_id: client.id,
-      relation: data.relation || null,
-      is_primary: !!data.is_primary,
-      notes: null,
-    });
-  };
+  const sortedContacts = useMemo(
+    () =>
+      typedContacts.sort((a, b) => {
+        if (a.is_primary && !b.is_primary) return -1;
+        if (!a.is_primary && b.is_primary) return 1;
+        return 0;
+      }),
+    [typedContacts]
+  );
 
   const onEdit = async (contact: ContactWithClient, data: EditForm) => {
     const supabase = getSupabaseBrowser();
@@ -114,16 +88,7 @@ export function FuneralContacts({ funeralId }: Props) {
 
   return (
     <>
-      <SectionHeader
-        title="Nabestaanden"
-        actions={
-          <FuneralContactForm
-            onSubmit={onCreate}
-            submitLabel="Toevoegen"
-            withDialog={true}
-          />
-        }
-      />
+      <SectionHeader title="Nabestaanden" />
       <div className="mt-3">
         {isLoading && <Skeleton className="h-16 w-full" />}
         {!isLoading && typedContacts.length === 0 && (
@@ -133,47 +98,40 @@ export function FuneralContacts({ funeralId }: Props) {
         )}
         {!isLoading && typedContacts.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {typedContacts
-              .sort((a, b) => {
-                // Sort primary contacts first
-                if (a.is_primary && !b.is_primary) return -1;
-                if (!a.is_primary && b.is_primary) return 1;
-                return 0;
-              })
-              .map((c) => (
-                <GenericCard
-                  key={c.id}
-                  title={`${c.client?.preferred_name} ${c.client?.last_name}`}
-                  subtitle={c.relation || "-"}
-                  content={
-                    <div className="text-sm">
-                      <div className="truncate">{c.client?.email ?? "-"}</div>
-                      <div className="text-muted-foreground">
-                        {c.client?.phone_number ?? "-"}
-                      </div>
+            {sortedContacts.map((c) => (
+              <GenericCard
+                key={c.id}
+                title={`${c.client?.preferred_name} ${c.client?.last_name}`}
+                subtitle={c.relation || "-"}
+                content={
+                  <div className="text-sm">
+                    <div className="truncate">{c.client?.email ?? "-"}</div>
+                    <div className="text-muted-foreground">
+                      {c.client?.phone_number ?? "-"}
                     </div>
-                  }
-                  actions={
-                    <>
-                      <FuneralContactEditForm contact={c} onEdit={onEdit} />
-                      <FuneralContactDeleteForm
-                        contactFirstName={c.client?.preferred_name ?? ""}
-                        onConfirm={() => onDelete(c)}
-                      />
-                    </>
-                  }
-                  footer={
-                    <div className="flex items-center justify-between w-full">
-                      <span className="text-gray-500 text-xs">
-                        Contactpersoon
-                      </span>
-                      {c.is_primary && (
-                        <Badge className="text-xs font-normal">Primair</Badge>
-                      )}
-                    </div>
-                  }
-                />
-              ))}
+                  </div>
+                }
+                actions={
+                  <>
+                    <FuneralContactEditForm contact={c} onEdit={onEdit} />
+                    <FuneralContactDeleteForm
+                      contactFirstName={c.client?.preferred_name ?? ""}
+                      onConfirm={() => onDelete(c)}
+                    />
+                  </>
+                }
+                footer={
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-gray-500 text-xs">
+                      Contactpersoon
+                    </span>
+                    {c.is_primary && (
+                      <Badge className="text-xs font-normal">Primair</Badge>
+                    )}
+                  </div>
+                }
+              />
+            ))}
           </div>
         )}
       </div>

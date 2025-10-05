@@ -1,19 +1,32 @@
 "use client";
 
-import { Content } from "@/components/layout";
 import { useFuneral } from "@/hooks/useFunerals";
 import { Costs } from "@/components/funerals/Costs";
-import { useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { RiAddLine } from "@remixicon/react";
+
+import {
+  SmartSearchBar,
+  SmartSearchBarAction,
+} from "@/components/ui/SmartSearchBar";
+
+import { CostForm } from "@/components/forms/CostForm";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function FuneralCostsPage({
   params,
 }: {
   params: Promise<{ id: string }> | { id: string };
 }) {
-  const t = useTranslations("funerals");
   const [id, setId] = useState<string>("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     if (params instanceof Promise) {
@@ -26,8 +39,26 @@ export default function FuneralCostsPage({
   }, [params]);
   const { funeral, isLoading } = useFuneral(id);
 
+  const handleAddContactDialog = useCallback(() => {
+    setIsDialogOpen(true);
+  }, []);
+
+  const searchActions = useCallback(
+    (): SmartSearchBarAction[] => [
+      {
+        id: "settings",
+        label: "Nabestaanden",
+        icon: <RiAddLine className="h-4 w-4" />,
+        onClick: () => {
+          handleAddContactDialog();
+        },
+      },
+    ],
+    []
+  );
+
   return (
-    <Content>
+    <>
       {isLoading && (
         <div className="pace-y-4 w-full">
           <Skeleton className="h-10 w-64" />
@@ -37,9 +68,22 @@ export default function FuneralCostsPage({
 
       {!isLoading && funeral && (
         <div className="space-y-4 w-full">
+          <SmartSearchBar
+            placeholder="Zoek in dashboard..."
+            actions={searchActions()}
+            entityTypes={["funeral", "note", "contact"]}
+          />
           <Costs funeralId={id} />
         </div>
       )}
-    </Content>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nieuw contact</DialogTitle>
+          </DialogHeader>
+          <CostForm funeralId={id} />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
