@@ -1,6 +1,8 @@
 "use client";
 
-import { useFunerals } from "@/hooks/useFunerals";
+import { useState } from "react";
+import { useFunerals, type FuneralFilters } from "@/hooks/useFunerals";
+import { useTasks } from "@/hooks/useTasks";
 import {
   Skeleton,
   Badge,
@@ -12,37 +14,51 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
+  Button,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui";
-import { RiAddLine, RiCrossLine, RiArrowRightLine } from "@remixicon/react";
+import {
+  RiAddLine,
+  RiCrossLine,
+  RiArrowRightLine,
+  RiFilterLine,
+} from "@remixicon/react";
 import { SectionHeader } from "@/components/layout";
 import { format } from "date-fns";
 import { Link } from "@/components/ui";
+import { Spinner } from "@/components/ui/spinner/Spinner";
 
-// Helper function to determine funeral status
-function getFuneralStatus(funeral: any) {
-  // If there's a signing_date, the funeral is completed
-  if (funeral.signing_date) {
-    return {
-      status: "completed",
+// Helper function to get funeral status display info
+function getFuneralStatusDisplay(funeral: any) {
+  const status = funeral.status || "planning";
+
+  const statusConfig = {
+    planning: {
+      label: "Planning",
+      color: "bg-yellow-100 text-yellow-700",
+    },
+    active: {
+      label: "Actief",
+      color: "bg-blue-100 text-blue-700",
+    },
+    completed: {
       label: "Afgerond",
       color: "bg-gray-100 text-gray-700",
-    };
-  }
+    },
+    cancelled: {
+      label: "Geannuleerd",
+      color: "bg-red-100 text-red-700",
+    },
+  };
 
-  // If there's a funeral_director assigned, it's active
-  if (funeral.funeral_director) {
-    return {
-      status: "active",
-      label: "Actief",
-      color: "bg-black text-white",
-    };
-  }
-
-  // Otherwise, it's in planning phase
   return {
-    status: "planning",
-    label: "Planning",
-    color: "bg-yellow-100 text-yellow-700",
+    status,
+    ...statusConfig[status as keyof typeof statusConfig],
   };
 }
 
@@ -131,18 +147,34 @@ function renderTeamMembers(teamAssignments: any[], funeralDirector?: string) {
   return <div className="flex -space-x-2">{avatars}</div>;
 }
 
-export function Funerals() {
-  const { funerals, isLoading } = useFunerals();
+// Component to fetch and display pending tasks for a funeral
+function FuneralPendingTasks({ funeralId }: { funeralId: string }) {
+  const { data: tasks, isLoading } = useTasks(funeralId);
+  const pendingTasks = tasks?.filter((task) => task.status !== "done") || [];
 
+  return (
+    <div className="flex items-center justify-between w-full">
+      <span className="text-sm font-medium text-gray-900">
+        Openstaande acties
+      </span>
+      <div className="flex items-center gap-2">
+        <Badge
+          variant="outline"
+          className="h-5 w-5 p-0 flex items-center justify-center text-xs"
+        >
+          {isLoading ? <Spinner size={24} /> : pendingTasks.length}
+        </Badge>
+      </div>
+    </div>
+  );
+}
+
+export function Funerals({ filters }: { filters: FuneralFilters }) {
+  const { funerals, isLoading } = useFunerals(filters);
   const isEmpty = !funerals || funerals.length === 0;
 
   return (
     <section className="space-y-4 w-full">
-      <SectionHeader
-        title="Uitvaarten"
-        description="Beheer alle uitvaarten en hun details"
-      />
-
       {isLoading && isEmpty ? (
         <div className="space-y-4">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -162,7 +194,7 @@ export function Funerals() {
           className="text-center"
         />
       ) : (
-        <div className="space-y-4">
+        <>
           {funerals!.map((f, i) => (
             <Link
               className="hover:no-underline"
@@ -175,7 +207,7 @@ export function Funerals() {
                   <div className="flex items-center gap-2">
                     {/* Funeral Team Members */}
                     {renderTeamMembers(
-                      f.team_assignments || [],
+                      [], // team_assignments not available yet
                       f.funeral_director || undefined
                     ) || (
                       <div className="flex -space-x-2">
@@ -192,10 +224,10 @@ export function Funerals() {
                     <Badge
                       variant="secondary"
                       className={`${
-                        getFuneralStatus(f).color
+                        getFuneralStatusDisplay(f).color
                       } text-xs px-2 py-1`}
                     >
-                      {getFuneralStatus(f).label}
+                      {getFuneralStatusDisplay(f).label}
                     </Badge>
                   </div>
                 }
@@ -218,29 +250,12 @@ export function Funerals() {
                     </div>
                   </div>
                 }
-                footer={
-                  <div className="flex items-center justify-between w-full">
-                    <span className="text-sm font-medium text-gray-900">
-                      Openstaande acties
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        variant="destructive"
-                        className="h-5 w-5 p-0 flex items-center justify-center text-xs"
-                      >
-                        3
-                      </Badge>
-                      <div className="h-6 w-6 rounded-full bg-gray-200 flex items-center justify-center">
-                        <RiArrowRightLine className="h-3 w-3 text-gray-600" />
-                      </div>
-                    </div>
-                  </div>
-                }
+                footer={<FuneralPendingTasks funeralId={f.id} />}
                 className="hover:shadow-md transition-shadow cursor-pointer"
               />
             </Link>
           ))}
-        </div>
+        </>
       )}
     </section>
   );

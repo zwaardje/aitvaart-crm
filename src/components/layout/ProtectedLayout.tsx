@@ -4,6 +4,7 @@ import { AuthGuard } from "@/components/auth";
 import { OnboardingGuard } from "@/components/onboarding";
 import { AppHeader, MainNavigation } from "@/components/layout";
 import { usePathname } from "next/navigation";
+import { Logo } from "@/components/ui/logo";
 
 interface Breadcrumb {
   href: string;
@@ -13,7 +14,6 @@ interface Breadcrumb {
 interface ProtectedLayoutProps {
   children: React.ReactNode;
   requireOnboarding?: boolean;
-  breadcrumbs?: Breadcrumb[];
   deceasedName?: string;
   pageTitle?: string;
   showBackButton?: boolean;
@@ -24,7 +24,6 @@ interface ProtectedLayoutProps {
 export function ProtectedLayout({
   children,
   requireOnboarding = true,
-  breadcrumbs = [],
   deceasedName,
   pageTitle,
   showBackButton = false,
@@ -43,12 +42,12 @@ export function ProtectedLayout({
   return (
     <AuthGuard>
       <AppHeader
-        breadcrumbs={breadcrumbs}
         deceasedName={deceasedName}
         pageTitle={pageTitle}
         showBackButton={shouldShowBackButton}
         onBackClick={onBackClick}
         onMenuClick={onMenuClick}
+        logo={<Logo />}
       />
       <div className="pb-16">
         {requireOnboarding ? (

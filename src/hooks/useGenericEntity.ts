@@ -19,6 +19,7 @@ export interface UseEntityOptions {
     column: string;
     ascending?: boolean;
   };
+  filters?: Record<string, any>;
   enabled?: boolean;
   staleTime?: number;
 }
@@ -43,6 +44,7 @@ export function useGenericEntity<T = any>(
     tableName,
     select = "*",
     orderBy,
+    filters,
     enabled = true,
     staleTime = 60000,
   } = options;
@@ -52,7 +54,7 @@ export function useGenericEntity<T = any>(
 
   // Get all entities
   const entitiesQuery = useQuery({
-    queryKey: [tableName, { select, orderBy }],
+    queryKey: [tableName, { select, orderBy, filters }],
     queryFn: async (): Promise<T[]> => {
       if (!userId) return [] as T[];
 
@@ -61,6 +63,32 @@ export function useGenericEntity<T = any>(
         .from(tableName as any)
         .select(select)
         .eq("entrepreneur_id", userId);
+
+      // Apply filters
+      if (filters) {
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== "") {
+            // Handle date range filters
+            if (key.endsWith("_from") && typeof value === "string") {
+              const baseKey = key.replace("_from", "");
+              query = query.gte(baseKey, value);
+            } else if (key.endsWith("_to") && typeof value === "string") {
+              const baseKey = key.replace("_to", "");
+              query = query.lte(baseKey, value);
+            } else if (Array.isArray(value)) {
+              query = query.in(key, value);
+            } else if (typeof value === "boolean") {
+              query = query.eq(key, value);
+            } else if (typeof value === "string" && value.includes("*")) {
+              // Support wildcard searches
+              const searchValue = value.replace(/\*/g, "%");
+              query = query.ilike(key, searchValue);
+            } else {
+              query = query.eq(key, value);
+            }
+          }
+        });
+      }
 
       if (orderBy) {
         query = query.order(orderBy.column, {

@@ -6,15 +6,17 @@ import { useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui";
 import { FuneralContacts } from "@/components/funerals/FuneralContacts";
 import { DeceasedCard } from "@/components/funerals/DeceasedCard";
-import { StreamVoiceAssistantWrapper } from "@/components/voice/StreamVoiceAssistant";
+import { TaskList } from "@/components/tasks";
+import { use } from "react";
 
 export default function FuneralDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const t = useTranslations("funerals");
-  const { funeral, isLoading } = useFuneral(params.id);
+  const { id } = use(params);
+  const { funeral, isLoading } = useFuneral(id);
 
   return (
     <Content>
@@ -27,9 +29,10 @@ export default function FuneralDetailsPage({
 
       {!isLoading && funeral && (
         <div className="space-y-4 w-full">
+          <TaskList funeralId={funeral.id} />
           <DeceasedCard deceased={funeral.deceased as any} />
 
-          <FuneralContacts funeralId={params.id} />
+          <FuneralContacts funeralId={id} />
         </div>
       )}
     </Content>

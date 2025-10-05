@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, use } from "react";
 import { useTranslations } from "next-intl";
 import { Content } from "@/components/layout";
 import { SectionHeader } from "@/components/layout";
@@ -256,7 +256,12 @@ function ScenarioContent({ funeralId }: ScenarioContentProps) {
   );
 }
 
-export default function ScenarioPage({ params }: { params: { id: string } }) {
+export default function ScenarioPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
   return (
     <Content>
       <Suspense
@@ -283,7 +288,7 @@ export default function ScenarioPage({ params }: { params: { id: string } }) {
           </div>
         }
       >
-        <ScenarioContent funeralId={params.id} />
+        <ScenarioContent funeralId={id} />
       </Suspense>
     </Content>
   );

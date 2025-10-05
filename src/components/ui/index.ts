@@ -37,6 +37,8 @@ export { SideSheet } from "./sidesheet";
 export {
   Dialog,
   DialogTrigger,
+  DialogPortal,
+  DialogOverlay,
   DialogContent,
   DialogHeader,
   DialogFooter,
@@ -63,12 +65,12 @@ export {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
-export { FilterBar, type FilterOption } from "./FilterBar";
 export {
   Command,
   CommandDialog,
@@ -90,3 +92,4 @@ export {
   TooltipTrigger,
 } from "./tooltip";
 export { SmartSearchBar, type SmartSearchBarAction } from "./SmartSearchBar";
+export { TaskList } from "../tasks";

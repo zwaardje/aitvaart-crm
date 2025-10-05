@@ -28,16 +28,18 @@ export default function DashboardPage() {
   return (
     <Content>
       <div className="p-2 space-y-2 w-full">
-        {/* Smart Search Bar */}
         <SmartSearchBar
           placeholder="Zoek in dashboard..."
           onResultsChange={handleSearchResultsChange}
           actions={searchActions()}
           entityTypes={["funeral", "note", "contact"]}
-          className="mb-6"
         />
 
-        <Funerals />
+        <Funerals
+          filters={{
+            status: "active",
+          }}
+        />
       </div>
     </Content>
   );

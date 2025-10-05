@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/lib/auth-utils";
-import { useTranslations } from "next-intl";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -13,7 +12,6 @@ interface AuthGuardProps {
 export function AuthGuard({ children, fallback }: AuthGuardProps) {
   const { user, loading } = useCurrentUser();
   const router = useRouter();
-  const t = useTranslations();
 
   useEffect(() => {
     if (loading) return; // Still loading

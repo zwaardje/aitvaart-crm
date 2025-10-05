@@ -8,8 +8,12 @@ import { SectionHeader } from "@/components/layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/Button";
-import { FilterBar, FilterOption } from "@/components/ui";
 import { RiAddLine, RiStoreLine } from "@remixicon/react";
+
+type FilterOption = {
+  value: string;
+  label: string;
+};
 
 function SuppliersContent() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -54,30 +58,6 @@ function SuppliersContent() {
             Nieuwe leverancier
           </Button>
         }
-      />
-
-      {/* Filter Bar */}
-      <FilterBar
-        searchPlaceholder="Zoek leveranciers..."
-        searchValue={searchTerm}
-        onSearchChange={setSearchTerm}
-        filters={[
-          {
-            key: "type",
-            label: "Type",
-            options: typeOptions,
-            value: typeFilter,
-            onValueChange: setTypeFilter,
-          },
-          {
-            key: "city",
-            label: "Plaats",
-            options: cityOptions,
-            value: cityFilter,
-            onValueChange: setCityFilter,
-          },
-        ]}
-        onClearFilters={handleClearFilters}
       />
 
       <div className="grid gap-6">

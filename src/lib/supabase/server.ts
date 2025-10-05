@@ -48,13 +48,15 @@ export function getSupabaseServer() {
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
-        getAll() {
-          return cookieStore.getAll();
+        async getAll() {
+          const cookies = await cookieStore;
+          return cookies.getAll();
         },
-        setAll(cookiesToSet) {
+        async setAll(cookiesToSet) {
           try {
+            const cookies = await cookieStore;
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              cookies.set(name, value, options)
             );
           } catch {
             // The `setAll` method was called from a Server Component.

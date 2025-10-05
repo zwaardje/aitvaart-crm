@@ -5,15 +5,16 @@ import { useFuneral } from "@/hooks/useFunerals";
 import { Notes } from "@/components/funerals/Notes";
 import { useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui";
-import { StreamVoiceAssistantWrapper } from "@/components/voice/StreamVoiceAssistant";
+import { use } from "react";
 
 export default function FuneralNotesPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const t = useTranslations("funerals");
-  const { funeral, isLoading } = useFuneral(params.id);
+  const { id } = use(params);
+  const { funeral, isLoading } = useFuneral(id);
 
   return (
     <Content>
@@ -26,7 +27,7 @@ export default function FuneralNotesPage({
 
       {!isLoading && funeral && (
         <div className="space-y-4 w-full">
-          <Notes funeralId={params.id} />
+          <Notes funeralId={id} />
         </div>
       )}
     </Content>

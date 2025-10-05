@@ -5,14 +5,16 @@ import { useFuneral } from "@/hooks/useFunerals";
 import { Costs } from "@/components/funerals/Costs";
 import { useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui";
+import { use } from "react";
 
 export default function FuneralCostsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const t = useTranslations("funerals");
-  const { funeral, isLoading } = useFuneral(params.id);
+  const { id } = use(params);
+  const { funeral, isLoading } = useFuneral(id);
 
   return (
     <Content>
@@ -25,7 +27,7 @@ export default function FuneralCostsPage({
 
       {!isLoading && funeral && (
         <div className="space-y-4 w-full">
-          <Costs funeralId={params.id} />
+          <Costs funeralId={id} />
         </div>
       )}
     </Content>

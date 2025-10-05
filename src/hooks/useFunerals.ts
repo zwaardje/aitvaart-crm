@@ -15,7 +15,41 @@ type FuneralWithRelations = Funeral & {
   deceased: Database["public"]["Tables"]["deceased"]["Row"];
 };
 
-export function useFunerals() {
+// Filter options for funerals
+export interface FuneralFilters {
+  location?: string;
+  funeral_director?: string;
+  signing_date_from?: string;
+  signing_date_to?: string;
+  created_at_from?: string;
+  created_at_to?: string;
+  status?: "planning" | "active" | "completed" | "cancelled";
+}
+
+export function useFunerals(filters?: FuneralFilters) {
+  // Process filters for useGenericEntity
+  const processedFilters = filters
+    ? {
+        // Simple filters that can be passed directly
+        ...(filters.location && { location: filters.location }),
+        ...(filters.funeral_director && {
+          funeral_director: filters.funeral_director,
+        }),
+        ...(filters.status && { status: filters.status }),
+        // Date range filters
+        ...(filters.signing_date_from && {
+          signing_date_from: filters.signing_date_from,
+        }),
+        ...(filters.signing_date_to && {
+          signing_date_to: filters.signing_date_to,
+        }),
+        ...(filters.created_at_from && {
+          created_at_from: filters.created_at_from,
+        }),
+        ...(filters.created_at_to && { created_at_to: filters.created_at_to }),
+      }
+    : undefined;
+
   const entity = useGenericEntity({
     tableName: "funerals",
     select: `
@@ -24,6 +58,7 @@ export function useFunerals() {
       deceased:deceased(*)
     `,
     orderBy: { column: "created_at", ascending: false },
+    filters: processedFilters,
     enabled: typeof window !== "undefined", // Only run on client side
   });
 

@@ -3,20 +3,17 @@
 import React, { useState } from "react";
 import { RiRobotLine, RiMoreLine, RiSparklingLine } from "@remixicon/react";
 import {
-  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  SearchBar,
-} from "@/components/ui";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dropdown-menu";
+
+import { Button } from "@/components/ui/Button";
+import { SearchBar } from "@/components/ui/SearchBar";
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./dialog";
 
 import { cn } from "@/lib/utils";
 
@@ -80,11 +77,12 @@ export function SmartSearchBar({
           {/* More Actions Menu */}
           {actions.length > 0 && (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-10 px-3 gap-2">
+              <DropdownMenuTrigger>
+                {/* <Button variant="outline" size="sm" className="h-10 px-3 gap-2">
                   <RiMoreLine className="h-4 w-4" />
                   <span className="inline">Meer</span>
-                </Button>
+                </Button> */}
+                <div>omfg</div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 {actions && actions.length > 0 ? (

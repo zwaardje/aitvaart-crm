@@ -12,7 +12,12 @@
     "confirm": "Bevestigen",
     "required": "Verplicht",
     "optional": "Optioneel",
-    "deleting": "Verwijderen..."
+    "deleting": "Verwijderen...",
+    "gender": {
+      "male": "Man",
+      "female": "Vrouw",
+      "other": "Anders"
+    }
   },
   "auth": {
     "signIn": {
@@ -126,6 +131,13 @@
       "dateOfBirth": "Geboortedatum",
       "dateOfDeath": "Overlijdensdatum",
       "adress": "Adres"
+    },
+    "tabs": {
+      "gegevens": "Gegevens",
+      "scenario": "Uitvaartscenario",
+      "kosten": "Kosten", 
+      "notities": "Notities",
+      "documenten": "Documenten"
     }
   },
   "intake": {
@@ -172,34 +184,6 @@
     "actions": {
       "finish": "Opslaan",
       "edit": "Bewerken"
-  },
-  "search": {
-    "search": "Zoeken",
-    "placeholder": "Zoek in notities, kosten, begravenissen en contacten...",
-    "searching": "Zoeken",
-    "results": "resultaten",
-    "noResults": "Geen resultaten gevonden",
-    "error": "Er is een fout opgetreden tijdens het zoeken",
-    "showing": "Toont",
-    "of": "van",
-    "sort": {
-      "relevance": "Relevantie",
-      "newest": "Nieuwste eerst",
-      "oldest": "Oudste eerst"
-    },
-    "entity": {
-      "note": "Notitie",
-      "cost": "Kosten",
-      "contact": "Contact",
-      "funeral": "Begrafenis"
-    }
-  },
-  "common": {
-      "gender": {
-        "male": "Man",
-        "female": "Vrouw",
-        "other": "Anders"
-      }
     },
     "sections": {
       "deceased": {
@@ -236,107 +220,25 @@
       }
     }
   },
-  "validation": {
-    "required": "is verplicht",
-    "minLength": "moet minimaal {min} karakters bevatten",
-    "minDigits": "moet minimaal {min} cijfers bevatten",
-    "invalidUrl": "Voer een geldige website URL in",
-    "email": {
-      "invalid": "Voer een geldig email adres in"
+  "search": {
+    "search": "Zoeken",
+    "placeholder": "Zoek in notities, kosten, begravenissen en contacten...",
+    "searching": "Zoeken",
+    "results": "resultaten",
+    "noResults": "Geen resultaten gevonden",
+    "error": "Er is een fout opgetreden tijdens het zoeken",
+    "showing": "Toont",
+    "of": "van",
+    "sort": {
+      "relevance": "Relevantie",
+      "newest": "Nieuwste eerst",
+      "oldest": "Oudste eerst"
     },
-    "password": {
-      "minLength": "Wachtwoord moet minimaal 6 karakters bevatten",
-      "maxLength": "Wachtwoord mag maximaal 100 karakters bevatten"
-    },
-    "phone": {
-      "invalid": "Voer een geldig telefoonnummer in"
-    },
-    "postalCode": {
-      "invalid": "Voer een geldige postcode in (1234 AB)",
-      "required": "Postcode is verplicht",
-      "minLength": "Postcode moet minimaal 4 karakters bevatten"
-    },
-    "kvkNumber": {
-      "invalid": "KVK nummer moet 8 cijfers bevatten",
-      "required": "KVK nummer is verplicht",
-      "minLength": "KVK nummer moet minimaal 8 cijfers bevatten"
-    },
-    "btwNumber": {
-      "invalid": "BTW nummer moet formaat NL123456789B01 hebben"
-    },
-    "website": {
-      "invalid": "Voer een geldige website URL in"
-    },
-    "companyName": {
-      "required": "Bedrijfsnaam is verplicht",
-      "minLength": "Bedrijfsnaam moet minimaal 2 karakters bevatten"
-    },
-    "fullName": {
-      "required": "Volledige naam is verplicht",
-      "minLength": "Volledige naam moet minimaal 2 karakters bevatten"
-    },
-    "preferredName": {
-      "required": "Voornaam is verplicht"
-    },
-    "lastName": {
-      "required": "Achternaam is verplicht"
-    },
-    "firstNames": {
-      "required": "Voornamen zijn verplicht"
-    },
-    "supplierName": {
-      "required": "Leveranciersnaam is verplicht"
-    },
-    "deceased": {
-      "required": "Selecteer een overledene"
-    },
-    "client": {
-      "required": "Selecteer een cliënt"
-    },
-    "funeral": {
-      "required": "Selecteer een uitvaart"
-    },
-    "fileName": {
-      "required": "Bestandsnaam is verplicht"
-    },
-    "fileSize": {
-      "positive": "Bestandsgrootte moet positief zijn"
-    },
-    "storagePath": {
-      "required": "Opslagpad is verplicht"
-    },
-    "invoiceNumber": {
-      "required": "Factuurnummer is verplicht"
-    },
-    "totalAmount": {
-      "positive": "Totaalbedrag moet positief zijn"
-    },
-    "version": {
-      "positive": "Versie moet een positief geheel getal zijn"
-    },
-    "color": {
-      "hexFormat": "Kleur moet hex formaat hebben (#RRGGBB)"
-    },
-    "description": {
-      "required": "Beschrijving is verplicht",
-      "minLength": "Beschrijving moet minimaal 10 karakters bevatten"
-    },
-    "address": {
-      "required": "Adres is verplicht",
-      "minLength": "Adres moet minimaal 5 karakters bevatten"
-    },
-    "city": {
-      "required": "Plaats is verplicht",
-      "minLength": "Plaats moet minimaal 2 karakters bevatten"
-    }
-  },
-  "funerals": {
-    "tabs": {
-      "gegevens": "Gegevens",
-      "scenario": "Uitvaartscenario",
-      "kosten": "Kosten", 
-      "notities": "Notities",
-      "documenten": "Documenten"
+    "entity": {
+      "note": "Notitie",
+      "cost": "Kosten",
+      "contact": "Contact",
+      "funeral": "Begrafenis"
     }
   },
   "breadcrumbs": {
@@ -435,6 +337,100 @@
   },
   "validation": {
     "required": "Dit veld is verplicht",
+    "isRequired": "is verplicht",
+    "minLength": "moet minimaal {min} karakters bevatten",
+    "minDigits": "moet minimaal {min} cijfers bevatten",
+    "invalidUrl": "Voer een geldige website URL in",
+    "email": {
+      "invalid": "Voer een geldig email adres in"
+    },
+    "password": {
+      "minLength": "Wachtwoord moet minimaal 6 karakters bevatten",
+      "maxLength": "Wachtwoord mag maximaal 100 karakters bevatten"
+    },
+    "phone": {
+      "invalid": "Voer een geldig telefoonnummer in"
+    },
+    "postalCode": {
+      "invalid": "Voer een geldige postcode in (1234 AB)",
+      "required": "Postcode is verplicht",
+      "minLength": "Postcode moet minimaal 4 karakters bevatten"
+    },
+    "kvkNumber": {
+      "invalid": "KVK nummer moet 8 cijfers bevatten",
+      "required": "KVK nummer is verplicht",
+      "minLength": "KVK nummer moet minimaal 8 cijfers bevatten"
+    },
+    "btwNumber": {
+      "invalid": "BTW nummer moet formaat NL123456789B01 hebben"
+    },
+    "website": {
+      "invalid": "Voer een geldige website URL in"
+    },
+    "companyName": {
+      "required": "Bedrijfsnaam is verplicht",
+      "minLength": "Bedrijfsnaam moet minimaal 2 karakters bevatten"
+    },
+    "fullName": {
+      "required": "Volledige naam is verplicht",
+      "minLength": "Volledige naam moet minimaal 2 karakters bevatten"
+    },
+    "preferredName": {
+      "required": "Voornaam is verplicht"
+    },
+    "lastName": {
+      "required": "Achternaam is verplicht"
+    },
+    "firstNames": {
+      "required": "Voornamen zijn verplicht"
+    },
+    "supplierName": {
+      "required": "Leveranciersnaam is verplicht",
+      "maxLength": "Leveranciersnaam mag maximaal 200 karakters bevatten"
+    },
+    "deceased": {
+      "required": "Selecteer een overledene"
+    },
+    "client": {
+      "required": "Selecteer een cliënt"
+    },
+    "funeral": {
+      "required": "Selecteer een uitvaart"
+    },
+    "fileName": {
+      "required": "Bestandsnaam is verplicht"
+    },
+    "fileSize": {
+      "positive": "Bestandsgrootte moet positief zijn"
+    },
+    "storagePath": {
+      "required": "Opslagpad is verplicht"
+    },
+    "invoiceNumber": {
+      "required": "Factuurnummer is verplicht"
+    },
+    "totalAmount": {
+      "positive": "Totaalbedrag moet positief zijn"
+    },
+    "version": {
+      "positive": "Versie moet een positief geheel getal zijn"
+    },
+    "color": {
+      "hexFormat": "Kleur moet hex formaat hebben (#RRGGBB)"
+    },
+    "description": {
+      "required": "Beschrijving is verplicht",
+      "minLength": "Beschrijving moet minimaal 10 karakters bevatten",
+      "maxLength": "Omschrijving mag maximaal 500 karakters bevatten"
+    },
+    "address": {
+      "required": "Adres is verplicht",
+      "minLength": "Adres moet minimaal 5 karakters bevatten"
+    },
+    "city": {
+      "required": "Plaats is verplicht",
+      "minLength": "Plaats moet minimaal 2 karakters bevatten"
+    },
     "title": {
       "maxLength": "Titel mag maximaal 200 karakters bevatten"
     },
@@ -446,12 +442,6 @@
     },
     "productName": {
       "maxLength": "Productnaam mag maximaal 200 karakters bevatten"
-    },
-    "supplierName": {
-      "maxLength": "Leveranciersnaam mag maximaal 200 karakters bevatten"
-    },
-    "description": {
-      "maxLength": "Omschrijving mag maximaal 500 karakters bevatten"
     },
     "quantity": {
       "min": "Aantal moet minimaal 0.01 zijn",

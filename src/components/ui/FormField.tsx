@@ -22,7 +22,7 @@ export function FormField({
         <Label
           htmlFor={
             typeof children === "object" && children && "props" in children
-              ? children.props.id
+              ? (children as any).props.id
               : undefined
           }
         >

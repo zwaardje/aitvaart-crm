@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useFuneral } from "@/hooks/useFunerals";
 import { useDocuments } from "@/hooks/useDocuments";
+import { use } from "react";
 import { Skeleton, Card } from "@/components/ui";
 import { Button } from "@/components/ui/Button";
 import {
@@ -27,14 +28,19 @@ import { Database } from "@/types/database";
 
 type Document = Database["public"]["Tables"]["documents"]["Row"];
 
-export default function DocumentsPage({ params }: { params: { id: string } }) {
+export default function DocumentsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const t = useTranslations();
-  const { funeral, isLoading: funeralLoading } = useFuneral(params.id);
+  const { id } = use(params);
+  const { funeral, isLoading: funeralLoading } = useFuneral(id);
   const {
     documents,
     isLoading: documentsLoading,
     deleteDocument,
-  } = useDocuments(params.id);
+  } = useDocuments(id);
 
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -133,7 +139,7 @@ export default function DocumentsPage({ params }: { params: { id: string } }) {
               <DialogTitle>Document uploaden</DialogTitle>
             </DialogHeader>
             <DocumentsUploadForm
-              funeralId={params.id}
+              funeralId={id}
               onSuccess={() => setUploadDialogOpen(false)}
             />
           </DialogContent>
@@ -175,7 +181,11 @@ export default function DocumentsPage({ params }: { params: { id: string } }) {
                     </h3>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <span>{formatFileSize(document.file_size || 0)}</span>
-                      <span>{formatDate(document.created_at || new Date().toISOString())}</span>
+                      <span>
+                        {formatDate(
+                          document.created_at || new Date().toISOString()
+                        )}
+                      </span>
                       {document.description && (
                         <span className="truncate">{document.description}</span>
                       )}

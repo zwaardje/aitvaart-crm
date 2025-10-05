@@ -3,10 +3,10 @@
 import * as React from "react";
 import { usePathname } from "next/navigation";
 import {
-  RiGroupLine,
   RiSparklingLine,
-  RiThunderstormsLine,
   RiSettings3Line,
+  RiDashboardLine,
+  RiCrossLine,
 } from "@remixicon/react";
 import { Link } from "@/components/ui";
 import { cn } from "@/lib/utils";
@@ -19,16 +19,17 @@ interface NavigationItem {
 const navigationItems: NavigationItem[] = [
   {
     href: "/dashboard",
-    icon: RiGroupLine,
+    icon: RiDashboardLine,
+  },
+  {
+    href: "/funerals",
+    icon: RiCrossLine,
   },
   {
     href: "/voice-assistant",
     icon: RiSparklingLine,
   },
-  {
-    href: "/quick-actions",
-    icon: RiThunderstormsLine,
-  },
+
   {
     href: "/settings",
     icon: RiSettings3Line,
@@ -66,7 +67,7 @@ export function MainNavigation({ className }: MainNavigationProps) {
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
-            <Icon className="h-5 w-5" />
+            <Icon className="h-4 w-4" />
           </Link>
         );
       })}
