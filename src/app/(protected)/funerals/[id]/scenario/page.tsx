@@ -1,19 +1,24 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, use } from "react";
 import { useTranslations } from "next-intl";
 import { Content } from "@/components/layout";
 import { SectionHeader } from "@/components/layout";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/Button";
+import {
+  Skeleton,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui";
+import { Button } from "@/components/ui";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui";
 import {
   ScenarioForm,
   ScenarioEditForm,
@@ -256,7 +261,12 @@ function ScenarioContent({ funeralId }: ScenarioContentProps) {
   );
 }
 
-export default function ScenarioPage({ params }: { params: { id: string } }) {
+export default function ScenarioPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
   return (
     <Content>
       <Suspense
@@ -283,7 +293,7 @@ export default function ScenarioPage({ params }: { params: { id: string } }) {
           </div>
         }
       >
-        <ScenarioContent funeralId={params.id} />
+        <ScenarioContent funeralId={id} />
       </Suspense>
     </Content>
   );

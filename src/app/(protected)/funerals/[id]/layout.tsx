@@ -4,7 +4,7 @@ import { FUNERAL_TABS } from "@/constants/funerals";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useFuneral } from "@/hooks/useFunerals";
-import { useMemo } from "react";
+import { useMemo, use } from "react";
 import React from "react";
 import { Submenu } from "@/components/layout";
 import { Content } from "@/components/layout";
@@ -14,13 +14,14 @@ export default function FuneralLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = use(params);
   const pathname = usePathname();
   const router = useRouter();
   const t = useTranslations();
-  const { funeral, isLoading: funeralLoading } = useFuneral(params.id);
-  const base = `/funerals/${params.id}`;
+  const { funeral, isLoading: funeralLoading } = useFuneral(id);
+  const base = `/funerals/${id}`;
   const items = FUNERAL_TABS.map((tab) => ({
     href: `${base}${tab.segment}`,
     label: t(tab.label),

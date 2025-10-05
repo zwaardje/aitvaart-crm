@@ -110,12 +110,9 @@ export function SignUpForm() {
   }
 
   return (
-    <Card>
-      <CardHeader className="text-center">
-        <CardTitle className="text-3xl">Maak een nieuw account aan</CardTitle>
-        <CardDescription>
-          Of <Link href="/auth/signin">log in op uw bestaande account</Link>
-        </CardDescription>
+    <Card className="border-none shadow-none bg-transparent">
+      <CardHeader className="text-center ">
+        <CardTitle className="text-xl">Maak een account</CardTitle>
       </CardHeader>
       <CardContent>
         <Form onSubmit={onSubmit} schema={signUpSchema} className="space-y-6">
@@ -170,14 +167,27 @@ export function SignUpForm() {
             </Alert>
           )}
 
-          <SubmitButton className="w-full" isLoading={isLoading}>
-            {isLoading ? "Account aanmaken..." : "Account aanmaken"}
-          </SubmitButton>
+          <div className="flex flex-col justify-between gap-2 items-center">
+            <SubmitButton className="w-full" isLoading={isLoading}>
+              {isLoading ? "Account aanmaken..." : "Account aanmaken"}
+            </SubmitButton>
+
+            <span className="text-sm text-muted-foreground lowercase">Of</span>
+            <Link className="p-0 h-auto text-sm" href="/auth/signin">
+              log in op uw bestaande account
+            </Link>
+          </div>
 
           <div className="text-center text-xs text-gray-500">
             Door een account aan te maken, gaat u akkoord met onze{" "}
-            <Link href="/terms">Algemene Voorwaarden</Link> en{" "}
-            <Link href="/privacy">Privacybeleid</Link>.
+            <Link className="p-0" href="/terms">
+              Algemene Voorwaarden
+            </Link>{" "}
+            en{" "}
+            <Link className="p-0" href="/privacy">
+              Privacybeleid
+            </Link>
+            .
           </div>
         </Form>
       </CardContent>

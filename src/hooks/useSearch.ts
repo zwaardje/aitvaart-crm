@@ -61,7 +61,7 @@ export function useSearch({
           throw error;
         }
 
-        return data || [];
+        return (data || []) as SearchResult[];
       } catch (error) {
         console.error("Search failed:", error);
         // Fallback to empty results instead of throwing
