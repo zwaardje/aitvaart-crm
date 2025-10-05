@@ -4,7 +4,7 @@ import { FUNERAL_TABS } from "@/constants/funerals";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useFuneral } from "@/hooks/useFunerals";
-import { useMemo, use } from "react";
+import { useMemo, useEffect, useState } from "react";
 import React from "react";
 import { Submenu } from "@/components/layout";
 import { Content } from "@/components/layout";
@@ -14,9 +14,20 @@ export default function FuneralLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }> | { id: string };
 }) {
-  const { id } = use(params);
+  // Handle both Promise and direct object cases
+  const [id, setId] = useState<string>("");
+
+  useEffect(() => {
+    if (params instanceof Promise) {
+      params.then(({ id: resolvedId }) => {
+        setId(resolvedId);
+      });
+    } else {
+      setId(params.id);
+    }
+  }, [params]);
   const pathname = usePathname();
   const router = useRouter();
   const t = useTranslations();

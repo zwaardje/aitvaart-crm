@@ -5,15 +5,25 @@ import { useFuneral } from "@/hooks/useFunerals";
 import { Notes } from "@/components/funerals/Notes";
 import { useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui";
-import { use } from "react";
+import { useEffect, useState } from "react";
 
 export default function FuneralNotesPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }> | { id: string };
 }) {
   const t = useTranslations("funerals");
-  const { id } = use(params);
+  const [id, setId] = useState<string>("");
+
+  useEffect(() => {
+    if (params instanceof Promise) {
+      params.then(({ id: resolvedId }) => {
+        setId(resolvedId);
+      });
+    } else {
+      setId(params.id);
+    }
+  }, [params]);
   const { funeral, isLoading } = useFuneral(id);
 
   return (

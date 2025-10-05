@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useFuneral } from "@/hooks/useFunerals";
 import { useDocuments } from "@/hooks/useDocuments";
-import { use } from "react";
+import { useEffect, useState } from "react";
 import { Skeleton, Card } from "@/components/ui";
 import { Button } from "@/components/ui";
 import {
@@ -23,7 +23,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui";
-import { useState } from "react";
 import { Database } from "@/types/database";
 
 type Document = Database["public"]["Tables"]["documents"]["Row"];
@@ -31,10 +30,20 @@ type Document = Database["public"]["Tables"]["documents"]["Row"];
 export default function DocumentsPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }> | { id: string };
 }) {
   const t = useTranslations();
-  const { id } = use(params);
+  const [id, setId] = useState<string>("");
+
+  useEffect(() => {
+    if (params instanceof Promise) {
+      params.then(({ id: resolvedId }) => {
+        setId(resolvedId);
+      });
+    } else {
+      setId(params.id);
+    }
+  }, [params]);
   const { funeral, isLoading: funeralLoading } = useFuneral(id);
   const {
     documents,
