@@ -99,7 +99,7 @@ export function Notes({ funeralId }: NotesProps) {
                 "dd MMM yyyy 'om' HH:mm"
               )}
               content={
-                <p className="text-gray-700 whitespace-pre-wrap text-sm">
+                <p className="text-gray-700 whitespace-pre-wrap">
                   {note.content}
                 </p>
               }
