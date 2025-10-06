@@ -3,17 +3,28 @@
 import { Content } from "@/components/layout";
 import { useFuneral } from "@/hooks/useFunerals";
 import { Notes } from "@/components/funerals/Notes";
-import { useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { RiBookLine } from "@remixicon/react";
+import {
+  SmartSearchBar,
+  SmartSearchBarAction,
+} from "@/components/ui/SmartSearchBar";
+import { NoteForm } from "@/components/forms/NoteForm";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function FuneralNotesPage({
   params,
 }: {
   params: Promise<{ id: string }> | { id: string };
 }) {
-  const t = useTranslations("funerals");
   const [id, setId] = useState<string>("");
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (params instanceof Promise) {
@@ -26,6 +37,20 @@ export default function FuneralNotesPage({
   }, [params]);
   const { funeral, isLoading } = useFuneral(id);
 
+  const searchActions = useCallback(
+    (): SmartSearchBarAction[] => [
+      {
+        id: "settings",
+        label: "Notitie toevoegen",
+        icon: <RiBookLine className="h-3 w-3" />,
+        onClick: () => {
+          setIsDialogOpen(true);
+        },
+      },
+    ],
+    []
+  );
+
   return (
     <Content>
       {isLoading && (
@@ -37,9 +62,24 @@ export default function FuneralNotesPage({
 
       {!isLoading && funeral && (
         <div className="space-y-4 w-full">
+          <SmartSearchBar
+            placeholder="Zoek in notities..."
+            onResultsChange={() => {}}
+            actions={searchActions()}
+            entityTypes={["funeral", "note", "contact"]}
+          />
           <Notes funeralId={id} />
         </div>
       )}
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nieuwe notitie</DialogTitle>
+          </DialogHeader>
+          <NoteForm funeralId={id} />
+        </DialogContent>
+      </Dialog>
     </Content>
   );
 }

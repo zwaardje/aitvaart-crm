@@ -4,7 +4,6 @@ import { useFuneral } from "@/hooks/useFunerals";
 import { Skeleton } from "@/components/ui";
 import { FuneralContacts } from "@/components/funerals/FuneralContacts";
 import { DeceasedCard } from "@/components/funerals/DeceasedCard";
-import { TaskList } from "@/components/tasks";
 import { useCallback, useEffect, useState } from "react";
 import {
   SmartSearchBar,
@@ -27,7 +26,7 @@ export default function FuneralDetailsPage({
   params: Promise<{ id: string }> | { id: string };
 }) {
   const [id, setId] = useState<string>("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (params instanceof Promise) {

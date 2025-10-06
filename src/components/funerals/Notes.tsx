@@ -66,14 +66,6 @@ export function Notes({ funeralId }: NotesProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 items-center justify-between">
-        <SearchBar
-          onResultsChange={handleResultsChange}
-          entityTypes={entityTypes}
-        />
-        <NoteForm funeralId={funeralId} />
-      </div>
-
       {isEmpty ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-8">
