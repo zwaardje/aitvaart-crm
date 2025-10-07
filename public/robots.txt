@@ -1,0 +1,6 @@
+# Robots.txt voor Aitvaart CRM
+# Dit is een private applicatie
+
+User-agent: *
+Disallow: /
+
