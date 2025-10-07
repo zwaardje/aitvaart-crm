@@ -80,6 +80,7 @@ export default function FuneralCostsPage({
             placeholder="Zoek in kosten..."
             actions={searchActions()}
             entityTypes={["funeral", "note", "contact"]}
+            sticky
           />
           <Costs funeralId={id} />
         </div>

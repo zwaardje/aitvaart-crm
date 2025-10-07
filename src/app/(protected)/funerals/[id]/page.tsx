@@ -9,7 +9,7 @@ import {
   SmartSearchBar,
   SmartSearchBarAction,
 } from "@/components/ui/SmartSearchBar";
-import { RiAddLine } from "@remixicon/react";
+import { RiAddLine, RiShare2Line } from "@remixicon/react";
 import { FuneralContactForm } from "@/components/forms/FuneralContactForm";
 
 import {
@@ -18,7 +18,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Content } from "@/components/layout";
 
 export default function FuneralDetailsPage({
   params,
@@ -26,7 +25,9 @@ export default function FuneralDetailsPage({
   params: Promise<{ id: string }> | { id: string };
 }) {
   const [id, setId] = useState<string>("");
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<
+    "funeral" | "share" | undefined
+  >(undefined);
 
   useEffect(() => {
     if (params instanceof Promise) {
@@ -46,7 +47,15 @@ export default function FuneralDetailsPage({
         label: "Nabestaanden toevoegen",
         icon: <RiAddLine className="h-3 w-3" />,
         onClick: () => {
-          setIsDialogOpen(true);
+          setIsDialogOpen("funeral");
+        },
+      },
+      {
+        id: "share",
+        label: "Voeg medewerker toe",
+        icon: <RiShare2Line className="h-3 w-3" />,
+        onClick: () => {
+          setIsDialogOpen("share");
         },
       },
     ],
@@ -54,7 +63,7 @@ export default function FuneralDetailsPage({
   );
 
   return (
-    <Content>
+    <>
       {isLoading && (
         <div className="space-y-4 w-full">
           <Skeleton className="h-10 w-64" />
@@ -68,13 +77,29 @@ export default function FuneralDetailsPage({
             placeholder="Zoek in dashboard..."
             actions={searchActions()}
             entityTypes={["funeral", "note", "contact"]}
+            sticky
           />
           <DeceasedCard deceased={funeral.deceased as any} />
 
           <FuneralContacts funeralId={id} />
         </div>
       )}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+
+      <Dialog
+        open={isDialogOpen === "share"}
+        onOpenChange={() => setIsDialogOpen(undefined)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Voeg medewerker toe</DialogTitle>
+          </DialogHeader>
+          Sharing is caring
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={isDialogOpen === "funeral"}
+        onOpenChange={() => setIsDialogOpen(undefined)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Nieuw contact</DialogTitle>
@@ -82,6 +107,6 @@ export default function FuneralDetailsPage({
           <FuneralContactForm funeralId={id} />
         </DialogContent>
       </Dialog>
-    </Content>
+    </>
   );
 }

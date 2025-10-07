@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 import {
   FuneralContactForm,
   FuneralContactFormValues,
@@ -36,7 +35,6 @@ export function FuneralContactEditForm({
   onSuccess,
   onEdit,
 }: FuneralContactEditFormProps) {
-  const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (data: FuneralContactFormValues) => {

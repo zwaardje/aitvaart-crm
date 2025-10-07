@@ -88,7 +88,6 @@ export function FuneralContacts({ funeralId }: Props) {
 
   return (
     <>
-      <SectionHeader title="Nabestaanden" />
       <div className="mt-3">
         {isLoading && <Skeleton className="h-16 w-full" />}
         {!isLoading && typedContacts.length === 0 && (
@@ -113,22 +112,17 @@ export function FuneralContacts({ funeralId }: Props) {
                 }
                 actions={
                   <>
+                    {c.is_primary && (
+                      <Badge className="text-xs font-normal">
+                        Opdrachtgever
+                      </Badge>
+                    )}
                     <FuneralContactEditForm contact={c} onEdit={onEdit} />
                     <FuneralContactDeleteForm
                       contactFirstName={c.client?.preferred_name ?? ""}
                       onConfirm={() => onDelete(c)}
                     />
                   </>
-                }
-                footer={
-                  <div className="flex items-center justify-between w-full">
-                    <span className="text-gray-500 text-xs">
-                      Contactpersoon
-                    </span>
-                    {c.is_primary && (
-                      <Badge className="text-xs font-normal">Primair</Badge>
-                    )}
-                  </div>
                 }
               />
             ))}

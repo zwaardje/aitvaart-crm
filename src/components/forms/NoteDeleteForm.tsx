@@ -46,7 +46,7 @@ export function NoteDeleteForm({ note, onSuccess }: NoteDeleteFormProps) {
           <RiDeleteBinLine />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md overflow-y-auto h-full">
+      <DialogContent className="sm:max-w-md overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Weet je het zeker?</DialogTitle>
         </DialogHeader>
@@ -73,7 +73,7 @@ export function NoteDeleteForm({ note, onSuccess }: NoteDeleteFormProps) {
               type="button"
               onClick={handleDelete}
               disabled={isDeleting}
-              variant="destructive"
+              variant="default"
             >
               Verwijder
             </Button>

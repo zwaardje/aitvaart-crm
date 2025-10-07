@@ -32,6 +32,7 @@ export interface SmartSearchBarProps {
   actions?: SmartSearchBarAction[];
   entityTypes?: ("funeral" | "note" | "cost" | "contact")[];
   className?: string;
+  sticky?: boolean;
 }
 
 export function SmartSearchBar({
@@ -41,6 +42,7 @@ export function SmartSearchBar({
   actions = [],
   entityTypes,
   className,
+  sticky = false,
 }: SmartSearchBarProps) {
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
 
@@ -51,6 +53,8 @@ export function SmartSearchBar({
           "group flex items-center gap-2 transition-all duration-300 ease-in-out",
           "focus-within:gap-1",
           !onResultsChange && "justify-end",
+          sticky &&
+            "sticky top-[6.5rem] md:top-[3.5rem] z-20 bg-white py-3 -mx-4 px-4 border-b",
           className
         )}
       >
@@ -74,8 +78,8 @@ export function SmartSearchBar({
               className="h-10 px-3 gap-2"
               onClick={() => setIsAIModalOpen(true)}
             >
-              <RiSparklingLine className="h-4 w-4" />
-              <span className="hidden sm:inline">AI</span>
+              <RiSparklingLine className="h-4 w-4 text-purple-600" />
+              <span className="sm:inline">Bewerken</span>
             </Button>
           )}
 
@@ -85,6 +89,7 @@ export function SmartSearchBar({
               <DropdownMenuTrigger>
                 <Button variant="outline" size="sm" className="h-10 px-3 gap-2">
                   <RiMoreLine className="h-4 w-4" />
+                  Meer
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-auto">

@@ -81,6 +81,7 @@ function ScenarioContent({ funeralId }: ScenarioContentProps) {
             placeholder="Zoek in scenario..."
             actions={searchActions()}
             entityTypes={["funeral", "note", "contact"]}
+            sticky
           />
 
           {scenarios && scenarios.length > 0 && (
@@ -89,7 +90,9 @@ function ScenarioContent({ funeralId }: ScenarioContentProps) {
                 <GenericCard
                   key={scenario.id}
                   title={scenario.title}
-                  subtitle={`${
+                  subtitle={` ${
+                    sectionLabels[scenario.section] || scenario.section
+                  } - ${
                     itemTypeLabels[scenario.item_type] || scenario.item_type
                   }`}
                   actions={
@@ -119,14 +122,6 @@ function ScenarioContent({ funeralId }: ScenarioContentProps) {
                             </span>
                           </div>
                         )}
-                    </div>
-                  }
-                  footer={
-                    <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <RiCalendarLine className="h-4 w-4" />
-                      <span className="font-medium">
-                        {sectionLabels[scenario.section] || scenario.section}
-                      </span>
                     </div>
                   }
                 />

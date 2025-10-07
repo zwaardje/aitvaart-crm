@@ -44,7 +44,8 @@ export function AppHeader({
   return (
     <header
       className={cn(
-        "w-full flex justify-between items-center px-4 py-2 relative z-40 bg-gray-100",
+        "w-full flex justify-between items-center px-4 py-2 z-40 bg-gray-100",
+        "md:relative fixed top-0 left-0 right-0",
         className
       )}
     >

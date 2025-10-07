@@ -61,11 +61,7 @@ export function ScenarioDeleteForm({
         <DialogClose asChild>
           <Button variant="outline">Annuleren</Button>
         </DialogClose>
-        <Button
-          type="button"
-          onClick={handleSubmit}
-          className="bg-red-600 text-white hover:bg-red-700"
-        >
+        <Button type="button" onClick={handleSubmit} variant="default">
           Verwijder
         </Button>
       </DialogFooter>

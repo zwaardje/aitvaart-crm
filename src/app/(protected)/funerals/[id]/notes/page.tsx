@@ -1,6 +1,5 @@
 "use client";
 
-import { Content } from "@/components/layout";
 import { useFuneral } from "@/hooks/useFunerals";
 import { Notes } from "@/components/funerals/Notes";
 import { Skeleton } from "@/components/ui";
@@ -52,7 +51,7 @@ export default function FuneralNotesPage({
   );
 
   return (
-    <Content>
+    <>
       {isLoading && (
         <div className="space-y-4 w-full">
           <Skeleton className="h-10 w-64" />
@@ -67,6 +66,7 @@ export default function FuneralNotesPage({
             onResultsChange={() => {}}
             actions={searchActions()}
             entityTypes={["funeral", "note", "contact"]}
+            sticky
           />
           <Notes funeralId={id} />
         </div>
@@ -80,6 +80,6 @@ export default function FuneralNotesPage({
           <NoteForm funeralId={id} />
         </DialogContent>
       </Dialog>
-    </Content>
+    </>
   );
 }

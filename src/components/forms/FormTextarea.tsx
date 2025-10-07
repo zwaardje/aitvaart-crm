@@ -40,13 +40,14 @@ export function FormTextarea({
         id={inputId}
         {...register(name, validation)}
         className={cn(
+          "text-xs",
           error && "border-red-500 focus-visible:ring-red-500",
           className
         )}
         {...rest}
       />
       <ErrorMessage message={error} />
-      {hint && !error && <p className="text-sm text-gray-500">{hint}</p>}
+      {hint && !error && <p className="text-xs text-gray-500">{hint}</p>}
     </div>
   );
 }

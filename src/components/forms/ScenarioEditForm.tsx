@@ -127,7 +127,7 @@ export function ScenarioEditForm({
         />
 
         {withDialog && (
-          <DialogFooter className="mt-2">
+          <DialogFooter className="mt-2 flex flex-row justify-between">
             <DialogClose asChild>
               <Button variant="outline">Annuleren</Button>
             </DialogClose>
