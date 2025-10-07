@@ -1,17 +1,17 @@
 "use client";
 
-import { useFormContext } from "react-hook-form";
+import { useFormContext, Controller } from "react-hook-form";
 import { useId } from "react";
 import { Checkbox, Label, ErrorMessage } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
-interface FormCheckboxProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
+interface FormCheckboxProps {
   name: string;
   label?: string;
   validation?: any;
   hint?: string;
   className?: string;
+  disabled?: boolean;
 }
 
 export function FormCheckbox({
@@ -20,10 +20,10 @@ export function FormCheckbox({
   validation,
   hint,
   className,
-  ...rest
+  disabled,
 }: FormCheckboxProps) {
   const {
-    register,
+    control,
     formState: { errors },
   } = useFormContext();
   const inputId = useId();
@@ -31,7 +31,19 @@ export function FormCheckbox({
 
   return (
     <div className={cn("flex flex-row items-center gap-2", className)}>
-      <Checkbox id={inputId} {...register(name, validation)} {...rest} />
+      <Controller
+        name={name}
+        control={control}
+        rules={validation}
+        render={({ field }) => (
+          <Checkbox
+            id={inputId}
+            checked={field.value}
+            onCheckedChange={field.onChange}
+            disabled={disabled}
+          />
+        )}
+      />
       {label && (
         <Label className="text-xs" htmlFor={inputId}>
           {label}

@@ -32,7 +32,11 @@ type Props = { funeralId: string };
 export function FuneralContacts({ funeralId }: Props) {
   const { contacts, isLoading, updateContact, deleteContact } =
     useFuneralContacts(funeralId);
-  const typedContacts = (contacts as unknown as ContactWithClient[]) ?? [];
+
+  const typedContacts = useMemo(
+    () => (contacts as unknown as ContactWithClient[]) ?? [],
+    [contacts]
+  );
 
   const sortedContacts = useMemo(
     () =>

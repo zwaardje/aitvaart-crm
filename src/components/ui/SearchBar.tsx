@@ -58,13 +58,13 @@ export function SearchBar({
           entityTypes.includes(result.entity_type)
         )
       : search.results;
-  }, [search.results, entityTypes?.join(",")]);
+  }, [search.results, entityTypes]);
 
   useEffect(() => {
     if (onResultsChange) {
       onResultsChange(filteredResults);
     }
-  }, [filteredResults]);
+  }, [filteredResults, onResultsChange]);
 
   const clearSearch = () => {
     setQuery("");

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/Button";
@@ -40,6 +40,14 @@ interface InviteData {
 }
 
 export default function AcceptInvitePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AcceptInviteContent />
+    </Suspense>
+  );
+}
+
+function AcceptInviteContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const organizationId = searchParams.get("organization");
@@ -52,23 +60,24 @@ export default function AcceptInvitePage() {
 
   useEffect(() => {
     // Check if user is already signed in
+    const checkAuthStatus = async () => {
+      const supabase = getSupabaseBrowser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // User is already signed in, process the invite
+        await processInvite(user);
+      } else {
+        // User needs to sign in first
+        setLoading(false);
+      }
+    };
+
     checkAuthStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const checkAuthStatus = async () => {
-    const supabase = getSupabaseBrowser();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      // User is already signed in, process the invite
-      await processInvite(user);
-    } else {
-      // User needs to sign in first
-      setLoading(false);
-    }
-  };
 
   const processInvite = async (user: any) => {
     if (!organizationId || !role) {

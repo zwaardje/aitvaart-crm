@@ -33,16 +33,22 @@ export type FuneralContactFormValues = z.infer<typeof funeralContactFormSchema>;
 
 interface FuneralContactFormProps {
   withDialog?: boolean;
-  funeralId: string;
+  funeralId?: string;
+  defaultValues?: FuneralContactFormValues;
+  onSubmit?: (data: FuneralContactFormValues) => void | Promise<void>;
+  submitLabel?: string;
 }
 
 export function FuneralContactForm({
   withDialog = false,
   funeralId,
+  defaultValues,
+  onSubmit: onSubmitProp,
+  submitLabel = "Toevoegen",
 }: FuneralContactFormProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { createContact } = useFuneralContacts(funeralId);
+  const { createContact } = useFuneralContacts(funeralId!);
 
   const onCreate = async (data: z.infer<typeof funeralContactFormSchema>) => {
     const supabase = getSupabaseBrowser();
@@ -82,7 +88,11 @@ export function FuneralContactForm({
 
   const handleSubmit = async (data: FuneralContactFormValues) => {
     try {
-      await onCreate(data);
+      if (onSubmitProp) {
+        await onSubmitProp(data);
+      } else {
+        await onCreate(data);
+      }
       if (withDialog) {
         setIsOpen(false);
       }
@@ -96,14 +106,16 @@ export function FuneralContactForm({
     <Form
       schema={funeralContactFormSchema}
       onSubmit={handleSubmit}
-      defaultValues={{
-        preferred_name: "",
-        last_name: "",
-        email: "",
-        phone_number: "",
-        relation: "",
-        is_primary: false,
-      }}
+      defaultValues={
+        defaultValues ?? {
+          preferred_name: "",
+          last_name: "",
+          email: "",
+          phone_number: "",
+          relation: "",
+          is_primary: false,
+        }
+      }
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <FormInput name="preferred_name" label="Voornaam" />
@@ -136,7 +148,7 @@ export function FuneralContactForm({
         <DialogClose asChild>
           <Button variant="outline">Annuleren</Button>
         </DialogClose>
-        <SubmitButton>Toevoegen</SubmitButton>
+        <SubmitButton>{submitLabel}</SubmitButton>
       </DialogFooter>
     </Form>
   );

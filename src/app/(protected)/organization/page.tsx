@@ -1,5 +1,6 @@
+"use client";
+
 import React from "react";
-import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserManager } from "@/components/organization/UserManager";
@@ -13,7 +14,6 @@ import {
 } from "@remixicon/react";
 
 export default function OrganizationPage() {
-  const t = useTranslations();
   const { data: userOrganization, isLoading } = useCurrentUserOrganization();
 
   if (isLoading) {

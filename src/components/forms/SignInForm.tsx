@@ -8,14 +8,11 @@ import {
   Card,
   CardHeader,
   CardContent,
-  CardFooter,
   CardTitle,
-  CardDescription,
   Input,
   Button,
 } from "@/components/ui";
-import { useTranslations } from "next-intl";
-import { Form, FormInput, SubmitButton } from "@/components/forms";
+import { Form } from "@/components/forms";
 import { Alert } from "@/components/ui/Alert";
 import {
   Form as ShadcnForm,
@@ -28,12 +25,12 @@ import {
 
 // import { ProviderButtons } from "@/components/auth";
 import { schemas, type SignInFormData } from "@/lib/validation";
+import { Spinner } from "@/components/ui/spinner/Spinner";
 
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const t = useTranslations();
 
   const onSubmit = async (data: SignInFormData) => {
     setIsLoading(true);
@@ -72,7 +69,7 @@ export function SignInForm() {
   return (
     <Card className="border-none shadow-none bg-transparent">
       <CardHeader className="text-center flex flex-col">
-        <CardTitle className="text-xl">{t("auth.signIn.title")}</CardTitle>
+        <CardTitle className="text-xl">Inloggen</CardTitle>
       </CardHeader>
       <CardContent>
         <Form
@@ -85,13 +82,13 @@ export function SignInForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("auth.signIn.email")}</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       type="email"
                       autoComplete="email"
-                      placeholder={t("auth.signIn.email")}
+                      placeholder="Email"
                       className="rounded-t-md"
                     />
                   </FormControl>
@@ -105,12 +102,12 @@ export function SignInForm() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex justify-between items-baseline gap-2">
-                    <FormLabel>{t("auth.signIn.password")}</FormLabel>
+                    <FormLabel>Wachtwoord</FormLabel>
                     <Link
                       href="/auth/forgot-password"
                       className="text-xs p-0 h-auto"
                     >
-                      {t("auth.signIn.forgotPassword")}
+                      Wachtwoord vergeten?
                     </Link>
                   </div>
                   <FormControl>
@@ -118,7 +115,7 @@ export function SignInForm() {
                       {...field}
                       type="password"
                       autoComplete="current-password"
-                      placeholder={t("auth.signIn.password")}
+                      placeholder="Wachtwoord"
                       className="rounded-b-md"
                     />
                   </FormControl>
@@ -136,16 +133,12 @@ export function SignInForm() {
 
           <div className="flex flex-col justify-between gap-2 items-center">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading
-                ? t("auth.signIn.submitting")
-                : t("auth.signIn.submit")}
+              {isLoading ? <Spinner size={16} /> : "Inloggen"}
             </Button>
 
-            <span className="text-sm text-muted-foreground lowercase">
-              {t("auth.signIn.subtitle")}
-            </span>
+            <span className="text-sm text-muted-foreground lowercase">Of</span>
             <Link className="p-0 h-auto text-sm" href="/auth/signup">
-              {t("auth.signIn.createAccount")}
+              Account aanmaken
             </Link>
           </div>
         </Form>
