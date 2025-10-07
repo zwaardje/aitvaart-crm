@@ -1,17 +1,27 @@
 "use client";
 
+import * as React from "react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/Button";
+import { Button, DialogClose, DialogFooter } from "@/components/ui";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Form } from "@/components/forms/Form";
 import { FormInput } from "./FormInput";
 import { FormTextarea } from "./FormTextarea";
 import { FormSelect } from "./FormSelect";
+import { SubmitButton } from "./SubmitButton";
 import { schemas, ScenarioFormData } from "@/lib/validation";
 import { useCreateScenarioWithDefaults } from "@/hooks/useScenarios";
 import { RiAddLine } from "@remixicon/react";
 
 interface ScenarioFormProps {
+  withDialog?: boolean;
   funeralId: string;
   onSuccess?: () => void;
 }
@@ -35,13 +45,21 @@ const ITEM_TYPE_OPTIONS = [
   { value: "transport", label: "Transport" },
 ];
 
-export function ScenarioForm({ funeralId, onSuccess }: ScenarioFormProps) {
+export function ScenarioForm({
+  withDialog = false,
+  funeralId,
+  onSuccess,
+}: ScenarioFormProps) {
   const t = useTranslations();
+  const [isOpen, setIsOpen] = useState(false);
   const { createScenarioWithDefaults } = useCreateScenarioWithDefaults();
 
   const handleSubmit = async (data: ScenarioFormData) => {
     try {
       await createScenarioWithDefaults(data);
+      if (withDialog) {
+        setIsOpen(false);
+      }
       onSuccess?.();
       console.log("Scenario item succesvol toegevoegd");
     } catch (error) {
@@ -50,7 +68,7 @@ export function ScenarioForm({ funeralId, onSuccess }: ScenarioFormProps) {
     }
   };
 
-  return (
+  const formContent = (
     <Form
       schema={schemas.scenarios.create}
       onSubmit={handleSubmit}
@@ -106,13 +124,34 @@ export function ScenarioForm({ funeralId, onSuccess }: ScenarioFormProps) {
           placeholder="Typ hier de waarde van het extra veld"
         />
 
-        <div className="flex justify-end gap-2 pt-4">
-          <Button type="submit">
-            <RiAddLine className="h-4 w-4 mr-2" />
-            Item toevoegen
-          </Button>
-        </div>
+        <DialogFooter className="mt-2 flex flex-row justify-between">
+          <DialogClose asChild>
+            <Button variant="outline">Annuleren</Button>
+          </DialogClose>
+          <SubmitButton>Item toevoegen</SubmitButton>
+        </DialogFooter>
       </div>
     </Form>
   );
+
+  if (withDialog) {
+    return (
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm">
+            <RiAddLine className="h-4 w-4 mr-2" />
+            Item toevoegen
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Nieuw scenario item</DialogTitle>
+          </DialogHeader>
+          {formContent}
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  return formContent;
 }

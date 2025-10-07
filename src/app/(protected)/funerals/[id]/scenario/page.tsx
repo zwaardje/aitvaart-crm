@@ -1,21 +1,15 @@
 "use client";
 
 import { Suspense, useState, useEffect, useCallback } from "react";
-import {
-  Skeleton,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui";
+import { Skeleton, Card, CardContent } from "@/components/ui";
 import { Button } from "@/components/ui";
+import { GenericCard } from "@/components/ui/GenericCard";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui";
+} from "@/components/ui/dialog";
 import {
   ScenarioForm,
   ScenarioEditForm,
@@ -23,12 +17,7 @@ import {
 } from "@/components/forms";
 import { useScenarios } from "@/hooks/useScenarios";
 import { Database } from "@/types/database";
-import {
-  RiAddLine,
-  RiEditLine,
-  RiDeleteBinLine,
-  RiCalendarLine,
-} from "@remixicon/react";
+import { RiAddLine, RiCalendarLine } from "@remixicon/react";
 import {
   SmartSearchBar,
   SmartSearchBarAction,
@@ -42,24 +31,8 @@ interface ScenarioContentProps {
 }
 
 function ScenarioContent({ funeralId }: ScenarioContentProps) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
   const { data: scenarios, isLoading } = useScenarios(funeralId);
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [editingScenario, setEditingScenario] =
-    useState<FuneralScenario | null>(null);
-  const [deletingScenario, setDeletingScenario] =
-    useState<FuneralScenario | null>(null);
-
-  // Group scenarios by section
-  const groupedScenarios =
-    scenarios?.reduce((acc, scenario) => {
-      if (!acc[scenario.section]) {
-        acc[scenario.section] = [];
-      }
-      acc[scenario.section].push(scenario);
-      return acc;
-    }, {} as Record<string, FuneralScenario[]>) || {};
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const sectionLabels: Record<string, string> = {
     soort_uitvaart: "Soort uitvaart",
@@ -80,23 +53,11 @@ function ScenarioContent({ funeralId }: ScenarioContentProps) {
     transport: "Transport",
   };
 
-  const handleAddSuccess = () => {
-    setIsAddOpen(false);
-  };
-
-  const handleEditSuccess = () => {
-    setEditingScenario(null);
-  };
-
-  const handleDeleteSuccess = () => {
-    setDeletingScenario(null);
-  };
-
   const searchActions = useCallback(
     (): SmartSearchBarAction[] => [
       {
-        id: "settings",
-        label: "Nabestaanden toevoegen",
+        id: "add-scenario",
+        label: "Scenario item toevoegen",
         icon: <RiAddLine className="h-3 w-3" />,
         onClick: () => {
           setIsDialogOpen(true);
@@ -109,152 +70,80 @@ function ScenarioContent({ funeralId }: ScenarioContentProps) {
   return (
     <>
       {isLoading ? (
-        <div className="space-y-6">
+        <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Card key={i}>
-              <CardHeader>
-                <Skeleton className="h-6 w-48" />
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <Skeleton className="h-20 w-full" />
-                  <Skeleton className="h-20 w-full" />
-                </div>
-              </CardContent>
-            </Card>
+            <Skeleton key={i} className="h-32 w-full" />
           ))}
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4">
           <SmartSearchBar
             placeholder="Zoek in scenario..."
             actions={searchActions()}
             entityTypes={["funeral", "note", "contact"]}
           />
-          {Object.entries(groupedScenarios).map(
-            ([section, sectionScenarios]) => (
-              <Card key={section}>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <RiCalendarLine className="h-5 w-5" />
-                    {sectionLabels[section] || section}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {sectionScenarios.map((scenario) => (
-                      <div
-                        key={scenario.id}
-                        className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="font-medium text-gray-900">
-                                {scenario.title}
-                              </h3>
-                              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                                {itemTypeLabels[scenario.item_type] ||
-                                  scenario.item_type}
-                              </span>
-                            </div>
 
-                            {scenario.description && (
-                              <p className="text-sm text-gray-600 mb-2">
-                                {scenario.description}
-                              </p>
-                            )}
-
-                            {scenario.extra_field_label &&
-                              scenario.extra_field_value && (
-                                <div className="text-sm">
-                                  <span className="text-gray-500">
-                                    {scenario.extra_field_label}:
-                                  </span>
-                                  <span className="ml-1 text-gray-900">
-                                    {scenario.extra_field_value}
-                                  </span>
-                                </div>
-                              )}
+          {scenarios && scenarios.length > 0 && (
+            <div className="space-y-3">
+              {scenarios.map((scenario) => (
+                <GenericCard
+                  key={scenario.id}
+                  title={scenario.title}
+                  subtitle={`${
+                    itemTypeLabels[scenario.item_type] || scenario.item_type
+                  }`}
+                  actions={
+                    <div className="flex items-center gap-1">
+                      <ScenarioEditForm scenario={scenario} withDialog={true} />
+                      <ScenarioDeleteForm
+                        scenario={scenario}
+                        withDialog={true}
+                      />
+                    </div>
+                  }
+                  content={
+                    <div className="space-y-2">
+                      {scenario.description && (
+                        <p className="text-sm text-gray-600">
+                          {scenario.description}
+                        </p>
+                      )}
+                      {scenario.extra_field_label &&
+                        scenario.extra_field_value && (
+                          <div className="text-sm">
+                            <span className="text-gray-500">
+                              {scenario.extra_field_label}:
+                            </span>
+                            <span className="ml-1 text-gray-900">
+                              {scenario.extra_field_value}
+                            </span>
                           </div>
-
-                          <div className="flex items-center gap-2 ml-4">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setEditingScenario(scenario)}
-                                >
-                                  <RiEditLine className="h-4 w-4" />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-2xl">
-                                <DialogHeader>
-                                  <DialogTitle>Item wijzigen</DialogTitle>
-                                </DialogHeader>
-                                {editingScenario && (
-                                  <ScenarioEditForm
-                                    scenario={editingScenario}
-                                    onSuccess={handleEditSuccess}
-                                  />
-                                )}
-                              </DialogContent>
-                            </Dialog>
-
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setDeletingScenario(scenario)}
-                                >
-                                  <RiDeleteBinLine className="h-4 w-4" />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="sm:max-w-md">
-                                <DialogHeader>
-                                  <DialogTitle> Weet je het zeker?</DialogTitle>
-                                </DialogHeader>
-                                {deletingScenario && (
-                                  <ScenarioDeleteForm
-                                    scenario={deletingScenario}
-                                    onSuccess={handleDeleteSuccess}
-                                  />
-                                )}
-                              </DialogContent>
-                            </Dialog>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-
-                    {sectionScenarios.length === 0 && (
-                      <div className="text-center py-8 text-gray-500">
-                        <p>Geen items in deze sectie</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          )}
-
-          {Object.keys(groupedScenarios).length === 0 && (
-            <Card>
-              <CardContent className="text-center py-12">
-                <p className="text-gray-500 mb-4">
-                  Nog geen scenario items toegevoegd
-                </p>
-                <Button onClick={() => setIsAddOpen(true)}>
-                  <RiAddLine className="h-4 w-4 mr-2" />
-                  Eerste item toevoegen
-                </Button>
-              </CardContent>
-            </Card>
+                        )}
+                    </div>
+                  }
+                  footer={
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <RiCalendarLine className="h-4 w-4" />
+                      <span className="font-medium">
+                        {sectionLabels[scenario.section] || scenario.section}
+                      </span>
+                    </div>
+                  }
+                />
+              ))}
+            </div>
           )}
         </div>
       )}
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nieuw scenario item</DialogTitle>
+          </DialogHeader>
+          <ScenarioForm funeralId={funeralId} />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
@@ -275,9 +164,5 @@ export default function ScenarioPage({
       setId(params.id);
     }
   }, [params]);
-  return (
-    <Content>
-      <ScenarioContent funeralId={id} />
-    </Content>
-  );
+  return <ScenarioContent funeralId={id} />;
 }
