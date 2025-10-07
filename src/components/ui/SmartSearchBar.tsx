@@ -50,8 +50,7 @@ export function SmartSearchBar({
     <>
       <div
         className={cn(
-          "group flex items-center gap-2 transition-all duration-300 ease-in-out",
-          "focus-within:gap-1",
+          "group relative flex items-center gap-2",
           !onResultsChange && "justify-end",
           sticky &&
             "sticky top-[6.5rem] md:top-[3.5rem] z-20 bg-white py-3 -mx-4 px-4 border-b",
@@ -60,7 +59,14 @@ export function SmartSearchBar({
       >
         {/* Search Input */}
         {onResultsChange && (
-          <div className="relative flex-1 transition-all duration-300 ease-in-out group-focus-within:flex-[2]">
+          <div
+            className={cn(
+              "flex-1 transition-all duration-500 ease-in-out origin-left",
+              "group-focus-within:absolute group-focus-within:left-5 group-focus-within:right-5 group-focus-within:z-10",
+              sticky &&
+                "group-focus-within:py-3 group-focus-within:-mx-4 group-focus-within:px-4"
+            )}
+          >
             <SearchBar
               placeholder={placeholder}
               onResultsChange={onResultsChange}
@@ -70,7 +76,7 @@ export function SmartSearchBar({
           </div>
         )}
 
-        <div className="flex items-center gap-2 transition-all duration-300 ease-in-out group-focus-within:scale-95 group-focus-within:opacity-80">
+        <div className="flex items-center gap-2 ml-auto transition-all duration-300 ease-in-out group-focus-within:opacity-0 group-focus-within:pointer-events-none">
           {showAiButton && (
             <Button
               variant="outline"
