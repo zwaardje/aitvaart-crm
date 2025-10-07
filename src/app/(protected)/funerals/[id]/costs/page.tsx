@@ -1,16 +1,18 @@
 "use client";
 
 import { useFuneral } from "@/hooks/useFunerals";
+import { Costs } from "@/components/funerals/Costs";
 import { Skeleton } from "@/components/ui";
-import { FuneralContacts } from "@/components/funerals/FuneralContacts";
-import { DeceasedCard } from "@/components/funerals/DeceasedCard";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { RiStoreLine, RiMoneyEuroBoxLine } from "@remixicon/react";
+import { SupplierForm } from "@/components/forms/SupplierForm";
+
 import {
   SmartSearchBar,
   SmartSearchBarAction,
 } from "@/components/ui/SmartSearchBar";
-import { RiAddLine, RiShare2Line } from "@remixicon/react";
-import { FuneralContactForm } from "@/components/forms/FuneralContactForm";
+
+import { CostForm } from "@/components/forms/CostForm";
 
 import {
   Dialog,
@@ -19,14 +21,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export default function FuneralDetailsPage({
+export default function FuneralCostsPage({
   params,
 }: {
   params: Promise<{ id: string }> | { id: string };
 }) {
   const [id, setId] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<
-    "funeral" | "share" | undefined
+    "costs" | "supplier" | undefined
   >(undefined);
 
   useEffect(() => {
@@ -43,19 +45,19 @@ export default function FuneralDetailsPage({
   const searchActions = useCallback(
     (): SmartSearchBarAction[] => [
       {
-        id: "settings",
-        label: "Nabestaanden toevoegen",
-        icon: <RiAddLine className="h-3 w-3" />,
+        id: "costs",
+        label: "Kosten toevoegen",
+        icon: <RiMoneyEuroBoxLine className="h-3 w-3" />,
         onClick: () => {
-          setIsDialogOpen("funeral");
+          setIsDialogOpen("costs");
         },
       },
       {
-        id: "share",
-        label: "Voeg medewerker toe",
-        icon: <RiShare2Line className="h-3 w-3" />,
+        id: "supplier",
+        label: "Leveranciers toevoegen",
+        icon: <RiStoreLine className="h-3 w-3" />,
         onClick: () => {
-          setIsDialogOpen("share");
+          setIsDialogOpen("supplier");
         },
       },
     ],
@@ -65,7 +67,7 @@ export default function FuneralDetailsPage({
   return (
     <>
       {isLoading && (
-        <div className="space-y-4 w-full">
+        <div className="pace-y-4 w-full">
           <Skeleton className="h-10 w-64" />
           <Skeleton className="h-32 w-full" />
         </div>
@@ -74,37 +76,36 @@ export default function FuneralDetailsPage({
       {!isLoading && funeral && (
         <div className="space-y-4 w-full">
           <SmartSearchBar
-            placeholder="Zoek in dashboard..."
+            onResultsChange={() => {}}
+            placeholder="Zoek in kosten..."
             actions={searchActions()}
             entityTypes={["funeral", "note", "contact"]}
             sticky
           />
-          <DeceasedCard deceased={funeral.deceased as any} />
-
-          <FuneralContacts funeralId={id} />
+          <Costs funeralId={id} />
         </div>
       )}
-
       <Dialog
-        open={isDialogOpen === "share"}
+        open={isDialogOpen === "costs"}
         onOpenChange={() => setIsDialogOpen(undefined)}
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Voeg medewerker toe</DialogTitle>
+            <DialogTitle>Voeg kosten toe</DialogTitle>
           </DialogHeader>
-          Sharing is caring
+          <CostForm funeralId={id} />
         </DialogContent>
       </Dialog>
+
       <Dialog
-        open={isDialogOpen === "funeral"}
+        open={isDialogOpen === "supplier"}
         onOpenChange={() => setIsDialogOpen(undefined)}
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Nieuw contact</DialogTitle>
+            <DialogTitle>Voeg leverancier toe</DialogTitle>
           </DialogHeader>
-          <FuneralContactForm funeralId={id} />
+          <SupplierForm />
         </DialogContent>
       </Dialog>
     </>

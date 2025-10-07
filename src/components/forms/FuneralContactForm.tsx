@@ -17,6 +17,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { RiAddLine } from "@remixicon/react";
+import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { useFuneralContacts } from "@/hooks";
 
 export const funeralContactFormSchema = z.object({
   preferred_name: z.string().min(1, "Voornaam verplicht"),
@@ -30,23 +32,67 @@ export const funeralContactFormSchema = z.object({
 export type FuneralContactFormValues = z.infer<typeof funeralContactFormSchema>;
 
 interface FuneralContactFormProps {
-  onSubmit: (data: FuneralContactFormValues) => void | Promise<void>;
-  submitLabel?: string;
-  defaultValues?: FuneralContactFormValues;
   withDialog?: boolean;
+  funeralId?: string;
+  defaultValues?: FuneralContactFormValues;
+  onSubmit?: (data: FuneralContactFormValues) => void | Promise<void>;
+  submitLabel?: string;
 }
 
 export function FuneralContactForm({
-  defaultValues,
-  onSubmit,
-  submitLabel = "Opslaan",
   withDialog = false,
+  funeralId,
+  defaultValues,
+  onSubmit: onSubmitProp,
+  submitLabel = "Toevoegen",
 }: FuneralContactFormProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+  const { createContact } = useFuneralContacts(funeralId!);
+
+  const onCreate = async (data: z.infer<typeof funeralContactFormSchema>) => {
+    const supabase = getSupabaseBrowser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error("Geen gebruiker aangemeld");
+
+    if (data.is_primary) {
+      await supabase
+        .from("funeral_contacts")
+        .update({ is_primary: false })
+        .eq("funeral_id", funeralId);
+    }
+
+    const { data: client, error: cErr } = await supabase
+      .from("clients")
+      .insert({
+        entrepreneur_id: user.id,
+        preferred_name: data.preferred_name,
+        last_name: data.last_name,
+        email: data.email || null,
+        phone_number: data.phone_number || null,
+      })
+      .select("id")
+      .single();
+    if (cErr) throw cErr;
+
+    await createContact({
+      funeral_id: funeralId,
+      client_id: client.id,
+      relation: data.relation || null,
+      is_primary: !!data.is_primary,
+      notes: null,
+    });
+  };
+
   const handleSubmit = async (data: FuneralContactFormValues) => {
     try {
-      await onSubmit(data);
+      if (onSubmitProp) {
+        await onSubmitProp(data);
+      } else {
+        await onCreate(data);
+      }
       if (withDialog) {
         setIsOpen(false);
       }
@@ -98,7 +144,7 @@ export function FuneralContactForm({
           className="md:col-span-2"
         />
       </div>
-      <DialogFooter className="mt-2">
+      <DialogFooter className="mt-2 flex flex-row justify-between">
         <DialogClose asChild>
           <Button variant="outline">Annuleren</Button>
         </DialogClose>

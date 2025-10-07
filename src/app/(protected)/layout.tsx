@@ -2,8 +2,9 @@
 
 import { ProtectedLayout } from "@/components/layout";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useFuneralName } from "@/hooks/useFunerals";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ProtectedRouteLayout({
   children,
@@ -11,6 +12,7 @@ export default function ProtectedRouteLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const t = useTranslations("breadcrumbs");
 
   // Extract funeral ID from pathname for dynamic name fetching
   const segments = pathname.split("/").filter(Boolean);
@@ -25,17 +27,21 @@ export default function ProtectedRouteLayout({
     funeralId || ""
   );
 
-  // Bepaal of we een back button moeten tonen
+  // Track hydration to prevent mismatch
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
   const shouldShowBackButton =
     pathname !== "/dashboard" &&
-    !pathname.includes("/suppliers") &&
+    !pathname.includes("/settings/") &&
     !pathname.endsWith("/funerals");
 
   // Bepaal de pagina titel en overledene naam
   const getPageTitle = () => {
     if (pathname === "/dashboard") return "Dashboard";
     if (pathname.includes("/funerals")) return "Uitvaarten";
-    if (pathname.includes("/suppliers")) return "Leveranciers";
+    if (pathname.includes("/suppliers")) return "Instellingen";
     return "Aitvaart CRM";
   };
 

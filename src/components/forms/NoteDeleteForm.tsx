@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 import { useNotes } from "@/hooks";
 import { Button } from "@/components/ui/Button";
 import {
@@ -22,7 +21,6 @@ interface NoteDeleteFormProps {
 }
 
 export function NoteDeleteForm({ note, onSuccess }: NoteDeleteFormProps) {
-  const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { deleteNote, refetch } = useNotes(note.funeral_id);
@@ -48,7 +46,7 @@ export function NoteDeleteForm({ note, onSuccess }: NoteDeleteFormProps) {
           <RiDeleteBinLine />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md overflow-y-auto h-full">
+      <DialogContent className="sm:max-w-md overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Weet je het zeker?</DialogTitle>
         </DialogHeader>
@@ -75,7 +73,7 @@ export function NoteDeleteForm({ note, onSuccess }: NoteDeleteFormProps) {
               type="button"
               onClick={handleDelete}
               disabled={isDeleting}
-              variant="destructive"
+              variant="default"
             >
               Verwijder
             </Button>

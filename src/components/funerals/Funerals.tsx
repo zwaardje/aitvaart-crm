@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useFunerals, type FuneralFilters } from "@/hooks/useFunerals";
 import { useTasks } from "@/hooks/useTasks";
 import {
@@ -10,25 +9,8 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
 } from "@/components/ui";
-import {
-  RiAddLine,
-  RiCrossLine,
-  RiArrowRightLine,
-  RiFilterLine,
-} from "@remixicon/react";
-import { SectionHeader } from "@/components/layout";
+import { RiAddLine, RiCrossLine } from "@remixicon/react";
 import { format } from "date-fns";
 import { Link } from "@/components/ui";
 import { Spinner } from "@/components/ui/spinner/Spinner";
@@ -69,21 +51,12 @@ function renderTeamMembers(teamAssignments: any[], funeralDirector?: string) {
   // Add funeral director first if available
   if (funeralDirector) {
     avatars.push(
-      <TooltipProvider key="director">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Avatar className="h-6 w-6 border-2 border-white">
-              <AvatarImage src={undefined} alt="Funeral Director" />
-              <AvatarFallback className="text-xs bg-gray-200 text-muted-foreground">
-                FD
-              </AvatarFallback>
-            </Avatar>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p className="text-xs">Uitvaartleider: {funeralDirector}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Avatar className="h-6 w-6 border-2 border-white">
+        <AvatarImage src={undefined} alt="Funeral Director" />
+        <AvatarFallback className="text-xs bg-gray-200 text-muted-foreground">
+          FD
+        </AvatarFallback>
+      </Avatar>
     );
   }
 
@@ -102,46 +75,21 @@ function renderTeamMembers(teamAssignments: any[], funeralDirector?: string) {
     const displayAssignments = sortedAssignments.slice(0, 2);
 
     displayAssignments.forEach((assignment) => {
-      const roleLabels = {
-        primary: "Primaire begeleider",
-        backup: "Backup begeleider",
-        assigned: "Toegewezen begeleider",
-      };
-
       const avatarColor = "bg-gray-200 text-muted-foreground border";
 
       avatars.push(
-        <TooltipProvider key={assignment.id}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Avatar className="h-6 w-6 border-2 border-white">
-                <AvatarImage
-                  src={undefined}
-                  alt={`Team member ${assignment.role}`}
-                />
-                <AvatarFallback className={`text-xs ${avatarColor}`}>
-                  {assignment.role === "primary"
-                    ? "P"
-                    : assignment.role === "backup"
-                    ? "B"
-                    : "A"}
-                </AvatarFallback>
-              </Avatar>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="text-xs">
-                {roleLabels[assignment.role as keyof typeof roleLabels] ||
-                  assignment.role}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Avatar className="h-6 w-6 border-2 border-white">
+          <AvatarImage src={undefined} alt={`Team member ${assignment.role}`} />
+          <AvatarFallback className={`text-xs ${avatarColor}`}>
+            {assignment.role === "primary"
+              ? "P"
+              : assignment.role === "backup"
+              ? "B"
+              : "A"}
+          </AvatarFallback>
+        </Avatar>
       );
     });
-  }
-
-  if (avatars.length === 0) {
-    return null;
   }
 
   return <div className="flex -space-x-2">{avatars}</div>;

@@ -3,10 +3,9 @@
 import * as React from "react";
 import { usePathname } from "next/navigation";
 import {
-  RiSparklingLine,
   RiSettings3Line,
   RiDashboardLine,
-  RiCrossLine,
+  RiUserStarFill,
 } from "@remixicon/react";
 import { Link } from "@/components/ui";
 import { cn } from "@/lib/utils";
@@ -23,11 +22,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     href: "/funerals",
-    icon: RiCrossLine,
-  },
-  {
-    href: "/voice-assistant",
-    icon: RiSparklingLine,
+    icon: RiUserStarFill,
   },
 
   {

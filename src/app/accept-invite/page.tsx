@@ -1,11 +1,7 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, Suspense } from "react";
-
-// Force dynamic rendering
-export const dynamic = "force-dynamic";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/badge";
@@ -43,10 +39,17 @@ interface InviteData {
   expiresAt: string;
 }
 
-function AcceptInvitePageContent() {
+export default function AcceptInvitePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AcceptInviteContent />
+    </Suspense>
+  );
+}
+
+function AcceptInviteContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const t = useTranslations();
   const organizationId = searchParams.get("organization");
   const role = searchParams.get("role");
 
@@ -55,111 +58,97 @@ function AcceptInvitePageContent() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  // Define translations outside of useCallback
-  const invalidInviteParams = t("auth.signIn.invalidInviteParams");
-  const acceptInviteError = t("auth.signIn.acceptInviteError");
-  const processInviteError = t("auth.signIn.processInviteError");
+  useEffect(() => {
+    // Check if user is already signed in
+    const checkAuthStatus = async () => {
+      const supabase = getSupabaseBrowser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-  const processInvite = useCallback(
-    async (user: any) => {
-      if (!organizationId || !role) {
-        setError(invalidInviteParams);
+      if (user) {
+        // User is already signed in, process the invite
+        await processInvite(user);
+      } else {
+        // User needs to sign in first
+        setLoading(false);
+      }
+    };
+
+    checkAuthStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const processInvite = async (user: any) => {
+    if (!organizationId || !role) {
+      setError("Ongeldige uitnodiging parameters");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/invites/accept", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          organizationId,
+          role,
+          permissions: {
+            can_manage_users: role === "admin" || role === "owner",
+            can_manage_funerals: true,
+            can_manage_clients: true,
+            can_manage_suppliers: true,
+            can_view_financials: role === "admin" || role === "owner",
+            can_manage_settings: role === "owner",
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Fout bij accepteren van uitnodiging");
         setLoading(false);
         return;
       }
 
-      try {
-        const response = await fetch("/api/invites/accept", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            organizationId,
-            role,
-            permissions: {
-              can_manage_users: role === "admin" || role === "owner",
-              can_manage_funerals: true,
-              can_manage_clients: true,
-              can_manage_suppliers: true,
-              can_view_financials: role === "admin" || role === "owner",
-              can_manage_settings: role === "owner",
-            },
-          }),
-        });
+      // Get organization details for display
+      const supabase = getSupabaseBrowser();
+      const { data: organization } = await supabase
+        .from("organizations")
+        .select("id, name, description")
+        .eq("id", organizationId)
+        .single();
 
-        const data = await response.json();
+      setInviteData({
+        id: data.data.id,
+        organization: organization || {
+          id: organizationId,
+          name: "Unknown",
+          description: null,
+        },
+        inviter: { full_name: "System", email: "system@aitvaart.com" },
+        role: role,
+        permissions: {
+          can_manage_users: data.data.can_manage_users || false,
+          can_manage_funerals: data.data.can_manage_funerals || false,
+          can_manage_clients: data.data.can_manage_clients || false,
+          can_manage_suppliers: data.data.can_manage_suppliers || false,
+          can_view_financials: data.data.can_view_financials || false,
+          can_manage_settings: data.data.can_manage_settings || false,
+        },
+        expiresAt: new Date().toISOString(),
+      });
 
-        if (!response.ok) {
-          setError(data.error || acceptInviteError);
-          setLoading(false);
-          return;
-        }
-
-        // Get organization details for display
-        const supabase = getSupabaseBrowser();
-        const { data: organization } = await supabase
-          .from("organizations")
-          .select("id, name, description")
-          .eq("id", organizationId)
-          .single();
-
-        setInviteData({
-          id: data.data.id,
-          organization: organization || {
-            id: organizationId,
-            name: "Unknown",
-            description: null,
-          },
-          inviter: { full_name: "System", email: "system@aitvaart.com" },
-          role: role,
-          permissions: {
-            can_manage_users: data.data.can_manage_users || false,
-            can_manage_funerals: data.data.can_manage_funerals || false,
-            can_manage_clients: data.data.can_manage_clients || false,
-            can_manage_suppliers: data.data.can_manage_suppliers || false,
-            can_view_financials: data.data.can_view_financials || false,
-            can_manage_settings: data.data.can_manage_settings || false,
-          },
-          expiresAt: new Date().toISOString(),
-        });
-
-        setSuccess(true);
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 2000);
-      } catch (error) {
-        setError(processInviteError);
-        setLoading(false);
-      }
-    },
-    [
-      organizationId,
-      role,
-      router,
-      invalidInviteParams,
-      acceptInviteError,
-      processInviteError,
-    ]
-  );
-
-  const checkAuthStatus = useCallback(async () => {
-    const supabase = getSupabaseBrowser();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      // User is already signed in, process the invite
-      await processInvite(user);
-    } else {
-      // User needs to sign in first
+      setSuccess(true);
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 2000);
+    } catch (error) {
+      setError("Fout bij verwerken van uitnodiging");
       setLoading(false);
     }
-  }, [processInvite]);
-
-  useEffect(() => {
-    // Check if user is already signed in
-    checkAuthStatus();
-  }, [checkAuthStatus]);
+  };
 
   const handleSignIn = () => {
     const supabase = getSupabaseBrowser();
@@ -273,7 +262,7 @@ function AcceptInvitePageContent() {
           </CardHeader>
           <CardContent className="space-y-4">
             <Button onClick={handleSignIn} className="w-full">
-              {t("auth.signIn.signInWithGoogle")}
+              Inloggen met Google
             </Button>
             <Button
               onClick={() => router.push("/")}
@@ -309,7 +298,7 @@ function AcceptInvitePageContent() {
             </h3>
             <p className="text-sm text-gray-600 mb-2">
               {inviteData.organization.description ||
-                t("auth.signIn.noDescriptionAvailable")}
+                "Geen beschrijving beschikbaar"}
             </p>
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Je rol:</span>
@@ -374,22 +363,5 @@ function AcceptInvitePageContent() {
         </CardContent>
       </Card>
     </div>
-  );
-}
-
-export default function AcceptInvitePage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <Skeleton className="h-8 w-48 mx-auto mb-4" />
-            <Skeleton className="h-4 w-32 mx-auto" />
-          </div>
-        </div>
-      }
-    >
-      <AcceptInvitePageContent />
-    </Suspense>
   );
 }

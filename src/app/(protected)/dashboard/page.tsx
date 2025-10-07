@@ -3,7 +3,10 @@
 import { useCallback } from "react";
 import { Funerals } from "@/components/funerals/Funerals";
 import { Content } from "@/components/layout";
-import { SmartSearchBar, SmartSearchBarAction } from "@/components/ui";
+import {
+  SmartSearchBar,
+  SmartSearchBarAction,
+} from "@/components/ui/SmartSearchBar";
 import { RiSettings3Line } from "@remixicon/react";
 
 export default function DashboardPage() {

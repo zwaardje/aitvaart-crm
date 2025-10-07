@@ -24,6 +24,7 @@ export { NoteDeleteForm } from "./NoteDeleteForm";
 export { CostForm } from "./CostForm";
 export { CostEditForm } from "./CostEditForm";
 export { CostDeleteForm } from "./CostDeleteForm";
+export { SupplierForm } from "./SupplierForm";
 export { ScenarioForm } from "./ScenarioForm";
 export { ScenarioEditForm } from "./ScenarioEditForm";
 export { ScenarioDeleteForm } from "./ScenarioDeleteForm";

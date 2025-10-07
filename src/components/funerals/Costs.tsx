@@ -1,19 +1,13 @@
 "use client";
 
 import { useCosts } from "@/hooks";
-import { CostForm, CostEditForm, CostDeleteForm } from "@/components/forms";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Skeleton,
-  Badge,
-} from "@/components/ui";
+import { CostEditForm, CostDeleteForm } from "@/components/forms";
+import { Card, CardContent, Skeleton } from "@/components/ui";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { RiMoneyDollarCircleLine, RiStoreLine } from "@remixicon/react";
 import type { Database } from "@/types/database";
+import { GenericCard } from "@/components/ui/GenericCard";
 
 type FuneralSupplier =
   Database["public"]["Tables"]["funeral_suppliers"]["Row"] & {
@@ -54,16 +48,12 @@ export function Costs({ funeralId }: CostsProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold">{t("title")}</h3>
-          {!isEmpty && (
-            <p className="text-sm text-gray-600 mt-1">
-              {t("totalCost")}: €{totalCost.toFixed(2)}
-            </p>
-          )}
-        </div>
-        <CostForm funeralId={funeralId} />
+      <div className="flex items-center justify-end">
+        {!isEmpty && (
+          <p className="text-sm text-gray-600 mt-1">
+            Totaal kosten: €{totalCost.toFixed(2)}
+          </p>
+        )}
       </div>
 
       {isEmpty ? (
@@ -83,55 +73,39 @@ export function Costs({ funeralId }: CostsProps) {
       ) : (
         <div className="space-y-3">
           {costs.map((cost: FuneralSupplier) => (
-            <Card key={cost.id} className="relative">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      {cost.product_name}
-                      <Badge variant="outline" className="text-xs">
-                        <RiStoreLine className="h-3 w-3 mr-1" />
-                        {cost.supplier.name}
-                      </Badge>
-                    </CardTitle>
-                    <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
-                      <span>
-                        {format(
-                          new Date(cost.created_at!),
-                          "dd MMM yyyy 'om' HH:mm"
-                        )}
-                      </span>
-                      <span className="font-medium text-green-600">
-                        €{cost.total_price?.toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <CostEditForm cost={cost} />
-                    <CostDeleteForm cost={cost} />
-                  </div>
+            <GenericCard
+              key={cost.id}
+              title={cost.product_name}
+              subtitle={`Aantal: ${
+                cost.quantity
+              } - Stukprijs: €${cost.unit_price.toFixed(2)}`}
+              actions={
+                <div className="flex items-center gap-1">
+                  <CostEditForm cost={cost} />
+                  <CostDeleteForm cost={cost} />
                 </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-500">{t("quantity")}:</span>
-                    <span className="ml-2 font-medium">{cost.quantity}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">{t("unitPrice")}:</span>
-                    <span className="ml-2 font-medium">
-                      €{cost.unit_price.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-                {cost.notes && (
-                  <div className="mt-3 p-2 bg-gray-50 rounded">
+              }
+              content={
+                <>
+                  {cost.notes && (
                     <p className="text-sm text-gray-600">{cost.notes}</p>
+                  )}
+                </>
+              }
+              footer={
+                <>
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
+                    {format(
+                      new Date(cost.created_at!),
+                      "dd MMM yyyy 'om' HH:mm"
+                    )}
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
+                    `{} • € {`${cost.total_price?.toFixed(2)} incl. btw`}
+                  </div>
+                </>
+              }
+            />
           ))}
         </div>
       )}

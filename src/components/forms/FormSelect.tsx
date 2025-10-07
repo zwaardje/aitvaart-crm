@@ -55,7 +55,7 @@ export function FormSelect({
           <Select value={field.value} onValueChange={field.onChange}>
             <SelectTrigger
               className={cn(
-                "h-9 text-sm",
+                "h-9 text-xs",
                 error && "border-red-500 focus-visible:ring-red-500",
                 className
               )}
@@ -64,7 +64,11 @@ export function FormSelect({
             </SelectTrigger>
             <SelectContent>
               {options.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
+                <SelectItem
+                  className="text-xs"
+                  key={option.value}
+                  value={option.value}
+                >
                   {option.label}
                 </SelectItem>
               ))}

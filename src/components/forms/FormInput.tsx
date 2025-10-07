@@ -39,7 +39,7 @@ export function FormInput({
         id={inputId}
         {...register(name, validation)}
         className={cn(
-          "h-9 text-sm",
+          "h-9 text-xs",
           error && "border-red-500 focus-visible:ring-red-500",
           className
         )}

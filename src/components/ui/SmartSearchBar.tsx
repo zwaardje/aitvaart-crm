@@ -26,19 +26,23 @@ export interface SmartSearchBarAction {
 }
 
 export interface SmartSearchBarProps {
+  showAiButton?: boolean;
   placeholder?: string;
   onResultsChange?: (results: any[]) => void;
   actions?: SmartSearchBarAction[];
   entityTypes?: ("funeral" | "note" | "cost" | "contact")[];
   className?: string;
+  sticky?: boolean;
 }
 
 export function SmartSearchBar({
+  showAiButton = true,
   placeholder = "Zoek...",
   onResultsChange,
   actions = [],
   entityTypes,
   className,
+  sticky = false,
 }: SmartSearchBarProps) {
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
 
@@ -48,62 +52,62 @@ export function SmartSearchBar({
         className={cn(
           "group flex items-center gap-2 transition-all duration-300 ease-in-out",
           "focus-within:gap-1",
+          !onResultsChange && "justify-end",
+          sticky &&
+            "sticky top-[6.5rem] md:top-[3.5rem] z-20 bg-white py-3 -mx-4 px-4 border-b",
           className
         )}
       >
         {/* Search Input */}
-        <div className="relative flex-1 transition-all duration-300 ease-in-out group-focus-within:flex-[2]">
-          <SearchBar
-            placeholder={placeholder}
-            onResultsChange={onResultsChange}
-            entityTypes={entityTypes}
-            className="w-full"
-          />
-        </div>
+        {onResultsChange && (
+          <div className="relative flex-1 transition-all duration-300 ease-in-out group-focus-within:flex-[2]">
+            <SearchBar
+              placeholder={placeholder}
+              onResultsChange={onResultsChange}
+              entityTypes={entityTypes}
+              className="w-full"
+            />
+          </div>
+        )}
 
-        {/* Action Buttons */}
         <div className="flex items-center gap-2 transition-all duration-300 ease-in-out group-focus-within:scale-95 group-focus-within:opacity-80">
-          {/* AI Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-10 px-3 gap-2"
-            onClick={() => setIsAIModalOpen(true)}
-          >
-            <RiSparklingLine className="h-4 w-4" />
-            <span className="hidden sm:inline">AI</span>
-          </Button>
+          {showAiButton && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 px-3 gap-2"
+              onClick={() => setIsAIModalOpen(true)}
+            >
+              <RiSparklingLine className="h-4 w-4 text-purple-600" />
+              <span className="sm:inline">Bewerken</span>
+            </Button>
+          )}
 
           {/* More Actions Menu */}
           {actions.length > 0 && (
             <DropdownMenu>
               <DropdownMenuTrigger>
-                {/* <Button variant="outline" size="sm" className="h-10 px-3 gap-2">
+                <Button variant="outline" size="sm" className="h-10 px-3 gap-2">
                   <RiMoreLine className="h-4 w-4" />
-                  <span className="inline">Meer</span>
-                </Button> */}
-                <div>omfg</div>
+                  Meer
+                </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                {actions && actions.length > 0 ? (
+              <DropdownMenuContent align="end" className="w-auto">
+                {actions &&
+                  actions.length > 0 &&
                   actions.map((action, index) => (
                     <React.Fragment key={action.id}>
                       {index > 0 && <DropdownMenuSeparator />}
                       <DropdownMenuItem
                         onClick={action.onClick}
                         disabled={action.disabled}
-                        className="flex items-center gap-2 cursor-pointer"
+                        className="flex items-center gap-2 cursor-pointer text-xs"
                       >
                         {action.icon}
                         {action.label}
                       </DropdownMenuItem>
                     </React.Fragment>
-                  ))
-                ) : (
-                  <DropdownMenuItem disabled>
-                    Geen acties beschikbaar
-                  </DropdownMenuItem>
-                )}
+                  ))}
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -111,26 +115,28 @@ export function SmartSearchBar({
       </div>
 
       {/* AI Modal */}
-      <Dialog open={isAIModalOpen} onOpenChange={setIsAIModalOpen}>
-        <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <RiRobotLine className="h-5 w-5" />
-              AI Assistant
-            </DialogTitle>
-          </DialogHeader>
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center space-y-4">
-              <RiRobotLine className="h-16 w-16 text-muted-foreground mx-auto" />
-              <h3 className="text-lg font-semibold">AI Assistant</h3>
-              <p className="text-muted-foreground">
-                De AI assistant wordt hier geladen...
-              </p>
-              <Button onClick={() => setIsAIModalOpen(false)}>Sluiten</Button>
+      {showAiButton && (
+        <Dialog open={isAIModalOpen} onOpenChange={setIsAIModalOpen}>
+          <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <RiRobotLine className="h-5 w-5" />
+                AI Assistant
+              </DialogTitle>
+            </DialogHeader>
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center space-y-4">
+                <RiRobotLine className="h-16 w-16 text-muted-foreground mx-auto" />
+                <h3 className="text-lg font-semibold">AI Assistant</h3>
+                <p className="text-muted-foreground">
+                  De AI assistant wordt hier geladen...
+                </p>
+                <Button onClick={() => setIsAIModalOpen(false)}>Sluiten</Button>
+              </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }

@@ -29,8 +29,8 @@ export function DeceasedCard({ deceased }: DeceasedCardProps) {
   if (!deceased) return null;
 
   return (
-    <Card>
-      <CardContent className="pt-4">
+    <Card className="rounded-sm">
+      <CardContent className="p-3">
         <SectionHeader
           title={
             <div className="truncate">
@@ -41,13 +41,13 @@ export function DeceasedCard({ deceased }: DeceasedCardProps) {
           actions={
             <Dialog open={open} onOpenChange={setOpen}>
               <Button
-                variant="icon-outline"
-                size="icon"
+                variant="outline"
+                size="sm"
                 aria-label="Bewerken"
                 title="Bewerken"
                 onClick={() => setOpen(true)}
               >
-                <RiEditLine className="h-4 w-4" />
+                <RiEditLine className="h-3 w-3" />
               </Button>
               <DialogContent>
                 <DialogHeader>

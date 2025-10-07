@@ -1,17 +1,15 @@
 "use client";
 
 import { useFuneral } from "@/hooks/useFunerals";
+import { Notes } from "@/components/funerals/Notes";
 import { Skeleton } from "@/components/ui";
-import { FuneralContacts } from "@/components/funerals/FuneralContacts";
-import { DeceasedCard } from "@/components/funerals/DeceasedCard";
 import { useCallback, useEffect, useState } from "react";
+import { RiBookLine } from "@remixicon/react";
 import {
   SmartSearchBar,
   SmartSearchBarAction,
 } from "@/components/ui/SmartSearchBar";
-import { RiAddLine, RiShare2Line } from "@remixicon/react";
-import { FuneralContactForm } from "@/components/forms/FuneralContactForm";
-
+import { NoteForm } from "@/components/forms/NoteForm";
 import {
   Dialog,
   DialogContent,
@@ -19,15 +17,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export default function FuneralDetailsPage({
+export default function FuneralNotesPage({
   params,
 }: {
   params: Promise<{ id: string }> | { id: string };
 }) {
   const [id, setId] = useState<string>("");
-  const [isDialogOpen, setIsDialogOpen] = useState<
-    "funeral" | "share" | undefined
-  >(undefined);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (params instanceof Promise) {
@@ -44,18 +40,10 @@ export default function FuneralDetailsPage({
     (): SmartSearchBarAction[] => [
       {
         id: "settings",
-        label: "Nabestaanden toevoegen",
-        icon: <RiAddLine className="h-3 w-3" />,
+        label: "Notitie toevoegen",
+        icon: <RiBookLine className="h-3 w-3" />,
         onClick: () => {
-          setIsDialogOpen("funeral");
-        },
-      },
-      {
-        id: "share",
-        label: "Voeg medewerker toe",
-        icon: <RiShare2Line className="h-3 w-3" />,
-        onClick: () => {
-          setIsDialogOpen("share");
+          setIsDialogOpen(true);
         },
       },
     ],
@@ -74,37 +62,22 @@ export default function FuneralDetailsPage({
       {!isLoading && funeral && (
         <div className="space-y-4 w-full">
           <SmartSearchBar
-            placeholder="Zoek in dashboard..."
+            placeholder="Zoek in notities..."
+            onResultsChange={() => {}}
             actions={searchActions()}
             entityTypes={["funeral", "note", "contact"]}
             sticky
           />
-          <DeceasedCard deceased={funeral.deceased as any} />
-
-          <FuneralContacts funeralId={id} />
+          <Notes funeralId={id} />
         </div>
       )}
 
-      <Dialog
-        open={isDialogOpen === "share"}
-        onOpenChange={() => setIsDialogOpen(undefined)}
-      >
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Voeg medewerker toe</DialogTitle>
+            <DialogTitle>Nieuwe notitie</DialogTitle>
           </DialogHeader>
-          Sharing is caring
-        </DialogContent>
-      </Dialog>
-      <Dialog
-        open={isDialogOpen === "funeral"}
-        onOpenChange={() => setIsDialogOpen(undefined)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Nieuw contact</DialogTitle>
-          </DialogHeader>
-          <FuneralContactForm funeralId={id} />
+          <NoteForm funeralId={id} />
         </DialogContent>
       </Dialog>
     </>

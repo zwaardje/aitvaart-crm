@@ -16,7 +16,12 @@ interface SubmenuProps {
 
 export function Submenu({ items, className }: SubmenuProps) {
   return (
-    <nav className={cn("w-full bg-gray-50 border-b bg-gray-100", className)}>
+    <nav
+      className={cn(
+        "w-full border-b bg-gray-100 sticky top-14 md:top-0 z-30",
+        className
+      )}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div
           className={cn(
@@ -33,7 +38,7 @@ export function Submenu({ items, className }: SubmenuProps) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "relative inline-flex items-center px-2 py-2 text-sm font-medium transition-all duration-200 rounded-sm whitespace-nowrap flex-shrink-0 text-xs",
+                  "relative inline-flex items-center px-2 py-2 text-xs font-medium transition-all duration-200 rounded-sm whitespace-nowrap flex-shrink-0",
                   item.isActive
                     ? "bg-white text-gray-900 shadow-sm"
                     : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
