@@ -2,22 +2,17 @@ import { StreamClient } from "@stream-io/node-sdk";
 import crypto from "crypto";
 import { env } from "@/lib/env";
 import { FuneralContext } from "./database";
-import { generateFuneralInstructions } from "./openai-functions";
-import {
-  handleAddNoteFunction,
-  handleAddCostFunction,
-  handleAddContactFunction,
-  handleGetFuneralInfoFunction,
-  handleSearchFuneralByNameFunction,
-  handleDocumentCommand,
-} from "./function-handlers";
+import { AIContextMetadata } from "@/types/ai-context";
+import { toolFactory } from "./tool-factory";
+import { instructionBuilder } from "./instruction-builder";
 
 /**
  * Initialize Stream client and create call
  */
 export async function initializeStreamCall(
   funeralId: string,
-  funeralContext: FuneralContext
+  funeralContext: FuneralContext,
+  aiContext?: AIContextMetadata
 ) {
   // Check if required environment variables are set
   if (!env.STREAM_API_KEY || !env.STREAM_API_SECRET) {
@@ -63,16 +58,27 @@ export async function initializeStreamCall(
       });
       console.log("OpenAI Realtime connected successfully");
 
-      // Set up comprehensive funeral-specific instructions
-      const funeralInstructions = generateFuneralInstructions(
-        funeralId,
-        funeralContext
-      );
-      console.log("Funeral instructions:", funeralInstructions);
+      // Build context-aware instructions
+      let instructions: string;
+      if (aiContext) {
+        console.log("Building context-aware instructions for:", aiContext);
+        instructions = instructionBuilder.build(aiContext, funeralContext);
+      } else {
+        // Fallback to general context
+        const defaultContext: AIContextMetadata = {
+          page: "general",
+          funeralId: funeralId,
+          scope: "manage",
+        };
+        console.log("Using default general context");
+        instructions = instructionBuilder.build(defaultContext, funeralContext);
+      }
+
+      console.log("AI instructions:", instructions.substring(0, 200) + "...");
 
       // Configure the AI agent with basic settings
       await realtimeClient.updateSession({
-        instructions: funeralInstructions,
+        instructions,
         voice: "alloy", // Use OpenAI's built-in voice instead of Eleven Labs
         input_audio_format: "pcm16",
         output_audio_format: "pcm16",
@@ -84,16 +90,29 @@ export async function initializeStreamCall(
         },
       });
 
-      // Store initial context
+      // Store initial context with AI context
       clientContexts.set(realtimeClient, {
         funeralId,
         context: funeralContext,
+        aiContext: aiContext || {
+          page: "general",
+          funeralId: funeralId,
+          scope: "manage",
+        },
       });
 
-      // Add tools using the correct addTool method
-      await setupFuneralTools(realtimeClient, funeralId, funeralContext);
+      // Generate and add context-aware tools
+      await setupContextAwareTools(
+        realtimeClient,
+        funeralContext,
+        aiContext || {
+          page: "general",
+          funeralId: funeralId,
+          scope: "manage",
+        }
+      );
 
-      console.log("AI agent configured successfully with tools");
+      console.log("AI agent configured successfully with context-aware tools");
       hasAI = true;
     }
   } catch (openaiError) {
@@ -139,238 +158,53 @@ export async function initializeStreamCall(
 }
 
 /**
- * Setup funeral-specific tools for the AI agent
+ * Setup context-aware tools for the AI agent using the tool factory
  */
-async function setupFuneralTools(
+async function setupContextAwareTools(
   realtimeClient: any,
-  funeralId: string,
-  funeralContext: FuneralContext
+  funeralContext: FuneralContext,
+  aiContext: AIContextMetadata
 ) {
-  // Add note tool
-  realtimeClient.addTool(
-    {
-      name: "add_note",
-      description: "Voeg een notitie toe aan de uitvaart",
-      parameters: {
-        type: "object",
-        properties: {
-          content: {
-            type: "string",
-            description: "De inhoud van de notitie",
-          },
-          title: {
-            type: "string",
-            description: "Een korte titel voor de notitie (optioneel)",
-          },
-          is_important: {
-            type: "boolean",
-            description: "Of de notitie belangrijk is (standaard: false)",
-          },
-        },
-        required: ["content"],
-      },
-    },
-    async ({ content, title, is_important = false }: any) => {
-      console.log("add_note request", { content, title, is_important });
-      return await handleAddNoteFunction(
-        {
-          content,
-          title,
-          is_important,
-        },
-        funeralContext
-      );
-    }
+  console.log("Setting up context-aware tools for:", aiContext);
+
+  // Generate tools based on context
+  const tools = await toolFactory.generateTools(aiContext, funeralContext);
+
+  console.log(
+    `Generated ${tools.length} tools for context:`,
+    tools.map((t) => t.name)
   );
 
-  // Add cost tool
-  realtimeClient.addTool(
-    {
-      name: "add_cost",
-      description: "Voeg kosten toe aan de uitvaart",
-      parameters: {
-        type: "object",
-        properties: {
-          amount: {
-            type: "number",
-            description: "Het bedrag in euro's",
-          },
-          description: {
-            type: "string",
-            description: "Beschrijving van de kosten",
-          },
-        },
-        required: ["amount", "description"],
-      },
-    },
-    async ({ amount, description }: any) => {
-      console.log("add_cost request", { amount, description });
-      return await handleAddCostFunction(
-        {
-          amount,
-          description,
-        },
-        funeralContext
-      );
-    }
-  );
+  // Register each tool with the realtime client
+  for (const tool of tools) {
+    console.log(`Registering tool: ${tool.name}`);
 
-  // Add contact tool
-  realtimeClient.addTool(
-    {
-      name: "add_contact",
-      description: "Voeg een contact toe aan de uitvaart",
-      parameters: {
-        type: "object",
-        properties: {
-          name: {
-            type: "string",
-            description: "De naam van het contact",
-          },
-          phone: {
-            type: "string",
-            description: "Telefoonnummer (optioneel)",
-          },
-          email: {
-            type: "string",
-            description: "E-mailadres (optioneel)",
-          },
-          relationship: {
-            type: "string",
-            description: "Relatie tot de overledene (bijv. Familie, Vriend)",
-          },
-        },
-        required: ["name"],
+    realtimeClient.addTool(
+      {
+        name: tool.name,
+        description: tool.description,
+        parameters: tool.parameters,
       },
-    },
-    async ({ name, phone, email, relationship = "Familie" }: any) => {
-      console.log("add_contact request", { name, phone, email, relationship });
-      return await handleAddContactFunction(
-        {
-          name,
-          phone,
-          email,
-          relationship,
-        },
-        funeralContext
-      );
-    }
-  );
+      async (args: any) => {
+        console.log(`${tool.name} called with args:`, args);
+        try {
+          const result = await tool.handler(args, funeralContext);
+          console.log(`${tool.name} result:`, result);
+          return result;
+        } catch (error) {
+          console.error(`Error in ${tool.name}:`, error);
+          return {
+            success: false,
+            message: `Fout bij ${tool.name}: ${
+              error instanceof Error ? error.message : "Unknown error"
+            }`,
+          };
+        }
+      }
+    );
+  }
 
-  // Add scenario tool
-  realtimeClient.addTool(
-    {
-      name: "add_scenario",
-      description: "Voeg een scenario toe aan de uitvaart",
-      parameters: {
-        type: "object",
-        properties: {
-          title: {
-            type: "string",
-            description: "Titel van het scenario",
-          },
-          description: {
-            type: "string",
-            description: "Beschrijving van het scenario",
-          },
-          is_selected: {
-            type: "boolean",
-            description: "Of dit scenario geselecteerd is (standaard: false)",
-          },
-        },
-        required: ["title", "description"],
-      },
-    },
-    async ({ title, description, is_selected = false }: any) => {
-      console.log("add_scenario request", { title, description, is_selected });
-      return await handleDocumentCommand(
-        `voeg scenario toe: ${title} - ${description}`,
-        funeralId,
-        funeralContext
-      );
-    }
-  );
-
-  // Add document tool
-  realtimeClient.addTool(
-    {
-      name: "add_document",
-      description: "Voeg een document toe aan de uitvaart",
-      parameters: {
-        type: "object",
-        properties: {
-          name: {
-            type: "string",
-            description: "Naam van het document",
-          },
-          description: {
-            type: "string",
-            description: "Beschrijving van het document",
-          },
-          file_type: {
-            type: "string",
-            description: "Type bestand (bijv. PDF, DOC, JPG)",
-          },
-        },
-        required: ["name"],
-      },
-    },
-    async ({ name, description, file_type }: any) => {
-      console.log("add_document request", { name, description, file_type });
-      return await handleDocumentCommand(
-        `voeg document toe: ${name} - ${description || ""} (${
-          file_type || "bestand"
-        })`,
-        funeralId,
-        funeralContext
-      );
-    }
-  );
-
-  // Get funeral info tool
-  realtimeClient.addTool(
-    {
-      name: "get_funeral_info",
-      description: "Krijg informatie over de uitvaart",
-      parameters: {
-        type: "object",
-        properties: {},
-        required: [],
-      },
-    },
-    async () => {
-      console.log("get_funeral_info request");
-      return await handleGetFuneralInfoFunction(funeralContext);
-    }
-  );
-
-  // Search funeral by name tool
-  realtimeClient.addTool(
-    {
-      name: "search_funeral_by_name",
-      description:
-        "Zoek naar uitvaartgegevens op basis van de naam van de overledene",
-      parameters: {
-        type: "object",
-        properties: {
-          deceased_name: {
-            type: "string",
-            description: "De naam van de overledene om naar te zoeken",
-          },
-        },
-        required: ["deceased_name"],
-      },
-    },
-    async ({ deceased_name }: any) => {
-      console.log("search_funeral_by_name request", { deceased_name });
-      return await handleSearchFuneralByNameFunction(
-        { deceased_name },
-        realtimeClient
-      );
-    }
-  );
-
-  console.log("All funeral tools registered successfully");
+  console.log("All context-aware tools registered successfully");
 }
 
 /**
@@ -378,7 +212,7 @@ async function setupFuneralTools(
  */
 const clientContexts = new Map<
   any,
-  { funeralId: string; context: FuneralContext }
+  { funeralId: string; context: FuneralContext; aiContext: AIContextMetadata }
 >();
 
 /**
@@ -387,52 +221,77 @@ const clientContexts = new Map<
 export async function updateFuneralContext(
   realtimeClient: any,
   newFuneralId: string,
-  newFuneralContext: FuneralContext
+  newFuneralContext: FuneralContext,
+  newAiContext?: AIContextMetadata
 ) {
   try {
     console.log("Updating funeral context for:", newFuneralId);
+
+    // Get current AI context if not provided
+    const currentContext = clientContexts.get(realtimeClient);
+    const aiContext = newAiContext ||
+      currentContext?.aiContext || {
+        page: "general",
+        funeralId: newFuneralId,
+        scope: "manage",
+      };
 
     // Store the new context
     clientContexts.set(realtimeClient, {
       funeralId: newFuneralId,
       context: newFuneralContext,
+      aiContext: aiContext,
     });
 
-    // Generate new funeral instructions with updated context
-    const updatedInstructions = generateFuneralInstructions(
-      newFuneralId,
+    // Generate new context-aware instructions
+    const updatedInstructions = instructionBuilder.build(
+      aiContext,
       newFuneralContext
     );
 
-    console.log("Updated funeral instructions:", updatedInstructions);
+    console.log(
+      "Updated instructions (first 200 chars):",
+      updatedInstructions.substring(0, 200)
+    );
 
     // Update the session with new instructions
     await realtimeClient.updateSession({
       instructions: updatedInstructions,
     });
 
-    // Remove existing tools before re-registering
-    const toolNames = [
+    // Get all currently registered tools to remove them
+    // Note: The exact method to get tool names might vary based on Stream SDK version
+    console.log("Removing old tools...");
+
+    // Try to remove common tool names
+    const potentialToolNames = [
       "add_note",
+      "update_note",
+      "delete_note",
+      "list_notes",
       "add_cost",
+      "update_cost",
+      "delete_cost",
+      "list_costs",
       "add_contact",
-      "add_scenario",
-      "add_document",
+      "update_contact",
+      "delete_contact",
+      "list_contacts",
       "get_funeral_info",
       "search_funeral_by_name",
     ];
 
-    for (const toolName of toolNames) {
+    for (const toolName of potentialToolNames) {
       try {
         await realtimeClient.removeTool(toolName);
         console.log(`Removed tool: ${toolName}`);
       } catch (error) {
-        console.log(`Tool ${toolName} was not found or already removed`);
+        // Tool might not exist, continue
       }
     }
 
     // Re-register tools with new context
-    await setupFuneralTools(realtimeClient, newFuneralId, newFuneralContext);
+    await setupContextAwareTools(realtimeClient, newFuneralContext, aiContext);
 
     console.log("Funeral context updated successfully");
 
@@ -458,9 +317,11 @@ export async function updateFuneralContext(
 /**
  * Get current funeral context for a realtime client
  */
-export function getCurrentFuneralContext(
-  realtimeClient: any
-): { funeralId: string; context: FuneralContext } | null {
+export function getCurrentFuneralContext(realtimeClient: any): {
+  funeralId: string;
+  context: FuneralContext;
+  aiContext: AIContextMetadata;
+} | null {
   return clientContexts.get(realtimeClient) || null;
 }
 
@@ -527,9 +388,11 @@ export async function sendTextMessage(realtimeClient: any, message: string) {
 /**
  * Get funeral context by call ID
  */
-export function getFuneralContextByCallId(
-  callId: string
-): { funeralId: string; context: FuneralContext } | null {
+export function getFuneralContextByCallId(callId: string): {
+  funeralId: string;
+  context: FuneralContext;
+  aiContext: AIContextMetadata;
+} | null {
   // Search through all stored contexts to find the one with matching call ID
   const entries = Array.from(clientContexts.entries());
   for (const [client, contextData] of entries) {

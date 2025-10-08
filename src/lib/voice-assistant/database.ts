@@ -388,3 +388,257 @@ export async function addFuneralContact(contactData: {
 
   return data[0];
 }
+
+/**
+ * Update funeral note
+ */
+export async function updateFuneralNote(
+  noteId: string,
+  noteData: {
+    title?: string;
+    content?: string;
+    is_important?: boolean;
+  }
+) {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { data, error } = await supabase
+    .from("funeral_notes")
+    .update({
+      ...noteData,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", noteId)
+    .select();
+
+  if (error) {
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error("Notitie niet gevonden");
+  }
+
+  return data[0];
+}
+
+/**
+ * Delete funeral note
+ */
+export async function deleteFuneralNote(noteId: string) {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { error } = await supabase
+    .from("funeral_notes")
+    .delete()
+    .eq("id", noteId);
+
+  if (error) {
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  return { success: true };
+}
+
+/**
+ * List funeral notes
+ */
+export async function listFuneralNotes(
+  funeralId: string,
+  importantOnly: boolean = false
+) {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  let query = supabase
+    .from("funeral_notes")
+    .select("*")
+    .eq("funeral_id", funeralId)
+    .order("created_at", { ascending: false });
+
+  if (importantOnly) {
+    query = query.eq("is_important", true);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  return data || [];
+}
+
+/**
+ * Update funeral cost
+ */
+export async function updateFuneralCost(
+  costId: string,
+  costData: {
+    amount?: number;
+    description?: string;
+  }
+) {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { data, error } = await supabase
+    .from("funeral_costs")
+    .update({
+      ...costData,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", costId)
+    .select();
+
+  if (error) {
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error("Kosten niet gevonden");
+  }
+
+  return data[0];
+}
+
+/**
+ * Delete funeral cost
+ */
+export async function deleteFuneralCost(costId: string) {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { error } = await supabase
+    .from("funeral_costs")
+    .delete()
+    .eq("id", costId);
+
+  if (error) {
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  return { success: true };
+}
+
+/**
+ * List funeral costs
+ */
+export async function listFuneralCosts(funeralId: string) {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { data, error } = await supabase
+    .from("funeral_costs")
+    .select("*")
+    .eq("funeral_id", funeralId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  return data || [];
+}
+
+/**
+ * Update funeral contact
+ */
+export async function updateFuneralContact(
+  contactId: string,
+  contactData: {
+    relation?: string;
+    notes?: string;
+  }
+) {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { data, error } = await supabase
+    .from("funeral_contacts")
+    .update({
+      ...contactData,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", contactId)
+    .select();
+
+  if (error) {
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error("Contact niet gevonden");
+  }
+
+  return data[0];
+}
+
+/**
+ * Delete funeral contact
+ */
+export async function deleteFuneralContact(contactId: string) {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { error } = await supabase
+    .from("funeral_contacts")
+    .delete()
+    .eq("id", contactId);
+
+  if (error) {
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  return { success: true };
+}
+
+/**
+ * List funeral contacts
+ */
+export async function listFuneralContacts(funeralId: string) {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { data, error } = await supabase
+    .from("funeral_contacts")
+    .select(
+      `
+      *,
+      client:client_id (
+        preferred_name,
+        last_name,
+        phone_number,
+        email
+      )
+    `
+    )
+    .eq("funeral_id", funeralId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  return data || [];
+}

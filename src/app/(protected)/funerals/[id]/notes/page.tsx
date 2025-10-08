@@ -67,6 +67,11 @@ export default function FuneralNotesPage({
             actions={searchActions()}
             entityTypes={["funeral", "note", "contact"]}
             sticky
+            aiContext={{
+              page: "notes",
+              funeralId: id,
+              scope: "manage",
+            }}
           />
           <Notes funeralId={id} />
         </div>

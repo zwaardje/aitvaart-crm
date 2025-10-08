@@ -82,6 +82,11 @@ function ScenarioContent({ funeralId }: ScenarioContentProps) {
             actions={searchActions()}
             entityTypes={["funeral", "note", "contact"]}
             sticky
+            aiContext={{
+              page: "scenarios",
+              funeralId: funeralId,
+              scope: "manage",
+            }}
           />
 
           {scenarios && scenarios.length > 0 && (

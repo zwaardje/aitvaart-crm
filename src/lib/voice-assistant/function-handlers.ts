@@ -3,8 +3,17 @@ import { FuneralContext } from "./database";
 import {
   createClient,
   addFuneralNote,
+  updateFuneralNote,
+  deleteFuneralNote,
+  listFuneralNotes,
   addFuneralCost,
+  updateFuneralCost,
+  deleteFuneralCost,
+  listFuneralCosts,
   addFuneralContact,
+  updateFuneralContact,
+  deleteFuneralContact,
+  listFuneralContacts,
   searchFuneralByName,
   getFuneralContext,
 } from "./database";
@@ -492,5 +501,275 @@ export async function handleGetFuneralInfoFunction(
     message: infoMessage,
     action: "funeral_info",
     data: funeralData,
+  });
+}
+
+/**
+ * Handle function-based note update
+ */
+export async function handleUpdateNoteFunction(
+  args: any,
+  funeralData: FuneralContext
+) {
+  const { noteId, content, title, is_important } = args;
+
+  if (!noteId) {
+    throw new Error("Note ID is required for updating a note");
+  }
+
+  const updateData: any = {};
+  if (content !== undefined) updateData.content = content;
+  if (title !== undefined) updateData.title = title;
+  if (is_important !== undefined) updateData.is_important = is_important;
+
+  if (Object.keys(updateData).length === 0) {
+    throw new Error("At least one field must be provided for update");
+  }
+
+  const data = await updateFuneralNote(noteId, updateData);
+  const deceasedName = getDeceasedName(funeralData.deceased);
+
+  return NextResponse.json({
+    success: true,
+    message: `Notitie bijgewerkt voor ${deceasedName}`,
+    action: "note_updated",
+    data,
+  });
+}
+
+/**
+ * Handle function-based note deletion
+ */
+export async function handleDeleteNoteFunction(
+  args: any,
+  funeralData: FuneralContext
+) {
+  const { noteId } = args;
+
+  if (!noteId) {
+    throw new Error("Note ID is required for deleting a note");
+  }
+
+  await deleteFuneralNote(noteId);
+  const deceasedName = getDeceasedName(funeralData.deceased);
+
+  return NextResponse.json({
+    success: true,
+    message: `Notitie verwijderd voor ${deceasedName}`,
+    action: "note_deleted",
+  });
+}
+
+/**
+ * Handle function-based notes listing
+ */
+export async function handleListNotesFunction(
+  args: any,
+  funeralData: FuneralContext
+) {
+  const { important_only = false } = args;
+
+  const notes = await listFuneralNotes(funeralData.id, important_only);
+  const deceasedName = getDeceasedName(funeralData.deceased);
+
+  let message = `Notities voor ${deceasedName}:\n\n`;
+  if (notes.length === 0) {
+    message += "Geen notities gevonden.";
+  } else {
+    notes.forEach((note: any, index: number) => {
+      message += `${index + 1}. ${note.title || "Zonder titel"}\n`;
+      message += `   ${note.content}\n`;
+      if (note.is_important) message += `   ⭐ Belangrijk\n`;
+      message += `   (ID: ${note.id})\n\n`;
+    });
+  }
+
+  return NextResponse.json({
+    success: true,
+    message,
+    action: "notes_listed",
+    data: notes,
+  });
+}
+
+/**
+ * Handle function-based cost update
+ */
+export async function handleUpdateCostFunction(
+  args: any,
+  funeralData: FuneralContext
+) {
+  const { costId, amount, description } = args;
+
+  if (!costId) {
+    throw new Error("Cost ID is required for updating costs");
+  }
+
+  const updateData: any = {};
+  if (amount !== undefined) updateData.amount = amount;
+  if (description !== undefined) updateData.description = description;
+
+  if (Object.keys(updateData).length === 0) {
+    throw new Error("At least one field must be provided for update");
+  }
+
+  const data = await updateFuneralCost(costId, updateData);
+  const deceasedName = getDeceasedName(funeralData.deceased);
+
+  return NextResponse.json({
+    success: true,
+    message: `Kosten bijgewerkt voor ${deceasedName}`,
+    action: "cost_updated",
+    data,
+  });
+}
+
+/**
+ * Handle function-based cost deletion
+ */
+export async function handleDeleteCostFunction(
+  args: any,
+  funeralData: FuneralContext
+) {
+  const { costId } = args;
+
+  if (!costId) {
+    throw new Error("Cost ID is required for deleting costs");
+  }
+
+  await deleteFuneralCost(costId);
+  const deceasedName = getDeceasedName(funeralData.deceased);
+
+  return NextResponse.json({
+    success: true,
+    message: `Kosten verwijderd voor ${deceasedName}`,
+    action: "cost_deleted",
+  });
+}
+
+/**
+ * Handle function-based costs listing
+ */
+export async function handleListCostsFunction(
+  args: any,
+  funeralData: FuneralContext
+) {
+  const costs = await listFuneralCosts(funeralData.id);
+  const deceasedName = getDeceasedName(funeralData.deceased);
+
+  let message = `Kosten voor ${deceasedName}:\n\n`;
+  if (costs.length === 0) {
+    message += "Geen kosten gevonden.";
+  } else {
+    let total = 0;
+    costs.forEach((cost: any, index: number) => {
+      message += `${index + 1}. €${cost.amount} - ${cost.description}\n`;
+      message += `   (ID: ${cost.id})\n`;
+      total += parseFloat(cost.amount);
+    });
+    message += `\nTotaal: €${total.toFixed(2)}`;
+  }
+
+  return NextResponse.json({
+    success: true,
+    message,
+    action: "costs_listed",
+    data: costs,
+  });
+}
+
+/**
+ * Handle function-based contact update
+ */
+export async function handleUpdateContactFunction(
+  args: any,
+  funeralData: FuneralContext
+) {
+  const { contactId, name, phone, email, relationship } = args;
+
+  if (!contactId) {
+    throw new Error("Contact ID is required for updating a contact");
+  }
+
+  const updateData: any = {};
+  if (relationship !== undefined) updateData.relation = relationship;
+
+  // Build notes field if phone or email changed
+  if (phone !== undefined || email !== undefined) {
+    updateData.notes = `Telefoon: ${phone || "N/A"}, Email: ${email || "N/A"}`;
+  }
+
+  if (Object.keys(updateData).length === 0) {
+    throw new Error("At least one field must be provided for update");
+  }
+
+  const data = await updateFuneralContact(contactId, updateData);
+  const deceasedName = getDeceasedName(funeralData.deceased);
+
+  return NextResponse.json({
+    success: true,
+    message: `Contact bijgewerkt voor ${deceasedName}`,
+    action: "contact_updated",
+    data,
+  });
+}
+
+/**
+ * Handle function-based contact deletion
+ */
+export async function handleDeleteContactFunction(
+  args: any,
+  funeralData: FuneralContext
+) {
+  const { contactId } = args;
+
+  if (!contactId) {
+    throw new Error("Contact ID is required for deleting a contact");
+  }
+
+  await deleteFuneralContact(contactId);
+  const deceasedName = getDeceasedName(funeralData.deceased);
+
+  return NextResponse.json({
+    success: true,
+    message: `Contact verwijderd voor ${deceasedName}`,
+    action: "contact_deleted",
+  });
+}
+
+/**
+ * Handle function-based contacts listing
+ */
+export async function handleListContactsFunction(
+  args: any,
+  funeralData: FuneralContext
+) {
+  const contacts = await listFuneralContacts(funeralData.id);
+  const deceasedName = getDeceasedName(funeralData.deceased);
+
+  let message = `Contacten voor ${deceasedName}:\n\n`;
+  if (contacts.length === 0) {
+    message += "Geen contacten gevonden.";
+  } else {
+    contacts.forEach((contact: any, index: number) => {
+      const clientName = contact.client?.preferred_name || "Onbekend";
+      message += `${index + 1}. ${clientName}`;
+      if (contact.client?.last_name) message += ` ${contact.client.last_name}`;
+      message += `\n`;
+      message += `   Relatie: ${contact.relation}\n`;
+      if (contact.client?.phone_number)
+        message += `   Telefoon: ${contact.client.phone_number}\n`;
+      if (contact.client?.email)
+        message += `   Email: ${contact.client.email}\n`;
+      if (contact.notes) message += `   Notities: ${contact.notes}\n`;
+      message += `   (ID: ${contact.id})\n\n`;
+    });
+  }
+
+  return NextResponse.json({
+    success: true,
+    message,
+    action: "contacts_listed",
+    data: contacts,
   });
 }
