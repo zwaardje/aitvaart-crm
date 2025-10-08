@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { AIContextMetadata } from "@/types/ai-context";
 import { Spinner } from "@/components/ui/spinner/Spinner";
+import { useAuth } from "@/hooks/useAuth";
 import {
   StreamVideo,
   StreamVideoClient,
@@ -34,6 +35,8 @@ export function ContextAwareVoiceAssistant({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasAI, setHasAI] = useState(false);
+
+  const { user } = useAuth();
 
   // Initialize Stream client with context
   const initializeClient = useCallback(async () => {
@@ -87,8 +90,8 @@ export function ContextAwareVoiceAssistant({
       const streamClient = StreamVideoClient.getOrCreateInstance({
         apiKey: result.apiKey,
         user: {
-          id: "user",
-          name: "User",
+          id: user?.id || "user",
+          name: user?.email || "User",
         },
         token: result.token,
       });

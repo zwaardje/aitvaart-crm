@@ -11,7 +11,8 @@ export type AIPageContext =
   | "contacts"
   | "scenarios"
   | "documents"
-  | "general";
+  | "general"
+  | "funerals";
 
 /**
  * Scope defines what actions are available in the current context
@@ -30,7 +31,7 @@ export interface AIContextMetadata {
   page: AIPageContext;
 
   /** The funeral ID for context */
-  funeralId: string;
+  funeralId?: string;
 
   /** Optional: specific entity being worked on (e.g., specific note ID) */
   entityId?: string;

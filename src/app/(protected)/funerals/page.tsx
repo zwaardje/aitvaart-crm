@@ -40,6 +40,11 @@ export default function FuneralsPage() {
           onResultsChange={() => {}}
           actions={searchActions()}
           entityTypes={["funeral", "note", "contact"]}
+          sticky
+          aiContext={{
+            page: "funerals",
+            scope: "manage",
+          }}
         />
         <Funerals filters={{}} />
       </div>

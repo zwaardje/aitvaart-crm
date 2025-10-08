@@ -76,8 +76,13 @@ export default function FuneralDetailsPage({
           <SmartSearchBar
             placeholder="Zoek in dashboard..."
             actions={searchActions()}
-            entityTypes={["funeral", "note", "contact"]}
+            entityTypes={["funeral", "contact"]}
             sticky
+            aiContext={{
+              page: "general",
+              funeralId: id,
+              scope: "manage",
+            }}
           />
           <DeceasedCard deceased={funeral.deceased as any} />
 
