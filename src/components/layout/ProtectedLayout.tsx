@@ -49,7 +49,7 @@ export function ProtectedLayout({
         onMenuClick={onMenuClick}
         logo={<Logo />}
       />
-      <div className="pb-16 pt-14 md:pt-0">
+      <div className="">
         {requireOnboarding ? (
           <OnboardingGuard>{children}</OnboardingGuard>
         ) : (
