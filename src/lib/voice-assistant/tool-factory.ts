@@ -19,6 +19,7 @@ import {
   handleListContactsFunction,
   handleGetFuneralInfoFunction,
   handleSearchFuneralByNameFunction,
+  handleCreateFuneralFunction,
 } from "./function-handlers";
 
 /**
@@ -39,6 +40,9 @@ export class AIToolFactory {
 
     // Page-specific tools
     switch (metadata.page) {
+      case "funerals":
+        tools.push(...this.generateFuneralsTools(metadata, funeralContext));
+        break;
       case "notes":
         tools.push(...this.generateNotesTools(metadata, funeralContext));
         break;
@@ -61,6 +65,54 @@ export class AIToolFactory {
 
     // Always include search capability
     tools.push(this.createSearchFuneralTool());
+
+    return tools;
+  }
+
+  /**
+   * Generate tools for funerals page
+   */
+  private generateFuneralsTools(
+    metadata: AIContextMetadata,
+    funeralContext: FuneralContext
+  ): AIToolHandler[] {
+    const tools: AIToolHandler[] = [];
+
+    // If no mode is selected yet, don't add specific tools
+    // The set_funeral_mode tool is added in stream-client.ts
+    if (!metadata.funeralMode) {
+      return tools;
+    }
+
+    // Mode-specific tools
+    switch (metadata.funeralMode) {
+      case "create_new":
+        // Tools for creating a new funeral
+        tools.push(this.createCreateFuneralTool(funeralContext));
+        tools.push(this.createAddNoteTool(funeralContext));
+        tools.push(this.createAddCostTool(funeralContext));
+        tools.push(this.createAddContactTool(funeralContext));
+        break;
+
+      case "edit_existing":
+        // Tools for editing existing funeral
+        tools.push(this.createAddNoteTool(funeralContext));
+        tools.push(this.createListNotesTool(funeralContext));
+        tools.push(this.createAddCostTool(funeralContext));
+        tools.push(this.createListCostsTool(funeralContext));
+        tools.push(this.createAddContactTool(funeralContext));
+        tools.push(this.createListContactsTool(funeralContext));
+        // Add update tools as needed
+        break;
+
+      case "wishes_listener":
+        // Tools for wishes conversation - passive listening with data capture
+        tools.push(this.createAddNoteTool(funeralContext));
+        tools.push(this.createAddCostTool(funeralContext));
+        tools.push(this.createAddContactTool(funeralContext));
+        // Add scenario/wishes tools
+        break;
+    }
 
     return tools;
   }
@@ -733,6 +785,113 @@ export class AIToolFactory {
       },
       handler: async () => {
         return await handleGetFuneralInfoFunction(funeralContext);
+      },
+    };
+  }
+
+  private createCreateFuneralTool(
+    funeralContext: FuneralContext
+  ): AIToolHandler {
+    return {
+      name: "create_funeral",
+      description:
+        "Maak een complete nieuwe uitvaart aan met overledene, opdrachtgever en uitvaart gegevens. Gebruik deze functie nadat je alle benodigde gegevens hebt verzameld en de gebruiker heeft bevestigd.",
+      parameters: {
+        type: "object",
+        properties: {
+          deceased_first_names: {
+            type: "string",
+            description: "Voornamen van de overledene (verplicht)",
+          },
+          deceased_last_name: {
+            type: "string",
+            description: "Achternaam van de overledene (verplicht)",
+          },
+          deceased_preferred_name: {
+            type: "string",
+            description: "Voorkeursnaam/roepnaam van de overledene (optioneel)",
+          },
+          deceased_date_of_birth: {
+            type: "string",
+            description:
+              "Geboortedatum overledene in formaat YYYY-MM-DD (optioneel)",
+          },
+          deceased_place_of_birth: {
+            type: "string",
+            description: "Geboorteplaats overledene (optioneel)",
+          },
+          deceased_date_of_death: {
+            type: "string",
+            description: "Overlijdensdatum in formaat YYYY-MM-DD (optioneel)",
+          },
+          deceased_gender: {
+            type: "string",
+            description: "Geslacht: 'male', 'female', of 'other' (optioneel)",
+          },
+          deceased_social_security_number: {
+            type: "string",
+            description: "BSN nummer overledene (optioneel)",
+          },
+          client_preferred_name: {
+            type: "string",
+            description: "Voornaam opdrachtgever (verplicht)",
+          },
+          client_last_name: {
+            type: "string",
+            description: "Achternaam opdrachtgever (verplicht)",
+          },
+          client_phone_number: {
+            type: "string",
+            description: "Telefoonnummer opdrachtgever (verplicht)",
+          },
+          client_email: {
+            type: "string",
+            description: "E-mailadres opdrachtgever (optioneel)",
+          },
+          client_street: {
+            type: "string",
+            description: "Straatnaam opdrachtgever (optioneel)",
+          },
+          client_house_number: {
+            type: "string",
+            description: "Huisnummer opdrachtgever (optioneel)",
+          },
+          client_house_number_addition: {
+            type: "string",
+            description: "Huisnummer toevoeging (optioneel)",
+          },
+          client_postal_code: {
+            type: "string",
+            description: "Postcode opdrachtgever (optioneel)",
+          },
+          client_city: {
+            type: "string",
+            description: "Plaats opdrachtgever (optioneel)",
+          },
+          funeral_location: {
+            type: "string",
+            description: "Locatie van de uitvaart (optioneel)",
+          },
+          funeral_signing_date: {
+            type: "string",
+            description:
+              "Datum van tekenen opdracht in formaat YYYY-MM-DD (optioneel)",
+          },
+          funeral_director: {
+            type: "string",
+            description: "Naam van de uitvaartleider (optioneel)",
+          },
+        },
+        required: [
+          "deceased_first_names",
+          "deceased_last_name",
+          "client_preferred_name",
+          "client_last_name",
+          "client_phone_number",
+        ],
+      },
+      handler: async (args: any) => {
+        return await handleCreateFuneralFunction(args, funeralContext);
       },
     };
   }

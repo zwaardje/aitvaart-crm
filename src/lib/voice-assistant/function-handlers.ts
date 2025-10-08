@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { FuneralContext } from "./database";
 import {
   createClient,
+  createCompleteFuneral,
   addFuneralNote,
   updateFuneralNote,
   deleteFuneralNote,
@@ -772,4 +773,113 @@ export async function handleListContactsFunction(
     action: "contacts_listed",
     data: contacts,
   });
+}
+
+/**
+ * Handle create complete funeral function
+ * Creates deceased, client, and funeral in one operation
+ */
+export async function handleCreateFuneralFunction(
+  args: any,
+  context: FuneralContext
+) {
+  const {
+    deceased_first_names,
+    deceased_last_name,
+    deceased_preferred_name,
+    deceased_date_of_birth,
+    deceased_place_of_birth,
+    deceased_date_of_death,
+    deceased_gender,
+    deceased_social_security_number,
+    client_preferred_name,
+    client_last_name,
+    client_phone_number,
+    client_email,
+    client_street,
+    client_house_number,
+    client_house_number_addition,
+    client_postal_code,
+    client_city,
+    funeral_location,
+    funeral_signing_date,
+    funeral_director,
+  } = args;
+
+  // Validate required fields
+  if (!deceased_first_names || !deceased_last_name) {
+    return NextResponse.json({
+      success: false,
+      message:
+        "Overledene voor- en achternaam zijn verplicht. Vraag de gebruiker om deze gegevens.",
+    });
+  }
+
+  if (!client_preferred_name || !client_last_name || !client_phone_number) {
+    return NextResponse.json({
+      success: false,
+      message:
+        "Opdrachtgever voor- en achternaam en telefoonnummer zijn verplicht. Vraag de gebruiker om deze gegevens.",
+    });
+  }
+
+  try {
+    console.log("Creating complete funeral with data:", {
+      deceased: { deceased_first_names, deceased_last_name },
+      client: { client_preferred_name, client_last_name },
+    });
+
+    const funeralData = await createCompleteFuneral({
+      entrepreneur_id: context.entrepreneur_id,
+      deceased: {
+        first_names: deceased_first_names,
+        last_name: deceased_last_name,
+        preferred_name: deceased_preferred_name,
+        date_of_birth: deceased_date_of_birth,
+        place_of_birth: deceased_place_of_birth,
+        date_of_death: deceased_date_of_death,
+        gender: deceased_gender,
+        social_security_number: deceased_social_security_number,
+      },
+      client: {
+        preferred_name: client_preferred_name,
+        last_name: client_last_name,
+        phone_number: client_phone_number,
+        email: client_email,
+        street: client_street,
+        house_number: client_house_number,
+        house_number_addition: client_house_number_addition,
+        postal_code: client_postal_code,
+        city: client_city,
+      },
+      funeral: {
+        location: funeral_location,
+        signing_date: funeral_signing_date,
+        funeral_director: funeral_director,
+      },
+    });
+
+    const deceasedName = getDeceasedName(funeralData.deceased);
+    const clientName = getClientName(funeralData.client);
+
+    return NextResponse.json({
+      success: true,
+      message: `✅ Uitvaart succesvol aangemaakt voor ${deceasedName}. Opdrachtgever: ${clientName}. Uitvaart ID: ${funeralData.id}`,
+      action: "funeral_created",
+      data: {
+        funeral_id: funeralData.id,
+        deceased_name: deceasedName,
+        client_name: clientName,
+        location: funeralData.location,
+      },
+    });
+  } catch (error) {
+    console.error("Error creating funeral:", error);
+    return NextResponse.json({
+      success: false,
+      message: `Er is een fout opgetreden bij het aanmaken van de uitvaart: ${
+        error instanceof Error ? error.message : "Onbekende fout"
+      }`,
+    });
+  }
 }

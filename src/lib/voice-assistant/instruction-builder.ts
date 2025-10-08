@@ -1,9 +1,26 @@
 /**
  * AI Instruction Builder - Generates context-aware instructions for the AI
+ *
+ * This file orchestrates the instruction building process by importing
+ * modular instruction functions from the ./instructions directory.
  */
 
 import { AIContextMetadata } from "@/types/ai-context";
 import { FuneralContext } from "./database";
+
+// Import all instruction modules
+import {
+  getFuneralCreateNewInstructions,
+  getFuneralEditExistingInstructions,
+  getFuneralWishesListenerInstructions,
+  getFuneralModeSelectionInstructions,
+  getNotesContextInstructions,
+  getCostsContextInstructions,
+  getContactsContextInstructions,
+  getScenariosContextInstructions,
+  getDocumentsContextInstructions,
+  getGeneralContextInstructions,
+} from "./instructions";
 
 /**
  * Main Instruction Builder class
@@ -73,23 +90,26 @@ Wanneer je data toevoegt, bevestig dit altijd met een korte samenvatting.`;
       "Onbekend";
 
     switch (metadata.page) {
+      case "funerals":
+        return this.getFuneralsContextInstructions(metadata, context);
+
       case "notes":
-        return this.getNotesContextInstructions(deceasedName, metadata);
+        return getNotesContextInstructions(deceasedName, metadata);
 
       case "costs":
-        return this.getCostsContextInstructions(deceasedName, metadata);
+        return getCostsContextInstructions(deceasedName, metadata);
 
       case "contacts":
-        return this.getContactsContextInstructions(deceasedName, metadata);
+        return getContactsContextInstructions(deceasedName, metadata);
 
       case "scenarios":
-        return this.getScenariosContextInstructions(deceasedName, metadata);
+        return getScenariosContextInstructions(deceasedName, metadata);
 
       case "documents":
-        return this.getDocumentsContextInstructions(deceasedName, metadata);
+        return getDocumentsContextInstructions(deceasedName, metadata);
 
       case "general":
-        return this.getGeneralContextInstructions(deceasedName, metadata);
+        return getGeneralContextInstructions(deceasedName, metadata);
 
       default:
         return "";
@@ -97,149 +117,27 @@ Wanneer je data toevoegt, bevestig dit altijd met een korte samenvatting.`;
   }
 
   /**
-   * Notes context instructions
+   * Funerals page context instructions with mode support
    */
-  private getNotesContextInstructions(
-    deceasedName: string,
-    metadata: AIContextMetadata
+  private getFuneralsContextInstructions(
+    metadata: AIContextMetadata,
+    context: FuneralContext
   ): string {
-    let instructions = `HUIDIGE PAGINA: NOTITIES
-Je bevindt je op de notities pagina van de uitvaart voor ${deceasedName}.
+    // Determine which mode is selected
+    switch (metadata.funeralMode) {
+      case "create_new":
+        return getFuneralCreateNewInstructions();
 
-FOCUS:
-Je belangrijkste taak is het helpen met notities voor deze uitvaart.`;
+      case "edit_existing":
+        return getFuneralEditExistingInstructions(context);
 
-    if (metadata.entityId) {
-      instructions += `\n\nSPECIFIEKE NOTITIE:
-Je werkt momenteel met een specifieke notitie (ID: ${metadata.entityId}).
-De gebruiker kan deze notitie bewerken of verwijderen.`;
+      case "wishes_listener":
+        return getFuneralWishesListenerInstructions(context);
+
+      default:
+        // Fallback: no mode selected - show mode selection
+        return getFuneralModeSelectionInstructions();
     }
-
-    instructions += `\n\nBEST PRACTICES:
-- Houd notities kort en to-the-point
-- Markeer belangrijke notities met de is_important flag
-- Geef elke notitie een duidelijke titel
-- Verwijs naar de overledene bij naam in je bevestigingen`;
-
-    return instructions;
-  }
-
-  /**
-   * Costs context instructions
-   */
-  private getCostsContextInstructions(
-    deceasedName: string,
-    metadata: AIContextMetadata
-  ): string {
-    let instructions = `HUIDIGE PAGINA: KOSTEN
-Je bevindt je op de kostenpagina van de uitvaart voor ${deceasedName}.
-
-FOCUS:
-Je belangrijkste taak is het helpen met kostenbeheer voor deze uitvaart.`;
-
-    if (metadata.entityId) {
-      instructions += `\n\nSPECIFIEKE KOSTEN:
-Je werkt momenteel met specifieke kosten (ID: ${metadata.entityId}).
-De gebruiker kan deze kosten bewerken of verwijderen.`;
-    }
-
-    instructions += `\n\nBEST PRACTICES:
-- Bedragen altijd in euro's
-- Geef duidelijke beschrijvingen voor elk kostenitem
-- Controleer of bedragen logisch zijn
-- Bied aan om totalen te berekenen wanneer nuttig
-- Verwijs naar de overledene bij naam in je bevestigingen`;
-
-    return instructions;
-  }
-
-  /**
-   * Contacts context instructions
-   */
-  private getContactsContextInstructions(
-    deceasedName: string,
-    metadata: AIContextMetadata
-  ): string {
-    let instructions = `HUIDIGE PAGINA: CONTACTEN
-Je bevindt je op de contactenpagina van de uitvaart voor ${deceasedName}.
-
-FOCUS:
-Je belangrijkste taak is het helpen met nabestaanden en contactpersonen.`;
-
-    if (metadata.entityId) {
-      instructions += `\n\nSPECIFIEK CONTACT:
-Je werkt momenteel met een specifiek contact (ID: ${metadata.entityId}).
-De gebruiker kan dit contact bewerken of verwijderen.`;
-    }
-
-    instructions += `\n\nBEST PRACTICES:
-- Vraag altijd naar de relatie tot de overledene
-- Leg contactgegevens (telefoon, email) vast wanneer beschikbaar
-- Wees respectvol bij het omgaan met familie en nabestaanden
-- Verwijs naar de overledene bij naam in je bevestigingen`;
-
-    return instructions;
-  }
-
-  /**
-   * Scenarios context instructions
-   */
-  private getScenariosContextInstructions(
-    deceasedName: string,
-    metadata: AIContextMetadata
-  ): string {
-    return `HUIDIGE PAGINA: SCENARIO'S
-Je bevindt je op de scenario's pagina van de uitvaart voor ${deceasedName}.
-
-FOCUS:
-Je helpt met het vastleggen en beheren van verschillende scenario's en wensen voor de uitvaart.
-
-BEST PRACTICES:
-- Leg scenario's en wensen gedetailleerd vast
-- Denk mee over praktische haalbaarheid
-- Verwijs naar de overledene bij naam in je bevestigingen`;
-  }
-
-  /**
-   * Documents context instructions
-   */
-  private getDocumentsContextInstructions(
-    deceasedName: string,
-    metadata: AIContextMetadata
-  ): string {
-    return `HUIDIGE PAGINA: DOCUMENTEN
-Je bevindt je op de documentenpagina van de uitvaart voor ${deceasedName}.
-
-FOCUS:
-Je helpt met het organiseren en tracken van documenten voor deze uitvaart.
-
-BEST PRACTICES:
-- Leg documenttype en beschrijving duidelijk vast
-- Help bij het categoriseren van documenten
-- Verwijs naar de overledene bij naam in je bevestigingen`;
-  }
-
-  /**
-   * General context instructions
-   */
-  private getGeneralContextInstructions(
-    deceasedName: string,
-    metadata: AIContextMetadata
-  ): string {
-    return `HUIDIGE PAGINA: ALGEMEEN
-Je bent in een algemene context voor de uitvaart van ${deceasedName}.
-
-FOCUS:
-Je kunt helpen met verschillende taken voor deze uitvaart, inclusief:
-- Notities toevoegen
-- Kosten registreren
-- Contacten beheren
-- Algemene vragen beantwoorden
-
-BEST PRACTICES:
-- Vraag om verduidelijking als de gebruiker niet specifiek is
-- Bied suggesties voor relevante acties
-- Verwijs naar de overledene bij naam in je bevestigingen`;
   }
 
   /**

@@ -296,6 +296,152 @@ export async function createClient(clientData: {
 }
 
 /**
+ * Create a new deceased person in the database
+ */
+export async function createDeceased(deceasedData: {
+  entrepreneur_id: string;
+  first_names: string;
+  last_name: string;
+  preferred_name?: string;
+  date_of_birth?: string;
+  place_of_birth?: string;
+  date_of_death?: string;
+  gender?: string;
+  social_security_number?: string;
+}) {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { data, error } = await supabase
+    .from("deceased")
+    .insert({
+      ...deceasedData,
+      created_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Deceased creation error: ${error.message}`);
+  }
+
+  return data;
+}
+
+/**
+ * Create a complete funeral (deceased + client + funeral) in one operation
+ * This is used by the AI voice assistant to create new funerals from speech
+ */
+export async function createCompleteFuneral(params: {
+  entrepreneur_id: string;
+  deceased: {
+    first_names: string;
+    last_name: string;
+    preferred_name?: string;
+    date_of_birth?: string;
+    place_of_birth?: string;
+    date_of_death?: string;
+    gender?: string;
+    social_security_number?: string;
+  };
+  client: {
+    preferred_name: string;
+    last_name: string;
+    phone_number?: string;
+    email?: string;
+    street?: string;
+    house_number?: string;
+    house_number_addition?: string;
+    postal_code?: string;
+    city?: string;
+  };
+  funeral?: {
+    location?: string;
+    signing_date?: string;
+    funeral_director?: string;
+  };
+}): Promise<FuneralContext> {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  try {
+    // Step 1: Create deceased
+    const deceasedData = await createDeceased({
+      entrepreneur_id: params.entrepreneur_id,
+      ...params.deceased,
+    });
+
+    // Step 2: Create client
+    const clientData = await createClient({
+      entrepreneur_id: params.entrepreneur_id,
+      ...params.client,
+    });
+
+    // Step 3: Create funeral linking both
+    const { data: funeralData, error: funeralError } = await supabase
+      .from("funerals")
+      .insert({
+        entrepreneur_id: params.entrepreneur_id,
+        deceased_id: deceasedData.id,
+        client_id: clientData.id,
+        location: params.funeral?.location,
+        signing_date: params.funeral?.signing_date,
+        funeral_director: params.funeral?.funeral_director,
+        status: "planning",
+        created_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (funeralError) {
+      throw new Error(`Funeral creation error: ${funeralError.message}`);
+    }
+
+    // Return complete funeral context
+    return {
+      id: funeralData.id,
+      entrepreneur_id: funeralData.entrepreneur_id,
+      deceased_id: funeralData.deceased_id,
+      client_id: funeralData.client_id,
+      location: funeralData.location || undefined,
+      signing_date: funeralData.signing_date || undefined,
+      funeral_director: funeralData.funeral_director || undefined,
+      created_at: funeralData.created_at!,
+      updated_at: funeralData.updated_at!,
+      deceased: {
+        first_names: deceasedData.first_names,
+        preferred_name: deceasedData.preferred_name || undefined,
+        last_name: deceasedData.last_name,
+        date_of_birth: deceasedData.date_of_birth || undefined,
+        date_of_death: deceasedData.date_of_death || undefined,
+        place_of_birth: deceasedData.place_of_birth || undefined,
+        gender: deceasedData.gender || undefined,
+        social_security_number:
+          deceasedData.social_security_number || undefined,
+      },
+      client: {
+        preferred_name: clientData.preferred_name,
+        last_name: clientData.last_name,
+        phone_number: clientData.phone_number || undefined,
+        email: clientData.email || undefined,
+        street: clientData.street || undefined,
+        house_number: clientData.house_number || undefined,
+        house_number_addition: clientData.house_number_addition || undefined,
+        postal_code: clientData.postal_code || undefined,
+        city: clientData.city || undefined,
+      },
+    };
+  } catch (error) {
+    console.error("Error creating complete funeral:", error);
+    throw error;
+  }
+}
+
+/**
  * Add a funeral note
  */
 export async function addFuneralNote(noteData: {

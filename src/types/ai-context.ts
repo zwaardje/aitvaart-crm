@@ -24,6 +24,15 @@ export type AIScope =
   | "manage"; // Full CRUD access
 
 /**
+ * Funeral conversation modes
+ * Determines the AI's behavior and instructions on the funerals page
+ */
+export type FuneralMode =
+  | "create_new" // Mode 1: Nieuwe uitvaart aanmaken via spraak
+  | "edit_existing" // Mode 2: Bestaande uitvaart bewerken
+  | "wishes_listener"; // Mode 3: Meeluisteren tijdens wensengesprek
+
+/**
  * Complete metadata about the current AI context
  */
 export interface AIContextMetadata {
@@ -38,6 +47,9 @@ export interface AIContextMetadata {
 
   /** What actions are allowed in this context */
   scope: AIScope;
+
+  /** Funeral-specific conversation mode (only applicable when page === 'funerals') */
+  funeralMode?: FuneralMode;
 
   /** Optional: additional context data */
   metadata?: {

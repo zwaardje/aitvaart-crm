@@ -175,6 +175,81 @@ async function setupContextAwareTools(
     tools.map((t) => t.name)
   );
 
+  // Add special set_funeral_mode tool for funerals page without mode
+  if (aiContext.page === "funerals" && !aiContext.funeralMode) {
+    console.log("Adding set_funeral_mode tool for mode selection");
+
+    realtimeClient.addTool(
+      {
+        name: "set_funeral_mode",
+        description:
+          "Zet de actieve modus voor de funeral voice assistant. Roep deze functie aan zodra je weet welke modus de gebruiker wil gebruiken.",
+        parameters: {
+          type: "object",
+          properties: {
+            mode: {
+              type: "string",
+              enum: ["create_new", "edit_existing", "wishes_listener"],
+              description:
+                "De gekozen modus: 'create_new' voor nieuwe uitvaart, 'edit_existing' voor bewerken, 'wishes_listener' voor wensengesprek",
+            },
+          },
+          required: ["mode"],
+        },
+      },
+      async (args: { mode: string }) => {
+        console.log("set_funeral_mode called with mode:", args.mode);
+
+        try {
+          // Update AI context with selected mode
+          const updatedAiContext = {
+            ...aiContext,
+            funeralMode: args.mode as
+              | "create_new"
+              | "edit_existing"
+              | "wishes_listener",
+          };
+
+          // Store updated context
+          clientContexts.set(realtimeClient, {
+            funeralId: funeralContext.id,
+            context: funeralContext,
+            aiContext: updatedAiContext,
+          });
+
+          // Build new instructions with the selected mode
+          const newInstructions = instructionBuilder.build(
+            updatedAiContext,
+            funeralContext
+          );
+
+          console.log("Updating session with new mode instructions...");
+
+          // Update the session with new instructions
+          await realtimeClient.updateSession({
+            instructions: newInstructions,
+          });
+
+          console.log(`Mode switched to: ${args.mode}`);
+
+          return {
+            success: true,
+            message: `Modus succesvol gezet naar: ${args.mode}`,
+            mode: args.mode,
+          };
+        } catch (error) {
+          console.error("Error setting funeral mode:", error);
+          return {
+            success: false,
+            message: `Fout bij instellen van modus: ${
+              error instanceof Error ? error.message : "Unknown error"
+            }`,
+          };
+        }
+      }
+    );
+  }
+
   // Register each tool with the realtime client
   for (const tool of tools) {
     console.log(`Registering tool: ${tool.name}`);

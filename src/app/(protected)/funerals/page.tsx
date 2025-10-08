@@ -1,14 +1,13 @@
 "use client";
 import { Content } from "@/components/layout";
 import { Funerals } from "@/components/funerals/Funerals";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
   SmartSearchBarAction,
   SmartSearchBar,
 } from "@/components/ui/SmartSearchBar";
 import { RiSettings3Line } from "@remixicon/react";
 import { IntakeForm } from "@/components/forms/IntakeForm";
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -32,9 +31,10 @@ export default function FuneralsPage() {
     ],
     []
   );
+
   return (
     <Content>
-      <div className="p-2  w-full">
+      <div className="p-2 w-full">
         <SmartSearchBar
           placeholder="Zoek in uitvaarten..."
           onResultsChange={() => {}}
@@ -44,10 +44,14 @@ export default function FuneralsPage() {
           aiContext={{
             page: "funerals",
             scope: "manage",
+            // funeralMode wordt niet gezet - AI zal zelf vragen welke modus
           }}
         />
+
         <Funerals filters={{}} />
       </div>
+
+      {/* Nieuwe uitvaart dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
