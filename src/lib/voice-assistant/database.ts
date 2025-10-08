@@ -3,6 +3,7 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 export interface FuneralContext {
   id: string;
   entrepreneur_id: string;
+  organization_id?: string;
   deceased_id: string;
   client_id: string;
   location?: string;
@@ -196,6 +197,7 @@ export async function getFuneralContext(
         `
         id,
         entrepreneur_id,
+        organization_id,
         deceased_id,
         client_id,
         location,
@@ -269,10 +271,19 @@ export async function getFuneralContext(
  */
 export async function createClient(clientData: {
   entrepreneur_id: string;
+  organization_id?: string;
   preferred_name: string;
-  last_name?: string;
+  last_name: string; // REQUIRED in database schema
   phone_number?: string;
   email?: string;
+  gender?: string;
+  date_of_birth?: string;
+  place_of_birth?: string;
+  street?: string;
+  house_number?: string;
+  house_number_addition?: string;
+  postal_code?: string;
+  city?: string;
 }) {
   const supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -300,6 +311,7 @@ export async function createClient(clientData: {
  */
 export async function createDeceased(deceasedData: {
   entrepreneur_id: string;
+  organization_id?: string;
   first_names: string;
   last_name: string;
   preferred_name?: string;
@@ -336,6 +348,7 @@ export async function createDeceased(deceasedData: {
  */
 export async function createCompleteFuneral(params: {
   entrepreneur_id: string;
+  organization_id?: string;
   deceased: {
     first_names: string;
     last_name: string;
@@ -370,41 +383,55 @@ export async function createCompleteFuneral(params: {
 
   try {
     // Step 1: Create deceased
+    console.log("Step 1: Creating deceased with data:", params.deceased);
     const deceasedData = await createDeceased({
       entrepreneur_id: params.entrepreneur_id,
+      organization_id: params.organization_id,
       ...params.deceased,
     });
+    console.log("Deceased created successfully:", deceasedData.id);
 
     // Step 2: Create client
+    console.log("Step 2: Creating client with data:", params.client);
     const clientData = await createClient({
       entrepreneur_id: params.entrepreneur_id,
+      organization_id: params.organization_id,
       ...params.client,
     });
+    console.log("Client created successfully:", clientData.id);
 
     // Step 3: Create funeral linking both
+    console.log("Step 3: Creating funeral record");
+    const now = new Date().toISOString();
     const { data: funeralData, error: funeralError } = await supabase
       .from("funerals")
       .insert({
         entrepreneur_id: params.entrepreneur_id,
+        organization_id: params.organization_id || null,
         deceased_id: deceasedData.id,
         client_id: clientData.id,
         location: params.funeral?.location,
         signing_date: params.funeral?.signing_date,
         funeral_director: params.funeral?.funeral_director,
         status: "planning",
-        created_at: new Date().toISOString(),
+        created_at: now,
+        updated_at: now,
       })
       .select()
       .single();
 
     if (funeralError) {
+      console.error("Funeral creation failed:", funeralError);
       throw new Error(`Funeral creation error: ${funeralError.message}`);
     }
+
+    console.log("Funeral created successfully:", funeralData.id);
 
     // Return complete funeral context
     return {
       id: funeralData.id,
       entrepreneur_id: funeralData.entrepreneur_id,
+      organization_id: funeralData.organization_id || undefined,
       deceased_id: funeralData.deceased_id,
       client_id: funeralData.client_id,
       location: funeralData.location || undefined,
@@ -452,32 +479,47 @@ export async function addFuneralNote(noteData: {
   is_important?: boolean;
   created_by: string;
 }) {
+  console.log("addFuneralNote called with:", {
+    funeral_id: noteData.funeral_id,
+    entrepreneur_id: noteData.entrepreneur_id,
+    title: noteData.title,
+    content_length: noteData.content?.length,
+  });
+
   const supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
+  const insertData = {
+    ...noteData,
+    created_at: new Date().toISOString(),
+  };
+
+  console.log("Inserting note into database:", insertData);
+
   const { data, error } = await supabase
     .from("funeral_notes")
-    .insert({
-      ...noteData,
-      created_at: new Date().toISOString(),
-    })
+    .insert(insertData)
     .select();
 
   if (error) {
+    console.error("Database error adding note:", error);
     throw new Error(`Database error: ${error.message}`);
   }
 
+  console.log("Note inserted successfully:", data[0]);
   return data[0];
 }
 
 /**
- * Add funeral costs
+ * Add funeral costs via funeral_suppliers
+ * Uses a special "Voice Assistant" supplier for costs added via voice
  */
 export async function addFuneralCost(costData: {
   funeral_id: string;
   entrepreneur_id: string;
+  organization_id?: string;
   amount: number;
   description: string;
 }) {
@@ -486,10 +528,36 @@ export async function addFuneralCost(costData: {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
+  // Get or create the voice assistant supplier
+  const { data: supplierId, error: supplierError } = await supabase.rpc(
+    "get_or_create_voice_assistant_supplier",
+    {
+      p_entrepreneur_id: costData.entrepreneur_id,
+      p_organization_id: costData.organization_id || null,
+    }
+  );
+
+  if (supplierError || !supplierId) {
+    console.error("Error getting voice assistant supplier:", supplierError);
+    throw new Error(
+      `Could not get voice assistant supplier: ${supplierError?.message}`
+    );
+  }
+
+  console.log("Using voice assistant supplier:", supplierId);
+
+  // Insert into funeral_suppliers (the actual costs table)
   const { data, error } = await supabase
-    .from("funeral_costs")
+    .from("funeral_suppliers")
     .insert({
-      ...costData,
+      funeral_id: costData.funeral_id,
+      entrepreneur_id: costData.entrepreneur_id,
+      organization_id: costData.organization_id || null,
+      supplier_id: supplierId,
+      product_name: costData.description,
+      unit_price: costData.amount,
+      quantity: 1,
+      notes: "Toegevoegd via voice assistant",
       created_at: new Date().toISOString(),
     })
     .select();
@@ -507,24 +575,38 @@ export async function addFuneralCost(costData: {
 export async function addFuneralContact(contactData: {
   funeral_id: string;
   entrepreneur_id: string;
+  organization_id?: string;
   client_id: string;
   relation: string;
   notes?: string;
 }) {
+  console.log("addFuneralContact called with:", {
+    funeral_id: contactData.funeral_id,
+    client_id: contactData.client_id,
+    entrepreneur_id: contactData.entrepreneur_id,
+    organization_id: contactData.organization_id,
+    relation: contactData.relation,
+  });
+
   const supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
+  const insertData = {
+    ...contactData,
+    created_at: new Date().toISOString(),
+  };
+
+  console.log("Inserting funeral_contact link:", insertData);
+
   const { data, error } = await supabase
     .from("funeral_contacts")
-    .insert({
-      ...contactData,
-      created_at: new Date().toISOString(),
-    })
+    .insert(insertData)
     .select();
 
   if (error) {
+    console.error("Database error adding funeral_contact:", error);
     // Handle unique constraint violation (same client already exists for this funeral)
     if (error.code === "23505" && error.message.includes("unique")) {
       throw new Error("CONTACT_EXISTS");
@@ -532,6 +614,7 @@ export async function addFuneralContact(contactData: {
     throw new Error(`Database error: ${error.message}`);
   }
 
+  console.log("Funeral contact link created successfully:", data[0]);
   return data[0];
 }
 

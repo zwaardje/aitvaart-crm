@@ -230,12 +230,84 @@ async function setupContextAwareTools(
             instructions: newInstructions,
           });
 
-          console.log(`Mode switched to: ${args.mode}`);
+          // Re-register tools with the new mode context
+          console.log("Re-registering tools for new mode...");
+
+          // Remove old tools first
+          const toolsToRemove = [
+            "add_note",
+            "add_cost",
+            "add_contact",
+            "create_funeral",
+            "set_funeral_mode",
+            "list_notes",
+            "list_costs",
+            "list_contacts",
+            "update_note",
+            "update_cost",
+            "update_contact",
+            "delete_note",
+            "delete_cost",
+            "delete_contact",
+            "get_funeral_info",
+            "search_funeral_by_name",
+          ];
+
+          for (const toolName of toolsToRemove) {
+            try {
+              await realtimeClient.removeTool(toolName);
+              console.log(`Removed tool: ${toolName}`);
+            } catch (error) {
+              // Tool might not exist, continue
+            }
+          }
+
+          // Generate and register new tools for the selected mode
+          const newTools = await toolFactory.generateTools(
+            updatedAiContext,
+            funeralContext
+          );
+
+          console.log(
+            `Registering ${newTools.length} tools for mode ${args.mode}:`,
+            newTools.map((t) => t.name)
+          );
+
+          for (const tool of newTools) {
+            realtimeClient.addTool(
+              {
+                name: tool.name,
+                description: tool.description,
+                parameters: tool.parameters,
+              },
+              async (toolArgs: any) => {
+                console.log(`${tool.name} called with args:`, toolArgs);
+                try {
+                  const result = await tool.handler(toolArgs, funeralContext);
+                  console.log(`${tool.name} result:`, result);
+                  return result;
+                } catch (error) {
+                  console.error(`Error in ${tool.name}:`, error);
+                  return {
+                    success: false,
+                    message: `Fout bij ${tool.name}: ${
+                      error instanceof Error ? error.message : "Unknown error"
+                    }`,
+                  };
+                }
+              }
+            );
+          }
+
+          console.log(
+            `Mode switched to: ${args.mode} with ${newTools.length} tools registered`
+          );
 
           return {
             success: true,
-            message: `Modus succesvol gezet naar: ${args.mode}`,
+            message: `Modus succesvol gezet naar: ${args.mode}. Je kunt nu de tools voor deze modus gebruiken.`,
             mode: args.mode,
+            toolsRegistered: newTools.map((t) => t.name),
           };
         } catch (error) {
           console.error("Error setting funeral mode:", error);
@@ -354,6 +426,8 @@ export async function updateFuneralContext(
       "list_contacts",
       "get_funeral_info",
       "search_funeral_by_name",
+      "create_funeral",
+      "set_funeral_mode",
     ];
 
     for (const toolName of potentialToolNames) {

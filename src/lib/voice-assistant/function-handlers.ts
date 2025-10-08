@@ -260,6 +260,13 @@ export async function handleAddNoteFunction(
     throw new Error("Content is required for adding a note");
   }
 
+  console.log("handleAddNoteFunction called with funeral data:", {
+    funeral_id: funeralData.id,
+    entrepreneur_id: funeralData.entrepreneur_id,
+    has_deceased: !!funeralData.deceased,
+    has_client: !!funeralData.client,
+  });
+
   const deceasedName = getDeceasedName(funeralData.deceased);
   const noteTitle = title || `Notitie voor ${deceasedName}`;
 
@@ -271,6 +278,8 @@ export async function handleAddNoteFunction(
     is_important: is_important,
     created_by: funeralData.entrepreneur_id,
   });
+
+  console.log("Note added successfully:", data);
 
   return NextResponse.json({
     success: true,
@@ -298,6 +307,7 @@ export async function handleAddCostFunction(
   const data = await addFuneralCost({
     funeral_id: funeralData.id,
     entrepreneur_id: funeralData.entrepreneur_id,
+    organization_id: funeralData.organization_id,
     amount: amount,
     description: description,
   });
@@ -317,34 +327,52 @@ export async function handleAddContactFunction(
   args: any,
   funeralData: FuneralContext
 ) {
-  const { name, phone, email, relationship = "Familie" } = args;
+  const {
+    first_name,
+    last_name,
+    phone,
+    email,
+    relationship = "Familie",
+  } = args;
 
-  if (!name) {
-    throw new Error("Name is required for adding a contact");
+  if (!first_name || !last_name) {
+    throw new Error(
+      "First name and last name are required for adding a contact"
+    );
   }
+
+  console.log("handleAddContactFunction called with funeral data:", {
+    funeral_id: funeralData.id,
+    entrepreneur_id: funeralData.entrepreneur_id,
+    contact_name: `${first_name} ${last_name}`,
+  });
 
   const deceasedName = getDeceasedName(funeralData.deceased);
 
-  // Create or find the client
-  let clientId = funeralData.client_id;
+  // Always create a new client for the contact
+  // (contacts are separate from the main client/opdrachtgever)
+  const newClient = await createClient({
+    entrepreneur_id: funeralData.entrepreneur_id,
+    organization_id: funeralData.organization_id,
+    preferred_name: first_name,
+    last_name: last_name,
+    phone_number: phone || undefined,
+    email: email || undefined,
+  });
 
-  if (name !== funeralData.client?.preferred_name) {
-    const newClient = await createClient({
-      entrepreneur_id: funeralData.entrepreneur_id,
-      preferred_name: name.split(" ")[0] || name,
-      last_name: name.split(" ").slice(1).join(" ") || "",
-      phone_number: phone || undefined,
-      email: email || undefined,
-    });
+  console.log("Client created for contact:", newClient.id);
 
-    clientId = newClient.id;
-  }
+  const clientId = newClient.id;
+
+  console.log("About to call addFuneralContact with clientId:", clientId);
 
   try {
-    // Add contact
+    // Add contact link
+    console.log("Calling addFuneralContact...");
     const data = await addFuneralContact({
       funeral_id: funeralData.id,
       entrepreneur_id: funeralData.entrepreneur_id,
+      organization_id: funeralData.organization_id,
       client_id: clientId,
       relation: relationship,
       notes:
@@ -353,9 +381,11 @@ export async function handleAddContactFunction(
           : undefined,
     });
 
+    console.log("addFuneralContact returned:", data);
+
     return NextResponse.json({
       success: true,
-      message: `Contact toegevoegd voor ${deceasedName}: ${name}`,
+      message: `Contact toegevoegd voor ${deceasedName}: ${first_name} ${last_name}`,
       action: "contact_added",
       data,
     });
@@ -363,7 +393,7 @@ export async function handleAddContactFunction(
     if (error instanceof Error && error.message === "CONTACT_EXISTS") {
       return NextResponse.json({
         success: false,
-        message: `Contact "${name}" bestaat al voor deze uitvaart.`,
+        message: `Contact "${first_name} ${last_name}" bestaat al voor deze uitvaart.`,
         action: "contact_exists",
       });
     }
@@ -804,7 +834,16 @@ export async function handleCreateFuneralFunction(
     funeral_location,
     funeral_signing_date,
     funeral_director,
+    funeral_notes,
+    funeral_contacts,
+    funeral_costs,
   } = args;
+
+  console.log("Received additional data:", {
+    notes: funeral_notes?.length || 0,
+    contacts: funeral_contacts?.length || 0,
+    costs: funeral_costs?.length || 0,
+  });
 
   // Validate required fields
   if (!deceased_first_names || !deceased_last_name) {
@@ -829,8 +868,18 @@ export async function handleCreateFuneralFunction(
       client: { client_preferred_name, client_last_name },
     });
 
+    // Validate entrepreneur_id
+    if (!context.entrepreneur_id || context.entrepreneur_id === "") {
+      return NextResponse.json({
+        success: false,
+        message:
+          "Geen geldige ondernemer ID beschikbaar. Probeer de pagina te verversen.",
+      });
+    }
+
     const funeralData = await createCompleteFuneral({
       entrepreneur_id: context.entrepreneur_id,
+      organization_id: context.organization_id,
       deceased: {
         first_names: deceased_first_names,
         last_name: deceased_last_name,
@@ -862,15 +911,171 @@ export async function handleCreateFuneralFunction(
     const deceasedName = getDeceasedName(funeralData.deceased);
     const clientName = getClientName(funeralData.client);
 
+    console.log("Funeral created, full funeral data:", {
+      id: funeralData.id,
+      entrepreneur_id: funeralData.entrepreneur_id,
+      organization_id: funeralData.organization_id,
+      deceased_id: funeralData.deceased_id,
+      client_id: funeralData.client_id,
+    });
+
+    // Step 4: Add notes if provided
+    const addedNotes = [];
+    const failedNotes = [];
+    if (funeral_notes && Array.isArray(funeral_notes)) {
+      console.log(
+        `Adding ${funeral_notes.length} notes to funeral ${funeralData.id}`
+      );
+      for (const note of funeral_notes) {
+        try {
+          const noteResult = await handleAddNoteFunction(
+            {
+              content: note.content,
+              title: note.title,
+              is_important: note.is_important || false,
+            },
+            funeralData
+          );
+          const noteData = await noteResult.json();
+          if (noteData.success) {
+            addedNotes.push(note.title || note.content.substring(0, 30));
+          } else {
+            failedNotes.push(note.title || note.content.substring(0, 30));
+          }
+        } catch (error) {
+          console.error("Error adding note:", error);
+          failedNotes.push(note.title || note.content.substring(0, 30));
+        }
+      }
+    }
+
+    // Step 5: Add contacts if provided
+    const addedContacts = [];
+    const failedContacts = [];
+    if (funeral_contacts && Array.isArray(funeral_contacts)) {
+      console.log(
+        `Adding ${funeral_contacts.length} contacts to funeral ${funeralData.id}`
+      );
+      for (const contact of funeral_contacts) {
+        try {
+          console.log(
+            `Processing contact: ${contact.first_name} ${contact.last_name}`
+          );
+          const contactResult = await handleAddContactFunction(
+            {
+              first_name: contact.first_name,
+              last_name: contact.last_name,
+              phone: contact.phone,
+              email: contact.email,
+              relationship: contact.relationship,
+            },
+            funeralData
+          );
+          console.log("handleAddContactFunction completed, parsing result...");
+          const contactData = await contactResult.json();
+          console.log("Contact result parsed:", contactData);
+
+          if (contactData.success) {
+            console.log(
+              `✅ Contact added successfully: ${contact.first_name} ${contact.last_name}`
+            );
+            addedContacts.push(`${contact.first_name} ${contact.last_name}`);
+          } else {
+            console.log(
+              `❌ Contact failed (not success): ${contactData.message}`
+            );
+            failedContacts.push(`${contact.first_name} ${contact.last_name}`);
+          }
+        } catch (error) {
+          console.error(
+            `❌ Error adding contact ${contact.first_name} ${contact.last_name}:`,
+            error
+          );
+          console.error("Error details:", {
+            message: error instanceof Error ? error.message : "Unknown",
+            stack: error instanceof Error ? error.stack : undefined,
+          });
+          failedContacts.push(`${contact.first_name} ${contact.last_name}`);
+        }
+      }
+    }
+
+    // Step 6: Add costs if provided
+    const addedCosts = [];
+    const failedCosts = [];
+    if (funeral_costs && Array.isArray(funeral_costs)) {
+      console.log(
+        `Adding ${funeral_costs.length} costs to funeral ${funeralData.id}`
+      );
+      for (const cost of funeral_costs) {
+        try {
+          const costResult = await handleAddCostFunction(
+            {
+              amount: cost.amount,
+              description: cost.description,
+            },
+            funeralData
+          );
+          const costData = await costResult.json();
+          if (costData.success) {
+            addedCosts.push(cost.description);
+          } else {
+            failedCosts.push(cost.description);
+          }
+        } catch (error) {
+          console.error("Error adding cost:", error);
+          failedCosts.push(cost.description);
+        }
+      }
+    }
+
+    // Build success message with what was added
+    let message = `✅ Uitvaart succesvol aangemaakt voor ${deceasedName}. Opdrachtgever: ${clientName}.`;
+    if (addedNotes.length > 0) {
+      message += ` ${addedNotes.length} notitie(s) toegevoegd.`;
+    }
+    if (addedContacts.length > 0) {
+      message += ` ${addedContacts.length} contact(en) toegevoegd.`;
+    }
+    if (addedCosts.length > 0) {
+      message += ` ${addedCosts.length} kostenpost(en) toegevoegd.`;
+    }
+
+    // Warn about failures
+    if (
+      failedNotes.length > 0 ||
+      failedContacts.length > 0 ||
+      failedCosts.length > 0
+    ) {
+      message += `\n\n⚠️ Waarschuwing:`;
+      if (failedNotes.length > 0) {
+        message += ` ${failedNotes.length} notitie(s) konden niet worden toegevoegd.`;
+      }
+      if (failedContacts.length > 0) {
+        message += ` ${failedContacts.length} contact(en) konden niet worden toegevoegd.`;
+      }
+      if (failedCosts.length > 0) {
+        message += ` ${failedCosts.length} kostenpost(en) konden niet worden toegevoegd.`;
+      }
+    }
+
+    message += ` Uitvaart ID: ${funeralData.id}`;
+
     return NextResponse.json({
       success: true,
-      message: `✅ Uitvaart succesvol aangemaakt voor ${deceasedName}. Opdrachtgever: ${clientName}. Uitvaart ID: ${funeralData.id}`,
+      message,
       action: "funeral_created",
       data: {
         funeral_id: funeralData.id,
         deceased_name: deceasedName,
         client_name: clientName,
         location: funeralData.location,
+        added_notes: addedNotes,
+        added_contacts: addedContacts,
+        added_costs: addedCosts,
+        failed_notes: failedNotes,
+        failed_contacts: failedContacts,
+        failed_costs: failedCosts,
       },
     });
   } catch (error) {
