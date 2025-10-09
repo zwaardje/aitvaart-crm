@@ -154,15 +154,8 @@ export function SmartSearchBar({
       {/* AI Modal */}
       {showAiButton && (
         <Dialog open={isAIModalOpen} onOpenChange={setIsAIModalOpen}>
-          <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <RiRobotLine className="h-5 w-5" />
-                {getAIButtonLabel()}
-              </DialogTitle>
-            </DialogHeader>
+          <DialogContent className="max-w-4xl h-[80vh] flex flex-col bg-transparent">
             <div className="flex-1 min-h-0">
-              {/* Voice Assistant */}
               <ContextAwareVoiceAssistant
                 funeralId={aiContext?.funeralId}
                 aiContext={aiContext}

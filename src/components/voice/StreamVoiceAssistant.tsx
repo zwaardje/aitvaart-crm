@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-import { Spinner } from "@/components/ui/spinner/Spinner";
+// Spinner import removed - using Nova-style loading indicators
 import {
   StreamVideo,
   StreamVideoClient,
@@ -12,6 +12,7 @@ import {
   useCallStateHooks,
   useStreamVideoClient,
 } from "@stream-io/video-react-sdk";
+import { AudioVisualizer } from "./AudioVisualizer";
 
 interface StreamVoiceAssistantProps {
   autoStart?: boolean;
@@ -139,15 +140,80 @@ export function StreamVoiceAssistant({
 
   if (!isConnected || !client) {
     return (
-      <div className="h-full w-full flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Spinner />
-          <p className="text-sm text-gray-600">
-            {isLoading
-              ? "Verbinden met voice assistant..."
-              : "Initialiseren..."}
-          </p>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+      <div className="h-full w-full flex items-center justify-center bg-gradient-to-b from-gray-50 to-white relative">
+        {/* Subtle dot pattern background */}
+        <div className="absolute inset-0 opacity-20">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(156, 163, 175, 0.3) 1px, transparent 0)`,
+              backgroundSize: "20px 20px",
+            }}
+          />
+        </div>
+
+        <div className="text-center space-y-8 relative z-10">
+          {/* Nova-style glowing orb */}
+          <div className="relative inline-block">
+            <div className="h-32 w-32 rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-purple-600 flex items-center justify-center shadow-2xl animate-pulse">
+              <div className="h-24 w-24 rounded-full bg-gradient-to-br from-white/30 to-transparent flex items-center justify-center">
+                <svg
+                  className="h-12 w-12 text-white/90"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                  />
+                </svg>
+              </div>
+            </div>
+            {/* Glow effect */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 blur-xl opacity-50 animate-pulse" />
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-lg text-gray-600">
+              Hi! Ik ben Nova je AI personal assistant.
+            </p>
+            <p className="text-xl font-bold text-gray-900">
+              <strong>Hoe kan ik je helpen?</strong>
+            </p>
+          </div>
+
+          {/* Loading state without spinner */}
+          <div className="flex items-center justify-center gap-3">
+            <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+            <p className="text-sm text-gray-500">
+              {isLoading
+                ? "Verbinden met voice assistant..."
+                : "Initialiseren..."}
+            </p>
+          </div>
+
+          {error && (
+            <div className="text-center">
+              <p className="text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg inline-block">
+                {error}
+              </p>
+            </div>
+          )}
+
+          {/* Audio visualizer */}
+          <div className="flex items-center justify-center gap-1 mt-8">
+            {[...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                className={`w-1 bg-gray-300 rounded-full transition-all duration-300 ${
+                  i < 3 ? "h-3" : i < 6 ? "h-6" : "h-8"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -284,13 +350,78 @@ function CallInterface({
 
   if (!isInCall) {
     return (
-      <div className="h-full w-full flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Spinner />
-          <p className="text-sm text-gray-600">
-            {isLoading ? "Deelnemen aan gesprek..." : "Wachten op call..."}
-          </p>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+      <div className="h-full w-full flex items-center justify-center bg-gradient-to-b from-gray-50 to-white relative">
+        {/* Subtle dot pattern background */}
+        <div className="absolute inset-0 opacity-20">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(156, 163, 175, 0.3) 1px, transparent 0)`,
+              backgroundSize: "20px 20px",
+            }}
+          />
+        </div>
+
+        <div className="text-center space-y-8 relative z-10">
+          {/* Nova-style glowing orb */}
+          <div className="relative inline-block">
+            <div className="h-32 w-32 rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-purple-600 flex items-center justify-center shadow-2xl animate-pulse">
+              <div className="h-24 w-24 rounded-full bg-gradient-to-br from-white/30 to-transparent flex items-center justify-center">
+                <svg
+                  className="h-12 w-12 text-white/90"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                  />
+                </svg>
+              </div>
+            </div>
+            {/* Glow effect */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 blur-xl opacity-50 animate-pulse" />
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-lg text-gray-600">
+              Hi! Ik ben Nova je AI personal assistant.
+            </p>
+            <p className="text-xl font-bold text-gray-900">
+              <strong>Hoe kan ik je helpen?</strong>
+            </p>
+          </div>
+
+          {/* Loading state without spinner */}
+          <div className="flex items-center justify-center gap-3">
+            <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+            <p className="text-sm text-gray-500">
+              {isLoading ? "Deelnemen aan gesprek..." : "Wachten op call..."}
+            </p>
+          </div>
+
+          {error && (
+            <div className="text-center">
+              <p className="text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg inline-block">
+                {error}
+              </p>
+            </div>
+          )}
+
+          {/* Audio visualizer */}
+          <div className="flex items-center justify-center gap-1 mt-8">
+            {[...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                className={`w-1 bg-gray-300 rounded-full transition-all duration-300 ${
+                  i < 3 ? "h-3" : i < 6 ? "h-6" : "h-8"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -390,7 +521,40 @@ function CallUI({
   };
 
   return (
-    <div className="h-full w-full flex flex-col justify-center items-center">
+    <div className="h-full w-full flex flex-col justify-center items-center bg-gradient-to-b from-gray-50 to-white relative">
+      {/* Subtle dot pattern background */}
+      <div className="absolute inset-0 opacity-20">
+        <div
+          className="w-full h-full"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(156, 163, 175, 0.3) 1px, transparent 0)`,
+            backgroundSize: "20px 20px",
+          }}
+        />
+      </div>
+
+      <div className="text-center space-y-8 relative z-10">
+        {/* AudioVisualizer component with Nova-style orb and bars */}
+        <AudioVisualizer />
+
+        <div className="space-y-3">
+          <p className="text-lg text-gray-600">
+            Hi! Ik ben Nova je AI personal assistant.
+          </p>
+          <p className="text-xl font-bold text-gray-900">
+            <strong>
+              {isAiSpeaking ? "AI spreekt..." : "Hoe kan ik je helpen?"}
+            </strong>
+          </p>
+        </div>
+
+        <p className="text-gray-500 text-sm">
+          {hasAI
+            ? "Spreek om met de AI assistant te praten"
+            : "Voice assistant actief (zonder AI)"}
+        </p>
+      </div>
+
       <div className="hidden">
         <SpeakerLayout participantsBarPosition="bottom" />
       </div>

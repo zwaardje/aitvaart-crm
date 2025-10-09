@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { AIContextMetadata } from "@/types/ai-context";
-import { Spinner } from "@/components/ui/spinner/Spinner";
+// Spinner import removed - using Nova-style loading indicators
 import { useAuth } from "@/hooks/useAuth";
 import {
   StreamVideo,
@@ -13,6 +13,7 @@ import {
   useCallStateHooks,
   useStreamVideoClient,
 } from "@stream-io/video-react-sdk";
+import { AudioVisualizer } from "./AudioVisualizer";
 
 interface ContextAwareVoiceAssistantProps {
   funeralId?: string;
@@ -139,30 +140,72 @@ export function ContextAwareVoiceAssistant({
 
   if (error) {
     return (
-      <div className="h-full w-full flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="text-red-600">
-            <svg
-              className="h-16 w-16 mx-auto mb-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+      <div className="h-full w-full flex items-center justify-center bg-gradient-to-b from-gray-50 to-white">
+        {/* Subtle dot pattern background */}
+        <div className="absolute inset-0 opacity-20">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(156, 163, 175, 0.3) 1px, transparent 0)`,
+              backgroundSize: "20px 20px",
+            }}
+          />
+        </div>
+
+        <div className="text-center space-y-8 relative z-10">
+          {/* Nova-style orb with error state */}
+          <div className="relative inline-block">
+            <div className="h-32 w-32 rounded-full bg-gradient-to-br from-red-500 via-orange-500 to-red-600 flex items-center justify-center shadow-2xl">
+              <div className="h-24 w-24 rounded-full bg-gradient-to-br from-white/30 to-transparent flex items-center justify-center">
+                <svg
+                  className="h-12 w-12 text-white/90"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+            {/* Glow effect */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-400 to-orange-400 blur-xl opacity-50" />
           </div>
-          <p className="text-sm text-red-600">{error}</p>
-          <button
-            onClick={initializeClient}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            Opnieuw proberen
-          </button>
+
+          <div className="space-y-3">
+            <p className="text-lg text-gray-600">Oeps! Er ging iets mis.</p>
+            <p className="text-xl font-bold text-gray-900">
+              <strong>Probeer het opnieuw</strong>
+            </p>
+          </div>
+
+          <div className="text-center">
+            <p className="text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg inline-block mb-4">
+              {error}
+            </p>
+            <button
+              onClick={initializeClient}
+              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              Opnieuw proberen
+            </button>
+          </div>
+
+          {/* Audio visualizer placeholder */}
+          <div className="flex items-center justify-center gap-1 mt-8">
+            {[...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                className={`w-1 bg-gray-300 rounded-full transition-all duration-300 ${
+                  i < 3 ? "h-3" : i < 6 ? "h-6" : "h-8"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -170,14 +213,72 @@ export function ContextAwareVoiceAssistant({
 
   if (!isConnected || !client) {
     return (
-      <div className="h-full w-full flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Spinner />
-          <p className="text-sm text-gray-600">
-            {isLoading
-              ? "Verbinden met voice assistant..."
-              : "Initialiseren..."}
-          </p>
+      <div className="h-full w-full flex items-center justify-center bg-gradient-to-b from-gray-50 to-white">
+        {/* Subtle dot pattern background */}
+        <div className="absolute inset-0 opacity-20">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(156, 163, 175, 0.3) 1px, transparent 0)`,
+              backgroundSize: "20px 20px",
+            }}
+          />
+        </div>
+
+        <div className="text-center space-y-8 relative z-10">
+          {/* Nova-style glowing orb */}
+          <div className="relative inline-block">
+            <div className="h-32 w-32 rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-purple-600 flex items-center justify-center shadow-2xl animate-pulse">
+              <div className="h-24 w-24 rounded-full bg-gradient-to-br from-white/30 to-transparent flex items-center justify-center">
+                <svg
+                  className="h-12 w-12 text-white/90"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                  />
+                </svg>
+              </div>
+            </div>
+            {/* Glow effect */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 blur-xl opacity-50 animate-pulse" />
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-lg text-gray-600">
+              Hi! Ik ben Nova je AI personal assistant.
+            </p>
+            <p className="text-xl font-bold text-gray-900">
+              <strong>Hoe kan ik je helpen?</strong>
+            </p>
+          </div>
+
+          {/* Loading state without spinner */}
+          <div className="flex items-center justify-center gap-3">
+            <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+            <p className="text-sm text-gray-500">
+              {isLoading
+                ? "Verbinden met voice assistant..."
+                : "Initialiseren..."}
+            </p>
+          </div>
+
+          {/* Audio visualizer placeholder */}
+          <div className="flex items-center justify-center gap-1 mt-8">
+            {[...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                className={`w-1 bg-gray-300 rounded-full transition-all duration-300 ${
+                  i < 3 ? "h-3" : i < 6 ? "h-6" : "h-8"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -309,13 +410,78 @@ function CallInterface({
 
   if (!isInCall) {
     return (
-      <div className="h-full w-full flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Spinner />
-          <p className="text-sm text-gray-600">
-            {isLoading ? "Deelnemen aan gesprek..." : "Wachten op call..."}
-          </p>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+      <div className="h-full w-full flex items-center justify-center bg-gradient-to-b from-gray-50 to-white">
+        {/* Subtle dot pattern background */}
+        <div className="absolute inset-0 opacity-20">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(156, 163, 175, 0.3) 1px, transparent 0)`,
+              backgroundSize: "20px 20px",
+            }}
+          />
+        </div>
+
+        <div className="text-center space-y-8 relative z-10">
+          {/* Nova-style glowing orb */}
+          <div className="relative inline-block">
+            <div className="h-32 w-32 rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-purple-600 flex items-center justify-center shadow-2xl animate-pulse">
+              <div className="h-24 w-24 rounded-full bg-gradient-to-br from-white/30 to-transparent flex items-center justify-center">
+                <svg
+                  className="h-12 w-12 text-white/90"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                  />
+                </svg>
+              </div>
+            </div>
+            {/* Glow effect */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 blur-xl opacity-50 animate-pulse" />
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-lg text-gray-600">
+              Hi! Ik ben Nova je AI personal assistant.
+            </p>
+            <p className="text-xl font-bold text-gray-900">
+              <strong>Hoe kan ik je helpen?</strong>
+            </p>
+          </div>
+
+          {/* Loading state without spinner */}
+          <div className="flex items-center justify-center gap-3">
+            <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+            <p className="text-sm text-gray-500">
+              {isLoading ? "Deelnemen aan gesprek..." : "Wachten op call..."}
+            </p>
+          </div>
+
+          {error && (
+            <div className="text-center">
+              <p className="text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg inline-block">
+                {error}
+              </p>
+            </div>
+          )}
+
+          {/* Audio visualizer placeholder */}
+          <div className="flex items-center justify-center gap-1 mt-8">
+            {[...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                className={`w-1 bg-gray-300 rounded-full transition-all duration-300 ${
+                  i < 3 ? "h-3" : i < 6 ? "h-6" : "h-8"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -363,92 +529,18 @@ function CallUI({
 
   return (
     <div className="h-full w-full flex flex-col">
-      {/* Status Indicator */}
-      <div className="flex-shrink-0 bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 rounded-t-lg">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div
-                className={`h-3 w-3 rounded-full ${
-                  isCallLive ? "bg-green-400" : "bg-gray-400"
-                }`}
-              />
-              {isCallLive && (
-                <div className="absolute inset-0 h-3 w-3 rounded-full bg-green-400 animate-ping" />
-              )}
-            </div>
-            <div>
-              <p className="text-sm font-medium">
-                {isCallLive ? "Verbonden" : "Niet verbonden"}
-              </p>
-              {aiContext && (
-                <p className="text-xs opacity-90">
-                  Context: {aiContext.page} ({aiContext.scope})
-                </p>
-              )}
-            </div>
-          </div>
-
-          <button
-            onClick={onLeave}
-            className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-sm font-medium transition-colors"
-          >
-            Afsluiten
-          </button>
+      <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-gray-50 to-white relative">
+        <div className="absolute inset-0 opacity-20">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(156, 163, 175, 0.3) 1px, transparent 0)`,
+              backgroundSize: "20px 20px",
+            }}
+          />
         </div>
-      </div>
-
-      {/* Voice Visualizer */}
-      <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-gray-50 to-white">
-        <div className="text-center space-y-6 p-8">
-          <div className="relative inline-block">
-            <div
-              className={`h-32 w-32 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center transition-all duration-300 ${
-                isAiSpeaking ? "scale-110 shadow-2xl" : "scale-100 shadow-lg"
-              }`}
-            >
-              <svg
-                className="h-16 w-16 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                />
-              </svg>
-            </div>
-            {isAiSpeaking && (
-              <div className="absolute inset-0 rounded-full bg-purple-400 animate-ping opacity-75" />
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <h3 className="text-2xl font-bold text-gray-900">
-              {isAiSpeaking ? "AI spreekt..." : "Klaar om te luisteren"}
-            </h3>
-            <p className="text-gray-600">
-              {hasAI
-                ? "Spreek om met de AI assistant te praten"
-                : "Voice assistant actief (zonder AI)"}
-            </p>
-          </div>
-
-          {aiContext && (
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm">
-              <span className="font-medium">{aiContext.page}</span>
-              <span className="opacity-60">•</span>
-              <span>
-                {aiContext.scope === "manage" && "Volledig beheer"}
-                {aiContext.scope === "create" && "Aanmaken"}
-                {aiContext.scope === "edit" && "Bewerken"}
-                {aiContext.scope === "view" && "Alleen lezen"}
-              </span>
-            </div>
-          )}
+        <div className="text-center space-y-8 p-8 relative z-10">
+          <AudioVisualizer />
         </div>
       </div>
 

@@ -53,62 +53,77 @@ export function AudioVisualizer() {
   const brightness = Math.max(Math.min(1 + volume * 0.2, 1.3), 0.8);
 
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <div className="relative w-60 h-60 flex items-center justify-center">
-        {/* Original audio visualizer for volume-based scaling */}
+    <div className="flex flex-col items-center space-y-8">
+      {/* Nova-style glowing orb */}
+      <div className="relative inline-block">
         <div
-          className="audio-visualizer absolute inset-0"
-          style={
-            {
-              "--volumeter-scale": volumeScale,
-              "--volumeter-brightness": brightness,
-              transform: `scale(${volumeScale})`,
-              opacity: brightness,
-            } as CSSProperties
-          }
-        >
+          className={`h-32 w-32 rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-purple-600 flex items-center justify-center shadow-2xl transition-all duration-300 ${
+            isAISpeaking
+              ? "scale-110 shadow-2xl"
+              : isUserSpeaking
+              ? "scale-105 shadow-xl"
+              : "scale-100 shadow-lg"
+          }`}
+          style={{
+            transform: `scale(${volumeScale})`,
+            opacity: brightness,
+          }}
+        ></div>
+        {/* Glow effect */}
+        <div
+          className={`absolute inset-0 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 blur-xl opacity-50 transition-all duration-300 ${
+            isAISpeaking || isUserSpeaking ? "animate-pulse" : "animate-pulse"
+          }`}
+          style={{
+            transform: `scale(${volumeScale})`,
+            opacity: brightness * 0.5,
+          }}
+        />
+        {(isAISpeaking || isUserSpeaking) && (
           <div
-            className={`audio-visualizer__aura audio-visualizer__aura_${activity}`}
+            className="absolute inset-0 rounded-full bg-purple-400 animate-ping opacity-75"
+            style={{
+              transform: `scale(${volumeScale})`,
+            }}
           />
-        </div>
+        )}
+      </div>
 
-        <div
-          className={`circle circle-speaker ${
-            isUserSpeaking ? "opacity-100" : "opacity-0"
-          }`}
-          style={{
-            transform: `translate(-50%, -50%) scale(${volumeScale})`,
-            opacity: isUserSpeaking ? brightness : 0,
-            animation: `rotateCircle ${6}s infinite ease-in-out, rotateShape ${6}s infinite ease-in-out`,
-            zIndex: 3,
-          }}
-        />
+      {/* Audio visualizer bars - Nova style */}
+      <div className="flex items-center justify-center gap-1">
+        {[...Array(8)].map((_, i) => {
+          const baseHeight =
+            i < 2 ? "h-4" : i < 4 ? "h-6" : i < 6 ? "h-8" : "h-10";
+          const isActive = isAISpeaking || isUserSpeaking;
+          const heightMultiplier = isActive ? 1 + volume * 0.5 : 1;
+          const delay = i * 100;
 
-        {/* AI circle - Violet */}
-        <div
-          className={`circle circle-ai ${
-            isAISpeaking ? "opacity-100" : "opacity-0"
-          }`}
-          style={{
-            transform: `translate(-50%, -50%) scale(${volumeScale})`,
-            opacity: isAISpeaking ? brightness : 0,
-            animation: `rotateCircle ${6}s infinite reverse ease-in-out, rotateShape ${6}s infinite reverse ease-in-out`,
-            zIndex: 2,
-          }}
-        />
-
-        {/* Idle circle - Gray (when neither is speaking) */}
-        <div
-          className={`circle circle-idle ${
-            !isUserSpeaking && !isAISpeaking ? "opacity-100" : "opacity-0"
-          }`}
-          style={{
-            transform: `translate(-50%, -50%) scale(${volumeScale})`,
-            opacity: !isUserSpeaking && !isAISpeaking ? brightness * 0.7 : 0,
-            animation: `rotateCircle ${8}s infinite ease-in-out, rotateShape ${8}s infinite ease-in-out`,
-            zIndex: 1,
-          }}
-        />
+          return (
+            <div
+              key={i}
+              className={`w-1 bg-gray-300 rounded-full transition-all duration-300 ${
+                isAISpeaking
+                  ? `${baseHeight} bg-purple-400`
+                  : isUserSpeaking
+                  ? `${baseHeight} bg-blue-400`
+                  : baseHeight
+              }`}
+              style={{
+                height: isActive
+                  ? `${
+                      parseInt(baseHeight.replace("h-", "")) *
+                      heightMultiplier *
+                      4
+                    }px`
+                  : undefined,
+                animationDelay: isActive ? `${delay}ms` : "none",
+                animation: isActive
+                  ? "pulse 1s ease-in-out infinite alternate"
+                  : "none",
+              }}
+            />
+          );
+        })}
       </div>
     </div>
   );
