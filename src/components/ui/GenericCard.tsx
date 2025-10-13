@@ -3,6 +3,8 @@
 import { ReactNode } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "./card";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { RiArrowRightLine, RiArrowRightSLine } from "@remixicon/react";
 
 interface GenericCardProps {
   title: string;
@@ -12,21 +14,29 @@ interface GenericCardProps {
   footer?: ReactNode;
   actions?: ReactNode;
   className?: string;
+  to?: string;
 }
 
-export function GenericCard({
+const Generic = ({
+  to,
+  className,
   title,
   subtitle,
   icon,
   content,
   footer,
   actions,
-  className,
-}: GenericCardProps) {
+}: GenericCardProps) => {
+  console.log(to);
   return (
-    <Card className={cn("relative rounded-sm", className)}>
+    <Card className={cn("relative rounded-sm", className, to && "shadow-none")}>
       <CardHeader className="pb-3 pl-3 pr-3 pt-3">
-        <div className="flex items-start justify-between">
+        <div
+          className={cn(
+            "flex items-start justify-between",
+            to && "items-center"
+          )}
+        >
           <div className="flex-1">
             <CardTitle className="flex flex-col items-start gap-2 text-sm">
               {icon}
@@ -39,6 +49,11 @@ export function GenericCard({
             )}
           </div>
           {actions && <div className="flex items-center gap-2">{actions}</div>}
+          {to && (
+            <div className="flex items-center gap-2">
+              <RiArrowRightSLine className="h-4 w-4" />
+            </div>
+          )}
         </div>
       </CardHeader>
       {content && (
@@ -53,5 +68,15 @@ export function GenericCard({
         </CardFooter>
       )}
     </Card>
+  );
+};
+
+export function GenericCard({ to, ...props }: GenericCardProps) {
+  return to ? (
+    <Link href={to}>
+      <Generic to={to} {...props} />
+    </Link>
+  ) : (
+    <Generic {...props} />
   );
 }

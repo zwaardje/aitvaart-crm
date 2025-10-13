@@ -31,11 +31,23 @@ export function AppHeader({
   onMenuClick,
 }: AppHeaderProps) {
   const router = useRouter();
+
   const handleBackClick = () => {
     if (onBackClick) {
       onBackClick();
     } else {
-      router.back();
+      // Navigate to parent level instead of browser back
+      const currentPath = window.location.pathname;
+      const pathSegments = currentPath.split("/").filter(Boolean);
+
+      if (pathSegments.length > 1) {
+        // Remove the last segment to go up one level
+        const parentPath = "/" + pathSegments.slice(0, -1).join("/");
+        router.push(parentPath);
+      } else {
+        // If we're at root level, just go to dashboard
+        router.push("/dashboard");
+      }
     }
   };
 

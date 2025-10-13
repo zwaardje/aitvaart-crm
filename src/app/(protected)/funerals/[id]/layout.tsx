@@ -1,6 +1,6 @@
 "use client";
 
-import { FUNERAL_TABS } from "@/constants/funerals";
+import { FUNERAL_TABS } from "@/constants/submenu";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";

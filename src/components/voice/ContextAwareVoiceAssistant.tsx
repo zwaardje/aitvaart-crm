@@ -111,7 +111,7 @@ export function ContextAwareVoiceAssistant({
     } finally {
       setIsLoading(false);
     }
-  }, [funeralId, aiContext]);
+  }, [funeralId, aiContext, user]);
 
   // Cleanup on unmount
   useEffect(() => {

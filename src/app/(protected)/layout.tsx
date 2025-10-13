@@ -2,7 +2,6 @@
 
 import { ProtectedLayout } from "@/components/layout";
 import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { useFuneralName } from "@/hooks/useFunerals";
 import { useState, useEffect } from "react";
 
@@ -12,7 +11,6 @@ export default function ProtectedRouteLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const t = useTranslations("breadcrumbs");
 
   // Extract funeral ID from pathname for dynamic name fetching
   const segments = pathname.split("/").filter(Boolean);
