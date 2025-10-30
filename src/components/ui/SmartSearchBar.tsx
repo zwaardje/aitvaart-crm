@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { RiRobotLine, RiMoreLine, RiSparklingLine } from "@remixicon/react";
+import { RiMoreLine, RiSparklingLine } from "@remixicon/react";
 import {
   DropdownMenu,
   DropdownMenuContent,

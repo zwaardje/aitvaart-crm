@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 import { Button, DialogClose, DialogFooter } from "@/components/ui";
 import {
   Dialog,
@@ -50,7 +49,6 @@ export function ScenarioForm({
   funeralId,
   onSuccess,
 }: ScenarioFormProps) {
-  const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
   const { createScenarioWithDefaults } = useCreateScenarioWithDefaults();
 

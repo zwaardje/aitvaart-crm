@@ -1,7 +1,7 @@
 "use client";
 
 import { useNotes } from "@/hooks";
-import { NoteForm, NoteEditForm, NoteDeleteForm } from "@/components/forms";
+import { NoteEditForm, NoteDeleteForm } from "@/components/forms";
 import {
   Card,
   CardContent,
@@ -13,8 +13,7 @@ import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { RiAlertLine, RiFileTextLine } from "@remixicon/react";
 import type { Database } from "@/types/database";
-import { SearchBar } from "@/components/ui/SearchBar";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useMemo } from "react";
 import type { SearchResult } from "@/hooks/useSearch";
 type FuneralNote = Database["public"]["Tables"]["funeral_notes"]["Row"] & {
   creator: Database["public"]["Tables"]["profiles"]["Row"] | null;
@@ -40,16 +39,6 @@ export function Notes({ funeralId }: NotesProps) {
   }, [searchResults, notes]);
 
   const isEmpty = !displayNotes || displayNotes.length === 0;
-
-  const handleResultsChange = useCallback((results: SearchResult[]) => {
-    setSearchResults(results);
-  }, []);
-
-  // Memoize entityTypes to prevent infinite re-renders
-  const entityTypes = useMemo(
-    () => ["note"] as ("funeral" | "note" | "cost" | "contact")[],
-    []
-  );
 
   if (isLoading) {
     return (
@@ -100,8 +89,8 @@ export function Notes({ funeralId }: NotesProps) {
               }
               actions={
                 <>
-                  <NoteEditForm note={note} />
-                  <NoteDeleteForm note={note} />
+                  <NoteEditForm note={note} withDialog />
+                  <NoteDeleteForm note={note} withDialog />
                 </>
               }
               footer={

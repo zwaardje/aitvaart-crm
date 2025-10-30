@@ -90,6 +90,8 @@ export interface Organization {
   plan_type: PlanType;
   max_users: number;
   is_active: boolean;
+  kvk_number?: string;
+  btw_number?: string;
 }
 
 export interface OrganizationMember {

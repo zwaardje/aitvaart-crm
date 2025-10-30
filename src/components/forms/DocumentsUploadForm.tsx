@@ -3,7 +3,14 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useDocuments } from "@/hooks/useDocuments";
-import { Button } from "@/components/ui/Button";
+import { Button, DialogClose, DialogFooter } from "@/components/ui";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,14 +19,17 @@ import { RiUploadLine, RiFileLine } from "@remixicon/react";
 interface DocumentsUploadFormProps {
   funeralId: string;
   onSuccess?: () => void;
+  withDialog?: boolean;
 }
 
 export function DocumentsUploadForm({
   funeralId,
   onSuccess,
+  withDialog = false,
 }: DocumentsUploadFormProps) {
   const t = useTranslations();
   const { uploadDocument, isUploading } = useDocuments(funeralId);
+  const [isOpen, setIsOpen] = useState(false);
 
   const [file, setFile] = useState<File | null>(null);
   const [description, setDescription] = useState("");
@@ -34,6 +44,7 @@ export function DocumentsUploadForm({
       await uploadDocument({ file, description: description || undefined });
       setFile(null);
       setDescription("");
+      if (withDialog) setIsOpen(false);
       onSuccess?.();
     } catch (error) {
       console.error("Error uploading document:", error);
@@ -75,7 +86,7 @@ export function DocumentsUploadForm({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  return (
+  const formContent = (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <Label htmlFor="file">Bestand</Label>
@@ -141,14 +152,44 @@ export function DocumentsUploadForm({
         />
       </div>
 
-      <div className="flex justify-end space-x-3">
-        <Button type="button" variant="outline" onClick={onSuccess}>
-          Annuleren
-        </Button>
-        <Button type="submit" disabled={!file || isUploading}>
-          {isUploading ? "Uploaden..." : "Uploaden"}
-        </Button>
-      </div>
+      {withDialog ? (
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="outline">
+              Annuleren
+            </Button>
+          </DialogClose>
+          <Button type="submit" disabled={!file || isUploading}>
+            {isUploading ? "Uploaden..." : "Uploaden"}
+          </Button>
+        </DialogFooter>
+      ) : (
+        <div className="flex justify-end space-x-3">
+          <Button type="submit" disabled={!file || isUploading}>
+            {isUploading ? "Uploaden..." : "Uploaden"}
+          </Button>
+        </div>
+      )}
     </form>
   );
+
+  if (withDialog) {
+    return (
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm">
+            Uploaden
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Document uploaden</DialogTitle>
+          </DialogHeader>
+          {formContent}
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  return formContent;
 }

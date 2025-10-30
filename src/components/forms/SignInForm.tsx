@@ -72,6 +72,12 @@ export function SignInForm() {
         <CardTitle className="text-xl">Inloggen</CardTitle>
       </CardHeader>
       <CardContent>
+        {error && (
+          <Alert variant="destructive">
+            <div className="text-sm">{error}</div>
+          </Alert>
+        )}
+
         <Form
           onSubmit={onSubmit}
           schema={schemas.auth.signIn}
@@ -124,12 +130,6 @@ export function SignInForm() {
               )}
             />
           </div>
-
-          {error && (
-            <Alert variant="destructive">
-              <div className="text-sm">{error}</div>
-            </Alert>
-          )}
 
           <div className="flex flex-col justify-between gap-2 items-center">
             <Button type="submit" className="w-full" disabled={isLoading}>

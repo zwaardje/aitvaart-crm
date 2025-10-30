@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useNotes } from "@/hooks";
+import { useSuppliers } from "@/hooks/useSuppliers";
 import { Button, DialogClose, DialogFooter } from "@/components/ui";
 import {
   Dialog,
@@ -13,34 +13,34 @@ import {
 import { RiDeleteBinLine } from "@remixicon/react";
 import type { Database } from "@/types/database";
 
-type FuneralNote = Database["public"]["Tables"]["funeral_notes"]["Row"];
+type Supplier = Database["public"]["Tables"]["suppliers"]["Row"];
 
-interface NoteDeleteFormProps {
+interface SupplierDeleteFormProps {
   withDialog?: boolean;
-  note: FuneralNote;
+  supplier: Supplier;
   onSuccess?: () => void;
 }
 
-export function NoteDeleteForm({
+export function SupplierDeleteForm({
   withDialog = false,
-  note,
+  supplier,
   onSuccess,
-}: NoteDeleteFormProps) {
+}: SupplierDeleteFormProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const { deleteNote, refetch } = useNotes(note.funeral_id);
+  const { deleteSupplier, refetch } = useSuppliers();
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
-      await deleteNote(note.id);
+      await deleteSupplier(supplier.id);
       await refetch();
       if (withDialog) {
         setIsOpen(false);
       }
       onSuccess?.();
     } catch (error) {
-      console.error("Error deleting note:", error);
+      console.error("Error deleting supplier:", error);
     } finally {
       setIsDeleting(false);
     }
@@ -50,8 +50,8 @@ export function NoteDeleteForm({
     <div className="space-y-6 p-2">
       <div>
         <p className="text-sm text-gray-500 mb-2">
-          Deze actie kan niet ongedaan worden gemaakt. Hiermee wordt uw item
-          definitief verwijderd.
+          Deze actie kan niet ongedaan worden gemaakt. Hiermee wordt de
+          leverancier <strong>{supplier.name}</strong> definitief verwijderd.
         </p>
       </div>
 
@@ -66,7 +66,8 @@ export function NoteDeleteForm({
             type="button"
             onClick={handleDelete}
             disabled={isDeleting}
-            className="bg-red-600 hover:bg-red-700 text-white"
+            variant="default"
+            className="bg-red-600 hover:bg-red-700"
           >
             Verwijder
           </Button>
@@ -78,7 +79,8 @@ export function NoteDeleteForm({
             type="button"
             onClick={handleDelete}
             disabled={isDeleting}
-            className="bg-red-600 hover:bg-red-700 text-white"
+            variant="default"
+            className="bg-red-600 hover:bg-red-700"
           >
             Verwijder
           </Button>
@@ -97,7 +99,7 @@ export function NoteDeleteForm({
         </DialogTrigger>
         <DialogContent className="sm:max-w-md overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Weet je het zeker?</DialogTitle>
+            <DialogTitle>Leverancier verwijderen</DialogTitle>
           </DialogHeader>
           {deleteContent}
         </DialogContent>

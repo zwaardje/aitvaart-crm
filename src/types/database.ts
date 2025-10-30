@@ -1305,14 +1305,13 @@ export type Database = {
         Row: {
           address: string | null;
           avatar_url: string | null;
-          btw_number: string | null;
           city: string | null;
           company_name: string | null;
           created_at: string | null;
           description: string | null;
+          email: string | null;
           full_name: string | null;
           id: string;
-          kvk_number: string | null;
           onboarding_completed: boolean | null;
           organization_id: string | null;
           phone: string | null;
@@ -1324,14 +1323,13 @@ export type Database = {
         Insert: {
           address?: string | null;
           avatar_url?: string | null;
-          btw_number?: string | null;
           city?: string | null;
           company_name?: string | null;
           created_at?: string | null;
           description?: string | null;
+          email?: string | null;
           full_name?: string | null;
           id: string;
-          kvk_number?: string | null;
           onboarding_completed?: boolean | null;
           organization_id?: string | null;
           phone?: string | null;
@@ -1343,14 +1341,13 @@ export type Database = {
         Update: {
           address?: string | null;
           avatar_url?: string | null;
-          btw_number?: string | null;
           city?: string | null;
           company_name?: string | null;
           created_at?: string | null;
           description?: string | null;
+          email?: string | null;
           full_name?: string | null;
           id?: string;
-          kvk_number?: string | null;
           onboarding_completed?: boolean | null;
           organization_id?: string | null;
           phone?: string | null;
@@ -1494,6 +1491,7 @@ export type Database = {
           postal_code: string | null;
           type: string | null;
           updated_at: string | null;
+          website: string | null;
         };
         Insert: {
           address?: string | null;

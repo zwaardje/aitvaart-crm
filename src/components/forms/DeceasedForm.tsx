@@ -9,6 +9,14 @@ import { FormInput } from "./FormInput";
 import { FormSelect } from "./FormSelect";
 import { SubmitButton } from "./SubmitButton";
 import { Button, DialogClose, DialogFooter } from "@/components/ui";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { RiEditLine } from "@remixicon/react";
 import type { Database } from "@/types/database";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
@@ -21,13 +29,16 @@ interface DeceasedFormProps {
   deceased: DeceasedRow;
   submitLabel?: string;
   onSaved?: () => void;
+  withDialog?: boolean;
 }
 
 export function DeceasedForm({
   deceased,
   submitLabel = "Opslaan",
   onSaved,
+  withDialog = false,
 }: DeceasedFormProps) {
+  const [isOpen, setIsOpen] = React.useState(false);
   const queryClient = useQueryClient();
 
   const updateMutation = useMutation({
@@ -42,6 +53,7 @@ export function DeceasedForm({
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["deceased"] });
       await queryClient.invalidateQueries({ queryKey: ["funerals"] });
+      if (withDialog) setIsOpen(false);
       onSaved?.();
     },
   });
@@ -64,10 +76,14 @@ export function DeceasedForm({
     coffin_registration_number: deceased.coffin_registration_number ?? "",
   };
 
-  return (
+  const handleSubmit = async (values: DeceasedFormValues) => {
+    await updateMutation.mutateAsync(values);
+  };
+
+  const formContent = (
     <Form
       schema={deceasedFormSchema}
-      onSubmit={(vals) => updateMutation.mutateAsync(vals)}
+      onSubmit={handleSubmit}
       defaultValues={defaultValues}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -98,12 +114,38 @@ export function DeceasedForm({
         <FormInput name="postal_code" label="Postcode" />
         <FormInput name="city" label="Plaats" />
       </div>
-      <DialogFooter className="mt-2">
-        <DialogClose asChild>
-          <Button variant="outline">Annuleren</Button>
-        </DialogClose>
-        <SubmitButton>{submitLabel}</SubmitButton>
-      </DialogFooter>
+      {withDialog ? (
+        <DialogFooter className="mt-2">
+          <DialogClose asChild>
+            <Button variant="outline">Annuleren</Button>
+          </DialogClose>
+          <SubmitButton>{submitLabel}</SubmitButton>
+        </DialogFooter>
+      ) : (
+        <div className="flex justify-end gap-2 pt-4">
+          <SubmitButton>{submitLabel}</SubmitButton>
+        </div>
+      )}
     </Form>
   );
+
+  if (withDialog) {
+    return (
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button variant="ghost" size="sm" icon>
+            <RiEditLine className="h-3 w-3" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Overledene bewerken</DialogTitle>
+          </DialogHeader>
+          {formContent}
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  return formContent;
 }

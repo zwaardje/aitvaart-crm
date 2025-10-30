@@ -66,7 +66,7 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
         ref={ref}
         id={formId}
         onSubmit={handleSubmit(onSubmit)}
-        className={cn("flex w-full flex-col gap-4", className)}
+        className={cn("flex w-full flex-col gap-4 p-2", className)}
         noValidate
       >
         {globalErrors && (

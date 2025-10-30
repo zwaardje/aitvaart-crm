@@ -255,7 +255,7 @@ export function useCurrentUserRole(organizationId?: string) {
 }
 
 export function useCurrentUserOrganization() {
-  return useQuery({
+  return useQuery<OrganizationMember | null>({
     queryKey: ["current-user-organization"],
     queryFn: async () => {
       const supabase = getSupabaseBrowser();
@@ -275,7 +275,7 @@ export function useCurrentUserOrganization() {
         .single();
 
       if (error) throw error;
-      return data;
+      return data as OrganizationMember;
     },
   });
 }

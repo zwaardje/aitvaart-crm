@@ -116,6 +116,28 @@ export const profileSchemas = {
     website: commonSchemas.website,
     description: commonSchemas.optionalString,
   }),
+
+  update: z.object({
+    full_name: z.string().min(1, "validation.fullName.required"),
+    phone: commonSchemas.phone,
+    email: commonSchemas.email.optional().or(z.literal("")),
+  }),
+};
+
+// Organization schemas
+export const organizationSchemas = {
+  update: z.object({
+    name: z.string().min(1, "validation.companyName.required"),
+    email: commonSchemas.email.optional().or(z.literal("")),
+    phone_number: commonSchemas.phone,
+    address: commonSchemas.optionalString,
+    city: commonSchemas.optionalString,
+    postal_code: commonSchemas.postalCode,
+    kvk_number: commonSchemas.kvkNumber,
+    btw_number: commonSchemas.btwNumber,
+    website: commonSchemas.website,
+    description: commonSchemas.optionalString,
+  }),
 };
 
 // Client schemas
@@ -273,6 +295,7 @@ export const brandingSchemas = {
 export const schemas = {
   auth: authSchemas,
   profile: profileSchemas,
+  organization: organizationSchemas,
   client: clientSchemas,
   deceased: deceasedSchemas,
   funeral: funeralSchemas,

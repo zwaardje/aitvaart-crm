@@ -3,15 +3,13 @@
 import React from "react";
 import { useCurrentUserOrganization } from "@/hooks/useOrganizations";
 import { useAuth } from "@/hooks/useAuth";
-import { useParams } from "next/navigation";
 import { GenericCard } from "@/components/ui/GenericCard";
-import { RiEditLine } from "@remixicon/react";
-import { Button } from "@/components/ui/Button";
+import { OrganizationEditForm } from "@/components/forms/OrganizationEditForm";
+import { ProfileEditForm } from "@/components/forms/ProfileEditForm";
 
 export default function CompanySettingsPage() {
-  const { id } = useParams();
-  const { data } = useCurrentUserOrganization();
-  const { profile } = useAuth();
+  const { data, refetch } = useCurrentUserOrganization();
+  const { profile, refetchProfile } = useAuth();
 
   const organization = data?.organization;
 
@@ -77,14 +75,14 @@ export default function CompanySettingsPage() {
           <div>
             <div className="text-gray-500 text-xs mb-1">KVK nummer</div>
             <div className="text-sm">
-              {data?.kvk_number || "Niet opgegeven"}
+              {organization.kvk_number || "Niet opgegeven"}
             </div>
           </div>
 
           <div>
             <div className="text-gray-500 text-xs mb-1">BTW nummer</div>
             <div className="text-sm">
-              {data?.btw_number || "Niet opgegeven"}
+              {organization.btw_number || "Niet opgegeven"}
             </div>
           </div>
         </div>
@@ -127,9 +125,10 @@ export default function CompanySettingsPage() {
         title="Bedrijfsgegevens"
         content={bedrijfsgegevensContent}
         actions={
-          <Button variant="outline" size="sm">
-            <RiEditLine className="h-4 w-4" />
-          </Button>
+          <OrganizationEditForm
+            organization={organization}
+            onSuccess={refetch}
+          />
         }
       />
 
@@ -137,9 +136,9 @@ export default function CompanySettingsPage() {
         title="Gegevens eigenaar"
         content={bedrijfseigenaarContent}
         actions={
-          <Button variant="outline" size="sm">
-            <RiEditLine className="h-4 w-4" />
-          </Button>
+          profile ? (
+            <ProfileEditForm profile={profile} onSuccess={refetchProfile} />
+          ) : null
         }
       />
     </div>
