@@ -12,7 +12,8 @@ export function Content({ children, className }: ContentProps) {
   return (
     <div
       className={cn(
-        "space-y-3 mx-auto max-w-7xl py-2 h-14 flex gap-4 min-h-screen bg-gray-50",
+        "h-[calc(100vh-10rem)]",
+        "space-y-3 mx-auto max-w-7xl py-2  w-full flex gap-4 bg-gray-50",
         className
       )}
     >

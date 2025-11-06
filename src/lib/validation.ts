@@ -137,6 +137,8 @@ export const organizationSchemas = {
     btw_number: commonSchemas.btwNumber,
     website: commonSchemas.website,
     description: commonSchemas.optionalString,
+    wish_intake_notes: commonSchemas.optionalString,
+    cost_estimate_notes: commonSchemas.optionalString,
   }),
 };
 
@@ -305,6 +307,26 @@ export const schemas = {
   estimate: estimateSchemas,
   branding: brandingSchemas,
   common: commonSchemas,
+  pricelistItem: {
+    create: z.object({
+      title: z.string().min(1, "validation.required"),
+      subtitle: z.string().optional(),
+      description: z.string().optional(),
+      default_quantity: z.number().int().min(1).optional(),
+      price_incl: z.number().min(0),
+      vat_rate: z.number().optional(),
+      unit: z.string().optional(),
+    }),
+    update: z.object({
+      title: z.string().min(1, "validation.required").optional(),
+      subtitle: z.string().optional(),
+      description: z.string().optional(),
+      default_quantity: z.number().int().min(1).optional(),
+      price_incl: z.number().min(0).optional(),
+      vat_rate: z.number().optional(),
+      unit: z.string().optional(),
+    }),
+  },
   notes: {
     create: z.object({
       funeral_id: z.string().uuid("validation.uuid.invalid"),

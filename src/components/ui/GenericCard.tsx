@@ -41,7 +41,7 @@ const Generic = ({
             <CardTitle
               className={cn(
                 "flex flex-col items-start gap-2 text-sm",
-                to && "font-normal tracking-wider"
+                to && "font-normal"
               )}
             >
               {icon}

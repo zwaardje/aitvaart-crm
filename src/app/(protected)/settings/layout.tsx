@@ -32,9 +32,7 @@ export default function SettingsLayout({
   return (
     <>
       <Submenu items={items} />
-      <Content>
-        <div className="p-2  w-full">{children}</div>
-      </Content>
+      <Content>{children}</Content>
     </>
   );
 }
