@@ -18,7 +18,7 @@ interface FormProps {
   onSubmit: (data: any) => void;
   className?: string;
   schema?: z.ZodSchema<any>;
-  serverErrors?: Error;
+  serverErrors?: Error | string;
   isLoading?: boolean;
   id?: string;
 }
@@ -50,7 +50,10 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
   React.useEffect(() => {
     if (serverErrors) {
       setError("root", {
-        message: serverErrors.message || "common.error",
+        message:
+          typeof serverErrors === "string"
+            ? serverErrors
+            : serverErrors.message || "common.error",
         type: "server",
       });
     }
@@ -70,9 +73,7 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
         noValidate
       >
         {globalErrors && (
-          <Alert variant="destructive" className="mb-4">
-            {globalErrors.message}
-          </Alert>
+          <Alert variant="destructive">{globalErrors.message}</Alert>
         )}
         {children}
       </form>

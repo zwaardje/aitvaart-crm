@@ -14,21 +14,21 @@ interface Breadcrumb {
 interface AppHeaderProps {
   logo?: React.ReactNode;
   className?: string;
-  deceasedName?: string;
+  showDeceasedName?: boolean;
+  funeralName?: string;
   pageTitle?: string;
   showBackButton?: boolean;
   onBackClick?: () => void;
-  onMenuClick?: () => void;
 }
 
 export function AppHeader({
   logo,
   className,
-  deceasedName,
+  showDeceasedName,
+  funeralName,
   pageTitle,
   showBackButton = false,
   onBackClick,
-  onMenuClick,
 }: AppHeaderProps) {
   const router = useRouter();
 
@@ -51,7 +51,9 @@ export function AppHeader({
     }
   };
 
-  const displayTitle = deceasedName || pageTitle || "Aitvaart CRM";
+  const displayTitle = showDeceasedName
+    ? funeralName
+    : pageTitle || "Aitvaart CRM";
 
   return (
     <header
@@ -65,7 +67,7 @@ export function AppHeader({
         <Button
           variant="ghost"
           size="icon"
-          onClick={showBackButton ? handleBackClick : onMenuClick}
+          onClick={showBackButton && handleBackClick}
           className="shrink-0 h-10 w-10 rounded-lg bg-gray-100 hover:bg-gray-200"
         >
           <RiArrowLeftLine className="h-5 w-5" />

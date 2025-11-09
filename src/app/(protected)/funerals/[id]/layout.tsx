@@ -40,9 +40,7 @@ export default function FuneralLayout({
   return (
     <>
       <Submenu items={items} />
-      <Content>
-        <div className="p-2  w-full">{children}</div>
-      </Content>
+      <div className="p-2  w-full">{children}</div>
     </>
   );
 }

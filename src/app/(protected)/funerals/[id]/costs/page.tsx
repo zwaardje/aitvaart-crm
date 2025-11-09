@@ -67,7 +67,7 @@ export default function FuneralCostsPage({
   return (
     <>
       {isLoading && (
-        <div className="pace-y-4 w-full">
+        <div className="space-y-4 w-full">
           <Skeleton className="h-10 w-64" />
           <Skeleton className="h-32 w-full" />
         </div>

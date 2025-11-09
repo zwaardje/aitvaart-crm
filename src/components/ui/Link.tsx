@@ -6,12 +6,11 @@ import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const linkVariants = cva(
-  "text-primary underline-offset-4 hover:underline transition-colors",
+  "underline-offset-4 hover:underline transition-colors",
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+        default: "bg-primary text-white shadow hover:bg-primary/90 radius-xs ",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:

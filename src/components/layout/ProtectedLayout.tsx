@@ -5,58 +5,72 @@ import { OnboardingGuard } from "@/components/onboarding";
 import { AppHeader, MainNavigation } from "@/components/layout";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/ui/logo";
-
-interface Breadcrumb {
-  href: string;
-  label: string;
-}
+import { useFuneralName } from "@/hooks/useFunerals";
+import { useMemo } from "react";
+import { Content } from "@/components/layout";
 
 interface ProtectedLayoutProps {
   children: React.ReactNode;
   requireOnboarding?: boolean;
-  deceasedName?: string;
-  pageTitle?: string;
-  showBackButton?: boolean;
   onBackClick?: () => void;
-  onMenuClick?: () => void;
 }
 
 export function ProtectedLayout({
   children,
   requireOnboarding = true,
-  deceasedName,
-  pageTitle,
-  showBackButton = false,
   onBackClick,
-  onMenuClick,
 }: ProtectedLayoutProps) {
   const pathname = usePathname();
 
-  // Bepaal of we een back button moeten tonen (als we niet op de hoofdpagina zijn)
-  const shouldShowBackButton =
-    showBackButton ||
-    (!pathname.includes("/dashboard") &&
-      !pathname.includes("/funerals") &&
-      !pathname.includes("/suppliers"));
+  const segments = pathname.split("/").filter(Boolean);
+  const funeralId = segments.find((segment) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      segment
+    )
+  );
+
+  const { data: funeralName, isLoading: isLoadingFuneralName } = useFuneralName(
+    funeralId || ""
+  );
+
+  const showBackButton =
+    pathname !== "/dashboard" &&
+    !pathname.includes("/settings/") &&
+    !pathname.endsWith("/funerals") &&
+    !pathname.includes("/intake");
+
+  const pageTitle = () => {
+    if (pathname === "/dashboard") return "Dashboard";
+    if (pathname.includes("/funerals")) return "Uitvaarten";
+    if (pathname.includes("/suppliers")) return "Instellingen";
+    if (pathname.includes("/intake")) return "Intake";
+    return "Aitvaart CRM";
+  };
+
+  const showMenu = pathname !== "/onboarding";
+
+  const showDeceasedName = useMemo(() => {
+    return Boolean(pathname.includes("/funerals/") && funeralName);
+  }, [pathname, funeralName]);
 
   return (
     <AuthGuard>
       <AppHeader
-        deceasedName={deceasedName}
-        pageTitle={pageTitle}
-        showBackButton={shouldShowBackButton}
+        showDeceasedName={showDeceasedName}
+        pageTitle={pageTitle()}
+        showBackButton={showBackButton}
         onBackClick={onBackClick}
-        onMenuClick={onMenuClick}
+        funeralName={funeralName ?? undefined}
         logo={<Logo />}
       />
-      <div className="">
+      <Content>
         {requireOnboarding ? (
           <OnboardingGuard>{children}</OnboardingGuard>
         ) : (
           children
         )}
-      </div>
-      <MainNavigation />
+      </Content>
+      {showMenu && <MainNavigation />}
     </AuthGuard>
   );
 }

@@ -1,38 +1,44 @@
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import type { Database } from "@/types/database";
 import { env } from "@/lib/env";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Create Supabase client for middleware
-  const supabase = createClient(
+  // Create a response object to modify
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
+
+  // Create Supabase client for middleware using SSR pattern
+  const supabase = createServerClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
-      auth: {
-        persistSession: false,
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value);
+            response.cookies.set(name, value, options);
+          });
+        },
       },
     }
   );
 
-  // Get session from cookies
-  const accessToken = request.cookies.get("sb-access-token")?.value;
-  const refreshToken = request.cookies.get("sb-refresh-token")?.value;
+  // Refresh session if expired - this is the recommended pattern
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  let isAuthenticated = false;
-
-  if (accessToken && refreshToken) {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser(accessToken);
-      isAuthenticated = !!user;
-    } catch {
-      isAuthenticated = false;
-    }
-  }
+  const isAuthenticated = !!user;
 
   // If user is not authenticated and trying to access protected routes
   if (!isAuthenticated && !pathname.startsWith("/auth/") && pathname !== "/") {
@@ -49,7 +55,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {

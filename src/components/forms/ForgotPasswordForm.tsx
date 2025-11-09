@@ -42,33 +42,24 @@ export function ForgotPasswordForm() {
 
   if (success) {
     return (
-      <div className="text-center space-y-4">
-        <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-          <svg
-            className="h-6 w-6 text-green-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-        </div>
-        <h2 className="text-xl font-bold">Email verzonden!</h2>
-        <p className="text-sm text-gray-600">
-          Controleer uw email voor instructies om uw wachtwoord te resetten.
-        </p>
-        <Link href="/auth/signin">Terug naar inloggen</Link>
-      </div>
+      <Card className="border-none shadow-none bg-transparent w-full">
+        <CardHeader className="text-center">
+          <CardTitle className="text-xl">Email verzonden!</CardTitle>
+          <CardDescription>
+            Controleer uw email voor instructies om uw wachtwoord te resetten.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col justify-between gap-2 items-center">
+          <Link href="/auth/signin" type="button" variant="default">
+            Terug naar inloggen
+          </Link>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <Card className="border-none shadow-none bg-transparent">
+    <Card className="border-none shadow-none bg-transparent w-full">
       <CardHeader className="text-center">
         <CardTitle className="text-xl">Wachtwoord vergeten?</CardTitle>
         <CardDescription>
@@ -80,23 +71,23 @@ export function ForgotPasswordForm() {
         <Form
           onSubmit={onSubmit}
           schema={schemas.auth.forgotPassword}
-          className="space-y-4"
+          serverErrors={error}
         >
-          <div className="space-y-4">
-            <FormInput
-              name="email"
-              label="Email adres"
-              type="email"
-              autoComplete="email"
-              placeholder="Email adres"
-            />
-          </div>
-
-          {error && (
-            <Alert variant="destructive">
-              <div className="text-sm">{error}</div>
-            </Alert>
-          )}
+          <FormInput
+            name="email"
+            label="Email adres"
+            type="email"
+            autoComplete="email"
+            placeholder="Email adres"
+            className="rounded-t-md"
+            validation={{
+              required: "Email is verplicht",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "Voer een geldig email adres in",
+              },
+            }}
+          />
 
           <div className="flex flex-col justify-between gap-2 items-center">
             <SubmitButton className="w-full" isLoading={isLoading}>

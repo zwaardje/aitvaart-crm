@@ -10,10 +10,11 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui";
-import { RiAddLine, RiCrossLine } from "@remixicon/react";
+import { RiCrossLine, RiAddLine } from "@remixicon/react";
 import { format } from "date-fns";
 import { Link } from "@/components/ui";
 import { Spinner } from "@/components/ui/spinner/Spinner";
+import { Button } from "@/components/ui/Button";
 
 // Helper function to get funeral status display info
 function getFuneralStatusDisplay(funeral: any) {
@@ -117,7 +118,13 @@ function FuneralPendingTasks({ funeralId }: { funeralId: string }) {
   );
 }
 
-export function Funerals({ filters }: { filters: FuneralFilters }) {
+export function Funerals({
+  filters,
+  handleCreateFuneral,
+}: {
+  filters: FuneralFilters;
+  handleCreateFuneral: () => void;
+}) {
   const { funerals, isLoading } = useFunerals(filters);
   const isEmpty = !funerals || funerals.length === 0;
 
@@ -131,15 +138,17 @@ export function Funerals({ filters }: { filters: FuneralFilters }) {
         </div>
       ) : isEmpty ? (
         <GenericCard
+          className="bg-gray-100"
           title="Geen uitvaarten gevonden"
           content={
-            <div className="flex flex-col items-center justify-center gap-3 py-8">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-muted-foreground/30">
-                <RiAddLine className="h-5 w-5 text-muted-foreground/50" />
-              </div>
+            <div className="flex flex-col gap-3 text-left">
+              <p>Er zijn momenteel nog geen actieve uitvaarten gevonden.</p>
+              <Button onClick={handleCreateFuneral}>
+                <RiAddLine className="h-4 w-4" />
+                Nieuwe uitvaart
+              </Button>
             </div>
           }
-          className="text-center"
         />
       ) : (
         <>

@@ -1,6 +1,6 @@
 # Authenticatie Setup - Uitvaart CRM
 
-Deze applicatie gebruikt NextAuth.js gecombineerd met Supabase voor authenticatie en autorisatie.
+Deze applicatie gebruikt Supabase Auth direct voor authenticatie en autorisatie. Supabase Auth wordt gebruikt via client-side forms en middleware voor route protection.
 
 ## 🚀 Setup
 
@@ -13,10 +13,6 @@ Voeg de volgende variabelen toe aan je `.env.local` bestand:
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-
-# NextAuth Configuration
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your_nextauth_secret_key_here
 ```
 
 ### 2. Supabase Setup
@@ -56,31 +52,35 @@ CREATE POLICY "Users can update their own profile"
 ### 1. Registratie (Sign Up)
 
 - Gebruiker vult formulier in op `/auth/signup`
-- Account wordt aangemaakt in Supabase Auth
+- Account wordt aangemaakt in Supabase Auth via `supabase.auth.signUp()`
+- Als email verificatie vereist is, wordt gebruiker geïnformeerd om email te controleren
+- Als email al bevestigd is (bijv. in development mode), wordt gebruiker doorgestuurd naar login pagina
 - Profiel wordt automatisch aangemaakt via database trigger
-- Gebruiker wordt doorgestuurd naar login pagina
 
 ### 2. Inloggen (Sign In)
 
 - Gebruiker vult credentials in op `/auth/signin`
-- NextAuth valideert credentials via Supabase
-- Session wordt aangemaakt met JWT token
+- Supabase Auth valideert credentials via `supabase.auth.signInWithPassword()`
+- Session wordt aangemaakt en opgeslagen in cookies via Supabase SSR
 - Gebruiker wordt doorgestuurd naar dashboard
 
 ### 3. Route Protection
 
+- Middleware gebruikt Supabase SSR pattern om session te refreshen
 - Middleware beschermt alle routes behalve auth pagina's
 - Ongeauthenticeerde gebruikers worden doorgestuurd naar login
-- Authenticated gebruikers hebben toegang tot alle functionaliteit
+- Authenticated gebruikers worden doorgestuurd naar dashboard als ze auth pagina's bezoeken
 
 ## 📁 Bestanden Overzicht
 
 ### Authenticatie Configuratie
 
-- `src/lib/auth.ts` - NextAuth configuratie
-- `src/app/api/auth/[...nextauth]/route.ts` - NextAuth API routes
-- `middleware.ts` - Route protection middleware
-- `src/types/next-auth.d.ts` - TypeScript type definitions
+- `middleware.ts` - Route protection middleware (gebruikt Supabase SSR pattern)
+- `src/lib/supabase/browser.ts` - Browser Supabase client voor client-side auth
+- `src/lib/supabase/server.ts` - Server Supabase client voor server-side auth
+- `src/lib/auth-utils.ts` - Auth utility hooks (`useCurrentUser`, `useCurrentUserId`)
+- `src/lib/auth.ts` - **@deprecated** NextAuth configuratie (niet gebruikt)
+- `src/app/api/auth/[...nextauth]/route.ts` - **@deprecated** NextAuth API route (niet gebruikt)
 
 ### Authenticatie Pagina's
 
@@ -90,8 +90,10 @@ CREATE POLICY "Users can update their own profile"
 
 ### Hooks & Components
 
-- `src/hooks/useAuth.ts` - Authenticatie hook (geüpdatet voor NextAuth)
-- `src/app/providers.tsx` - Session provider wrapper
+- `src/hooks/useAuth.ts` - Authenticatie hook (gebruikt Supabase Auth)
+- `src/components/auth/AuthGuard.tsx` - Auth guard component
+- `src/components/forms/SignInForm.tsx` - Login formulier
+- `src/components/forms/SignUpForm.tsx` - Registratie formulier
 - `src/app/dashboard/page.tsx` - Beschermde dashboard pagina
 
 ## 🎨 UI Features
@@ -133,18 +135,19 @@ function MyComponent() {
 }
 ```
 
-### Session Management
+### Direct Supabase Auth Usage
 
 ```tsx
-import { useSession } from "next-auth/react";
+import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { useCurrentUser } from "@/lib/auth-utils";
 
 function MyComponent() {
-  const { data: session, status } = useSession();
+  const { user, loading } = useCurrentUser();
 
-  if (status === "loading") return <div>Loading...</div>;
-  if (status === "unauthenticated") return <div>Not logged in</div>;
+  if (loading) return <div>Loading...</div>;
+  if (!user) return <div>Not logged in</div>;
 
-  return <div>Hello {session?.user?.name}</div>;
+  return <div>Hello {user.email}</div>;
 }
 ```
 
@@ -156,11 +159,12 @@ function MyComponent() {
 - Gebruikers kunnen alleen hun eigen data zien en bewerken
 - `entrepreneur_id` wordt automatisch toegevoegd bij nieuwe records
 
-### JWT Tokens
+### Session Management
 
-- NextAuth gebruikt JWT tokens voor session management
+- Supabase Auth gebruikt JWT tokens voor session management
+- Tokens worden automatisch opgeslagen in cookies via Supabase SSR
+- Middleware refresht automatisch de session bij elke request
 - Tokens bevatten user ID en andere essentiële informatie
-- Automatische token refresh
 
 ### Route Protection
 
@@ -174,9 +178,9 @@ function MyComponent() {
 
 1. **"No user logged in" errors**
 
-   - Controleer of NextAuth correct is geconfigureerd
-   - Verificeer environment variabelen
-   - Check of Supabase auth is ingeschakeld
+   - Controleer of Supabase environment variabelen correct zijn ingesteld
+   - Verificeer of Supabase auth is ingeschakeld in je Supabase project
+   - Check of cookies correct worden opgeslagen (check browser developer tools)
 
 2. **RLS Policy errors**
 
@@ -185,9 +189,10 @@ function MyComponent() {
    - Check database permissions
 
 3. **Session niet persistent**
-   - Controleer `NEXTAUTH_SECRET` environment variabele
-   - Verificeer cookie settings
-   - Check middleware configuratie
+   - Verificeer cookie settings in browser
+   - Check of middleware correct de session refresht
+   - Controleer Supabase project settings voor auth configuratie
+   - Check of email verificatie niet vereist is (in development mode)
 
 ### Debug Tips
 
@@ -198,7 +203,12 @@ function MyComponent() {
 
 ## 📚 Aanvullende Resources
 
-- [NextAuth.js Documentation](https://next-auth.js.org/)
 - [Supabase Auth Documentation](https://supabase.com/docs/guides/auth)
+- [Supabase SSR Documentation](https://supabase.com/docs/guides/auth/server-side/creating-a-client)
 - [React Hook Form Documentation](https://react-hook-form.com/)
 - [Zod Validation Documentation](https://zod.dev/)
+
+## ⚠️ Opmerkingen
+
+- **NextAuth is niet meer in gebruik**: De applicatie gebruikt nu direct Supabase Auth. NextAuth bestanden zijn gemarkeerd als `@deprecated` maar blijven in de codebase voor referentie.
+- **Email Verificatie**: Standaard vereist Supabase email verificatie. In development mode kan dit worden uitgeschakeld in Supabase project settings.

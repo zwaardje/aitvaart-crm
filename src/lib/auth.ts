@@ -1,3 +1,8 @@
+/**
+ * @deprecated This NextAuth configuration is not currently used.
+ * The application uses Supabase Auth directly via client-side forms.
+ * This file is kept for reference but can be removed if NextAuth is not needed.
+ */
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 // Removed OAuth providers (Google/Azure) to use Supabase Auth only

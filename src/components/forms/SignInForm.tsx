@@ -9,19 +9,9 @@ import {
   CardHeader,
   CardContent,
   CardTitle,
-  Input,
-  Button,
+  CardDescription,
 } from "@/components/ui";
-import { Form } from "@/components/forms";
-import { Alert } from "@/components/ui/Alert";
-import {
-  Form as ShadcnForm,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormInput, SubmitButton } from "@/components/forms";
 
 // import { ProviderButtons } from "@/components/auth";
 import { schemas, type SignInFormData } from "@/lib/validation";
@@ -45,19 +35,41 @@ export function SignInForm() {
         });
 
       if (authError) {
-        // Provide more specific error messages
-        if (authError.message.includes("Invalid login credentials")) {
+        // Provide more specific and user-friendly error messages
+        if (
+          authError.message.includes("Invalid login credentials") ||
+          authError.message.includes("invalid")
+        ) {
           setError(
             "Ongeldige inloggegevens. Controleer uw email en wachtwoord."
           );
-        } else if (authError.message.includes("Email not confirmed")) {
-          setError("Controleer uw email voor een bevestigingslink.");
+        } else if (
+          authError.message.includes("Email not confirmed") ||
+          authError.message.includes("email_not_confirmed")
+        ) {
+          setError(
+            "Uw email adres is nog niet bevestigd. Controleer uw inbox voor een bevestigingslink."
+          );
+        } else if (authError.message.includes("too many requests")) {
+          setError(
+            "Te veel pogingen. Wacht even voordat u het opnieuw probeert."
+          );
+        } else if (authError.message.includes("network")) {
+          setError(
+            "Netwerkfout. Controleer uw internetverbinding en probeer het opnieuw."
+          );
         } else {
-          setError("Er is een fout opgetreden bij het inloggen.");
+          setError(
+            authError.message || "Er is een fout opgetreden bij het inloggen."
+          );
         }
-      } else if (authData.user) {
-        // Successfully signed in
+        return;
+      }
+
+      if (authData.user && authData.session) {
+        // Successfully signed in - redirect to dashboard
         router.push("/dashboard");
+        router.refresh(); // Refresh to ensure session is updated
       }
     } catch (error) {
       setError("Er is een fout opgetreden. Probeer het opnieuw.");
@@ -67,74 +79,60 @@ export function SignInForm() {
   };
 
   return (
-    <Card className="border-none shadow-none bg-transparent">
-      <CardHeader className="text-center flex flex-col">
+    <Card className="border-none shadow-none bg-transparent w-full">
+      <CardHeader className="text-center">
         <CardTitle className="text-xl">Inloggen</CardTitle>
+        <CardDescription>
+          Welkom terug bij uw account. Voer uw email en wachtwoord in om in te
+          loggen.
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        {error && (
-          <Alert variant="destructive">
-            <div className="text-sm">{error}</div>
-          </Alert>
-        )}
-
         <Form
           onSubmit={onSubmit}
           schema={schemas.auth.signIn}
-          className="space-y-4"
+          serverErrors={error}
         >
-          <div className="space-y-4">
-            <FormField
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="email"
-                      autoComplete="email"
-                      placeholder="Email"
-                      className="rounded-t-md"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormInput
+            name="email"
+            label="Email adres"
+            type="email"
+            autoComplete="email"
+            placeholder="Email adres"
+            className="rounded-t-md"
+            suffix={
+              <Link href="/auth/forgot-password" className="text-xs p-0 h-auto">
+                Wachtwoord vergeten?
+              </Link>
+            }
+            validation={{
+              required: "Email is verplicht",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "Voer een geldig email adres in",
+              },
+            }}
+          />
 
-            <FormField
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex justify-between items-baseline gap-2">
-                    <FormLabel>Wachtwoord</FormLabel>
-                    <Link
-                      href="/auth/forgot-password"
-                      className="text-xs p-0 h-auto"
-                    >
-                      Wachtwoord vergeten?
-                    </Link>
-                  </div>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="password"
-                      autoComplete="current-password"
-                      placeholder="Wachtwoord"
-                      className="rounded-b-md"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormInput
+            name="password"
+            label="Wachtwoord"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Wachtwoord"
+            validation={{
+              required: "Wachtwoord is verplicht",
+              minLength: {
+                value: 6,
+                message: "Wachtwoord moet minimaal 6 karakters bevatten",
+              },
+            }}
+          />
 
           <div className="flex flex-col justify-between gap-2 items-center">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? <Spinner size={16} /> : "Inloggen"}
-            </Button>
+            <SubmitButton className="w-full" isLoading={isLoading}>
+              {isLoading ? "Account aanmaken..." : "Account aanmaken"}
+            </SubmitButton>
 
             <span className="text-sm text-muted-foreground lowercase">Of</span>
             <Link className="p-0 h-auto text-sm" href="/auth/signup">

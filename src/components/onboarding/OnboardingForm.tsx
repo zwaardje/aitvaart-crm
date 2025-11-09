@@ -3,24 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-import { useTranslations } from "next-intl";
-import {
-  Form,
-  FormInput,
-  FormTextarea,
-  FormSelect,
-  SubmitButton,
-} from "@/components/forms";
-import {
-  Alert,
-  AlertTitle,
-  AlertDescription,
-  Wizard,
-  WizardStep,
-  WizardNavigation,
-  WizardProgress,
-} from "@/components/ui";
+import { Form, FormInput, FormTextarea } from "@/components/forms";
+import { Wizard, WizardStep, WizardNavigation } from "@/components/ui";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 
 const onboardingSchema = z.object({
   companyName: z.string().min(1, "Bedrijfsnaam is verplicht"),
@@ -41,7 +33,6 @@ export function OnboardingForm() {
   const [error, setError] = useState("");
   const router = useRouter();
   const { completeOnboarding, isCompletingOnboarding } = useOnboarding();
-  const t = useTranslations();
 
   const onSubmit = async (data: any) => {
     setError("");
@@ -59,108 +50,92 @@ export function OnboardingForm() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {t("Welkom bij uw uitvaart CRM") || "Welkom bij uw uitvaart CRM"}
-        </h1>
-        <p className="text-gray-600">
-          {t(
-            "Om u optimaal van dienst te kunnen zijn, hebben we enkele gegevens van uw uitvaartonderneming nodig. Deze informatie is cruciaal voor het correct functioneren van het systeem."
-          ) ||
-            "Om u optimaal van dienst te kunnen zijn, hebben we enkele gegevens van uw uitvaartonderneming nodig. Deze informatie is cruciaal voor het correct functioneren van het systeem."}
-        </p>
-      </div>
-
       <Wizard totalSteps={3}>
-        <WizardProgress />
-
         <Form
           onSubmit={onSubmit}
           schema={onboardingSchema}
           className="space-y-6"
+          serverErrors={error}
         >
           {/* Stap 1: Bedrijfsinformatie */}
           <WizardStep step={1}>
-            <div className="rounded-lg border bg-card text-card-foreground p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                {t("Stap 1: Bedrijfsinformatie") ||
-                  "Stap 1: Bedrijfsinformatie"}
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                {t("Vertel ons iets over uw uitvaartonderneming en uzelf.") ||
-                  "Vertel ons iets over uw uitvaartonderneming en uzelf."}
-              </p>
+            <Card></Card>
+            <CardHeader>
+              <CardTitle>Stap 1: Bedrijfsinformatie</CardTitle>
+              <CardDescription>
+                Vertel ons iets over uw uitvaartonderneming en uzelf
+              </CardDescription>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormInput
+                    name="companyName"
+                    label="Bedrijfsnaam"
+                    placeholder="Uitvaartonderneming De Vrede"
+                    validation={{
+                      required: "Bedrijfsnaam is verplicht",
+                      minLength: {
+                        value: 2,
+                        message:
+                          "Bedrijfsnaam moet minimaal 2 karakters bevatten",
+                      },
+                    }}
+                  />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormInput
-                  name="companyName"
-                  label={t("Bedrijfsnaam")}
-                  placeholder={t("Uitvaartonderneming De Vrede")}
-                  validation={{
-                    required: t("Bedrijfsnaam is verplicht"),
-                    minLength: {
-                      value: 2,
-                      message: t(
-                        "Bedrijfsnaam moet minimaal 2 karakters bevatten"
-                      ),
-                    },
-                  }}
-                />
+                  <FormInput
+                    name="fullName"
+                    label="Uw volledige naam"
+                    placeholder="Jan de Vries"
+                    validation={{
+                      required: "Volledige naam is verplicht",
+                      minLength: {
+                        value: 2,
+                        message:
+                          "Volledige naam moet minimaal 2 karakters bevatten",
+                      },
+                    }}
+                  />
 
-                <FormInput
-                  name="fullName"
-                  label="Uw volledige naam"
-                  placeholder="Jan de Vries"
-                  validation={{
-                    required: "Volledige naam is verplicht",
-                    minLength: {
-                      value: 2,
-                      message:
-                        "Volledige naam moet minimaal 2 karakters bevatten",
-                    },
-                  }}
-                />
+                  <FormInput
+                    name="phone"
+                    label="Telefoonnummer"
+                    type="tel"
+                    placeholder="06-12345678"
+                    validation={{
+                      required: "Telefoonnummer is verplicht",
+                      minLength: {
+                        value: 10,
+                        message:
+                          "Telefoonnummer moet minimaal 10 cijfers bevatten",
+                      },
+                    }}
+                  />
 
-                <FormInput
-                  name="phone"
-                  label="Telefoonnummer"
-                  type="tel"
-                  placeholder="06-12345678"
-                  validation={{
-                    required: "Telefoonnummer is verplicht",
-                    minLength: {
-                      value: 10,
-                      message:
-                        "Telefoonnummer moet minimaal 10 cijfers bevatten",
-                    },
-                  }}
-                />
+                  <FormInput
+                    name="website"
+                    label="Website (optioneel)"
+                    type="url"
+                    placeholder="https://www.uitvaartonderneming.nl"
+                  />
+                </div>
 
-                <FormInput
-                  name="website"
-                  label="Website (optioneel)"
-                  type="url"
-                  placeholder="https://www.uitvaartonderneming.nl"
-                />
-              </div>
-
-              <div className="mt-4">
-                <FormTextarea
-                  name="description"
-                  label="Korte beschrijving van uw bedrijf"
-                  placeholder="Vertel iets over uw uitvaartonderneming, specialisaties, en werkgebied..."
-                  rows={3}
-                  validation={{
-                    required: "Beschrijving is verplicht",
-                    minLength: {
-                      value: 10,
-                      message:
-                        "Beschrijving moet minimaal 10 karakters bevatten",
-                    },
-                  }}
-                />
-              </div>
-            </div>
+                <div className="mt-4">
+                  <FormTextarea
+                    name="description"
+                    label="Korte beschrijving van uw bedrijf"
+                    placeholder="Vertel iets over uw uitvaartonderneming, specialisaties, en werkgebied..."
+                    rows={3}
+                    validation={{
+                      required: "Beschrijving is verplicht",
+                      minLength: {
+                        value: 10,
+                        message:
+                          "Beschrijving moet minimaal 10 karakters bevatten",
+                      },
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </CardHeader>
           </WizardStep>
 
           {/* Stap 2: Adresgegevens */}
@@ -249,29 +224,13 @@ export function OnboardingForm() {
                 />
               </div>
             </div>
-
-            <Alert className="mt-6">
-              <AlertTitle>Belangrijke informatie</AlertTitle>
-              <AlertDescription>
-                Deze gegevens zijn noodzakelijk voor het correct functioneren
-                van uw CRM systeem. U kunt deze informatie later nog aanpassen
-                in uw profielinstellingen.
-              </AlertDescription>
-            </Alert>
           </WizardStep>
-
-          {error && (
-            <Alert variant="destructive">
-              <AlertTitle>Fout bij opslaan</AlertTitle>
-              <AlertDescription className="text-sm">{error}</AlertDescription>
-            </Alert>
-          )}
 
           <WizardNavigation
             finishLabel={
               isCompletingOnboarding
-                ? t("Gegevens opslaan...")
-                : t("Onboarding voltooien")
+                ? "Gegevens opslaan..."
+                : "Onboarding voltooien"
             }
             isNextDisabled={isCompletingOnboarding}
           />

@@ -3,9 +3,16 @@
 import { useState } from "react";
 import { z } from "zod";
 import { Form, FormInput, SubmitButton } from "@/components/forms";
-import { Alert } from "@/components/ui";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import { schemas } from "@/lib/validation";
+import { Link } from "@/components/ui";
 
 const resetSchema = z
   .object({
@@ -62,44 +69,59 @@ export function ResetPasswordForm() {
 
   if (success) {
     return (
-      <div className="text-center space-y-2">
-        <h2 className="text-xl font-semibold">Wachtwoord aangepast</h2>
-        <p className="text-sm text-muted-foreground">
-          U wordt doorgestuurd naar de inlogpagina...
-        </p>
-      </div>
+      <Card className="border-none shadow-none bg-transparent w-full">
+        <CardHeader className="text-center">
+          <CardTitle className="text-xl">Uw wachtwoord is aangepast</CardTitle>
+          <CardDescription>
+            U wordt doorgestuurd naar de inlogpagina...
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col justify-between gap-2 items-center">
+          <Link href="/auth/signin" type="button" variant="default">
+            Terug naar inloggen
+          </Link>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <Form onSubmit={onSubmit} schema={resetSchema} className="space-y-6">
-      <div className="space-y-4">
-        <FormInput
-          name="password"
-          label="Nieuw wachtwoord"
-          type="password"
-          autoComplete="new-password"
-          placeholder="Nieuw wachtwoord"
-        />
+    <Card className="border-none shadow-none bg-transparent w-full">
+      <CardHeader className="text-center">
+        <CardTitle className="text-2xl">Wachtwoord resetten</CardTitle>
+        <CardDescription>
+          Stel een nieuw wachtwoord in voor uw account.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form onSubmit={onSubmit} schema={resetSchema} serverErrors={error}>
+          <FormInput
+            name="password"
+            label="Nieuw wachtwoord"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Nieuw wachtwoord"
+          />
 
-        <FormInput
-          name="confirmPassword"
-          label="Bevestig wachtwoord"
-          type="password"
-          autoComplete="new-password"
-          placeholder="Bevestig wachtwoord"
-        />
-      </div>
+          <FormInput
+            name="confirmPassword"
+            label="Bevestig wachtwoord"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Bevestig wachtwoord"
+          />
 
-      {error && (
-        <Alert variant="destructive">
-          <div className="text-sm">{error}</div>
-        </Alert>
-      )}
-
-      <SubmitButton className="w-full" isLoading={isLoading}>
-        {isLoading ? "Opslaan..." : "Wachtwoord opslaan"}
-      </SubmitButton>
-    </Form>
+          <div className="flex flex-col justify-between gap-2 items-center">
+            <SubmitButton className="w-full" isLoading={isLoading}>
+              {isLoading ? "Opslaan..." : "Wachtwoord opslaan"}
+            </SubmitButton>
+            <span className="text-sm text-muted-foreground lowercase">Of</span>
+            <Link className="p-0 h-auto text-sm" href="/auth/signin">
+              Terug naar inloggen
+            </Link>
+          </div>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }

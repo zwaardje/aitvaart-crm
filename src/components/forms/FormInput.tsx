@@ -11,6 +11,7 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   validation?: any;
   hint?: string;
   className?: string;
+  suffix?: React.ReactNode;
 }
 
 export function FormInput({
@@ -19,6 +20,7 @@ export function FormInput({
   validation,
   hint,
   className,
+  suffix,
   ...rest
 }: FormInputProps) {
   const {
@@ -30,11 +32,14 @@ export function FormInput({
 
   return (
     <div className={cn("space-y-1", className)}>
-      {label && (
-        <Label htmlFor={inputId} className="text-xs text-muted-foreground">
-          {label}
-        </Label>
-      )}
+      <div className="flex items-center justify-between gap-2">
+        {label && (
+          <Label htmlFor={inputId} className="text-xs text-muted-foreground">
+            {label}
+          </Label>
+        )}
+        {suffix && suffix}
+      </div>
       <Input
         id={inputId}
         {...register(name, validation)}

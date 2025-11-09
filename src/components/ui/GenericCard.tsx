@@ -15,6 +15,7 @@ interface GenericCardProps {
   actions?: ReactNode;
   className?: string;
   to?: string;
+  square?: boolean;
 }
 
 const Generic = ({
@@ -26,10 +27,18 @@ const Generic = ({
   content,
   footer,
   actions,
+  square,
 }: GenericCardProps) => {
   console.log(to);
   return (
-    <Card className={cn("relative rounded-sm", className, to && "shadow-none")}>
+    <Card
+      className={cn(
+        "relative rounded-sm",
+        className,
+        to && "shadow-none",
+        square && "aspect-square"
+      )}
+    >
       <CardHeader className="pb-3 pl-3 pr-3 pt-3">
         <div
           className={cn(

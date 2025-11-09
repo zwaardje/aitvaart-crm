@@ -28,7 +28,6 @@ export function SearchBar({
   const t = useTranslations("search");
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
@@ -52,8 +51,6 @@ export function SearchBar({
     limit,
   });
 
-  const entityTypesString = entityTypes?.join(",");
-  
   const filteredResults = useMemo(() => {
     return entityTypes
       ? search.results.filter((result) =>
@@ -83,8 +80,6 @@ export function SearchBar({
             placeholder={placeholder || t("placeholder")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
             className="pl-10 pr-10"
           />
           {search.isLoading || isTyping ? (
