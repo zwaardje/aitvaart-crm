@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { RiSearchLine, RiCloseLine } from "@remixicon/react";
 import { Input } from "./input";
@@ -18,6 +18,18 @@ interface SearchBarProps {
   limit?: number;
 }
 
+// Helper function to compare arrays by their content
+function arraysEqual(a: any[], b: any[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((item, index) => {
+    const itemB = b[index];
+    return (
+      item.entity_id === itemB.entity_id &&
+      item.entity_type === itemB.entity_type
+    );
+  });
+}
+
 export function SearchBar({
   onResultsChange,
   placeholder,
@@ -29,6 +41,15 @@ export function SearchBar({
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+
+  // Store callback in ref to avoid dependency issues
+  const onResultsChangeRef = useRef(onResultsChange);
+  const previousResultsRef = useRef<any[]>([]);
+
+  // Update callback ref when it changes
+  useEffect(() => {
+    onResultsChangeRef.current = onResultsChange;
+  }, [onResultsChange]);
 
   useEffect(() => {
     if (query.length > 0) {
@@ -60,10 +81,15 @@ export function SearchBar({
   }, [search.results, entityTypes]);
 
   useEffect(() => {
-    if (onResultsChange) {
-      onResultsChange(filteredResults);
+    // Only call callback if results actually changed
+    if (
+      onResultsChangeRef.current &&
+      !arraysEqual(filteredResults, previousResultsRef.current)
+    ) {
+      onResultsChangeRef.current(filteredResults);
+      previousResultsRef.current = filteredResults;
     }
-  }, [filteredResults, onResultsChange]);
+  }, [filteredResults]);
 
   const clearSearch = () => {
     setQuery("");

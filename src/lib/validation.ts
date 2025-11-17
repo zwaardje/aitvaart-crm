@@ -187,17 +187,97 @@ export const deceasedSchemas = {
 };
 
 // Funeral schemas
-const funeralCreateSchema = z.object({
-  deceased_id: z.string().uuid("validation.deceased.required"),
-  client_id: z.string().uuid("validation.client.required"),
-  location: commonSchemas.optionalString,
-  signing_date: commonSchemas.date,
-  funeral_director: commonSchemas.optionalString,
-});
+const funeralCreateSchema = z
+  .object({
+    deceased_id: z.string().uuid("validation.deceased.required"),
+    client_id: z.string().uuid("validation.client.required"),
+    location: commonSchemas.optionalString,
+    signing_date: commonSchemas.date,
+    funeral_director: commonSchemas.optionalString,
+    deceased_death_date: commonSchemas.date,
+  })
+  .refine(
+    (data) =>
+      data.deceased_death_date &&
+      data.signing_date &&
+      data.deceased_death_date < data.signing_date,
+    {
+      message:
+        "De overlijdensdatum moet voor de datum van ondertekening liggen",
+      path: ["deceased_death_date"],
+    }
+  )
+  .refine(
+    (data) =>
+      data.signing_date &&
+      data.deceased_death_date &&
+      data.signing_date > data.deceased_death_date,
+    {
+      message: "De datum van ondertekening moet na de overlijdensdatum liggen",
+      path: ["deceased_death_date"],
+    }
+  );
 
 export const funeralSchemas = {
   create: funeralCreateSchema,
-  update: funeralCreateSchema.partial(),
+  update: funeralCreateSchema,
+};
+
+// Intake form schema
+const intakeDeceasedSchema = z.object({
+  first_names: z.string().min(1, "validation.required"),
+  last_name: z.string().min(1, "validation.required"),
+  date_of_birth: z.string().min(1, "validation.required"),
+  place_of_birth: z.string().min(1, "validation.required"),
+  gender: z.enum(["male", "female", "other"], {
+    errorMap: () => ({ message: "validation.required" }),
+  }),
+  social_security_number: z.string().min(1, "validation.required"),
+  coffin_registration_number: z.string().min(1, "validation.required"),
+  street: z.string().min(1, "validation.required"),
+  house_number: z.string().min(1, "validation.required"),
+  house_number_addition: z.string().optional(),
+  postal_code: z
+    .string()
+    .regex(/^[0-9]{4}\s?[A-Z]{2}$/i, "validation.postalCode.invalid"),
+  city: z.string().min(1, "validation.required"),
+  date_of_death: z.string().min(1, "validation.required"),
+});
+
+const intakeClientSchema = z.object({
+  preferred_name: z.string().min(1, "validation.required"),
+  last_name: z.string().min(1, "validation.required"),
+  phone_number: z
+    .string()
+    .regex(/^[\+]?[0-9\s\-\(\)]{10,}$/, "validation.phone.invalid"),
+  email: z.string().email("validation.email.invalid"),
+});
+
+const intakeFuneralSchema = z.object({
+  funeral_director: z.string().min(1, "validation.required"),
+  location: z.string().min(1, "validation.required"),
+  signing_date: z.string().min(1, "validation.required"),
+});
+
+export const intakeSchemas = {
+  form: z
+    .object({
+      deceased: intakeDeceasedSchema,
+      client: intakeClientSchema,
+      funeral: intakeFuneralSchema,
+    })
+    .refine(
+      (data) =>
+        data.deceased.date_of_death &&
+        data.funeral.signing_date &&
+        new Date(data.deceased.date_of_death) <=
+          new Date(data.funeral.signing_date),
+      {
+        message:
+          "De datum van ondertekening moet na de overlijdensdatum liggen",
+        path: ["funeral", "signing_date"],
+      }
+    ),
 };
 
 // Supplier schemas
@@ -402,3 +482,4 @@ export type ScenarioFormData = z.infer<typeof schemas.scenarios.create>;
 export type ScenarioUpdateFormData = z.infer<typeof schemas.scenarios.update>;
 export type CostFormData = z.infer<typeof schemas.costs.create>;
 export type CostUpdateFormData = z.infer<typeof schemas.costs.update>;
+export type IntakeFormData = z.infer<typeof intakeSchemas.form>;

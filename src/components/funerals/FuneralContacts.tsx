@@ -3,13 +3,8 @@
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import { useFuneralContacts } from "@/hooks";
 import type { Database } from "@/types/database";
-import { Badge, Skeleton, GenericCard } from "@/components/ui";
-import {
-  FuneralContactForm,
-  FuneralContactEditForm,
-  FuneralContactDeleteForm,
-} from "@/components/forms";
-import { SectionHeader } from "@/components/layout";
+import { Skeleton } from "@/components/ui";
+import { ContactsCard } from "@/components/funerals/ContactsCard";
 import { useMemo } from "react";
 
 type ClientRow = Database["public"]["Tables"]["clients"]["Row"];
@@ -17,7 +12,7 @@ type FuneralContactRow =
   Database["public"]["Tables"]["funeral_contacts"]["Row"];
 type ContactWithClient = FuneralContactRow & { client: ClientRow | null };
 
-type CreateForm = {
+export type CreateForm = {
   preferred_name: string;
   last_name: string;
   email?: string;
@@ -25,7 +20,7 @@ type CreateForm = {
   relation?: string;
   is_primary?: boolean;
 };
-type EditForm = CreateForm;
+export type EditForm = CreateForm;
 
 type Props = { funeralId: string };
 
@@ -102,32 +97,11 @@ export function FuneralContacts({ funeralId }: Props) {
         {!isLoading && typedContacts.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {sortedContacts.map((c) => (
-              <GenericCard
+              <ContactsCard
                 key={c.id}
-                title={`${c.client?.preferred_name} ${c.client?.last_name}`}
-                subtitle={c.relation || "-"}
-                content={
-                  <div className="text-sm">
-                    <div className="truncate">{c.client?.email ?? "-"}</div>
-                    <div className="text-muted-foreground">
-                      {c.client?.phone_number ?? "-"}
-                    </div>
-                  </div>
-                }
-                actions={
-                  <>
-                    {c.is_primary && (
-                      <Badge className="text-xs font-normal">
-                        Opdrachtgever
-                      </Badge>
-                    )}
-                    <FuneralContactEditForm contact={c} onEdit={onEdit} />
-                    <FuneralContactDeleteForm
-                      contactFirstName={c.client?.preferred_name ?? ""}
-                      onConfirm={() => onDelete(c)}
-                    />
-                  </>
-                }
+                contact={c}
+                onEdit={onEdit}
+                onDelete={onDelete}
               />
             ))}
           </div>

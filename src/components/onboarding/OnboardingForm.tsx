@@ -59,12 +59,13 @@ export function OnboardingForm() {
         >
           {/* Stap 1: Bedrijfsinformatie */}
           <WizardStep step={1}>
-            <Card></Card>
-            <CardHeader>
-              <CardTitle>Stap 1: Bedrijfsinformatie</CardTitle>
-              <CardDescription>
-                Vertel ons iets over uw uitvaartonderneming en uzelf
-              </CardDescription>
+            <Card>
+              <CardHeader>
+                <CardTitle>Stap 1: Bedrijfsinformatie</CardTitle>
+                <CardDescription>
+                  Vertel ons iets over uw uitvaartonderneming en uzelf
+                </CardDescription>
+              </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormInput
@@ -135,95 +136,99 @@ export function OnboardingForm() {
                   />
                 </div>
               </CardContent>
-            </CardHeader>
+            </Card>
           </WizardStep>
 
           {/* Stap 2: Adresgegevens */}
           <WizardStep step={2}>
-            <div className="rounded-lg border bg-card text-card-foreground p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Stap 2: Adresgegevens
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                Waar is uw uitvaartonderneming gevestigd?
-              </p>
+            <Card>
+              <CardHeader>
+                <CardTitle>Stap 2: Adresgegevens</CardTitle>
+                <CardDescription>
+                  Waar is uw uitvaartonderneming gevestigd?
+                </CardDescription>
+              </CardHeader>
 
-              <div className="space-y-4">
-                <FormInput
-                  name="address"
-                  label="Straat en huisnummer"
-                  placeholder="Hoofdstraat 123"
-                  validation={{
-                    required: "Adres is verplicht",
-                    minLength: {
-                      value: 5,
-                      message: "Adres moet minimaal 5 karakters bevatten",
-                    },
-                  }}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <CardContent>
+                <div className="space-y-4">
                   <FormInput
-                    name="postalCode"
-                    label="Postcode"
-                    placeholder="1234 AB"
+                    name="address"
+                    label="Straat en huisnummer"
+                    placeholder="Hoofdstraat 123"
                     validation={{
-                      required: "Postcode is verplicht",
+                      required: "Adres is verplicht",
                       minLength: {
-                        value: 4,
-                        message: "Postcode moet minimaal 4 karakters bevatten",
+                        value: 5,
+                        message: "Adres moet minimaal 5 karakters bevatten",
                       },
                     }}
                   />
 
-                  <FormInput
-                    name="city"
-                    label="Plaats"
-                    placeholder="Amsterdam"
-                    validation={{
-                      required: "Plaats is verplicht",
-                      minLength: {
-                        value: 2,
-                        message: "Plaats moet minimaal 2 karakters bevatten",
-                      },
-                    }}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormInput
+                      name="postalCode"
+                      label="Postcode"
+                      placeholder="1234 AB"
+                      validation={{
+                        required: "Postcode is verplicht",
+                        minLength: {
+                          value: 4,
+                          message:
+                            "Postcode moet minimaal 4 karakters bevatten",
+                        },
+                      }}
+                    />
+
+                    <FormInput
+                      name="city"
+                      label="Plaats"
+                      placeholder="Amsterdam"
+                      validation={{
+                        required: "Plaats is verplicht",
+                        minLength: {
+                          value: 2,
+                          message: "Plaats moet minimaal 2 karakters bevatten",
+                        },
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </WizardStep>
 
           {/* Stap 3: Bedrijfsgegevens */}
           <WizardStep step={3}>
-            <div className="rounded-lg border bg-card text-card-foreground p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Stap 3: Bedrijfsgegevens
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                Tot slot hebben we nog enkele officiële gegevens nodig.
-              </p>
+            <Card>
+              <CardHeader>
+                <CardTitle>Stap 3: Bedrijfsgegevens</CardTitle>
+                <CardDescription>
+                  Tot slot hebben we nog enkele officiële gegevens nodig.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormInput
+                    name="kvkNumber"
+                    label="KVK nummer"
+                    placeholder="12345678"
+                    validation={{
+                      required: "KVK nummer is verplicht",
+                      minLength: {
+                        value: 8,
+                        message: "KVK nummer moet minimaal 8 cijfers bevatten",
+                      },
+                    }}
+                  />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormInput
-                  name="kvkNumber"
-                  label="KVK nummer"
-                  placeholder="12345678"
-                  validation={{
-                    required: "KVK nummer is verplicht",
-                    minLength: {
-                      value: 8,
-                      message: "KVK nummer moet minimaal 8 cijfers bevatten",
-                    },
-                  }}
-                />
-
-                <FormInput
-                  name="btwNumber"
-                  label="BTW nummer (optioneel)"
-                  placeholder="NL123456789B01"
-                />
-              </div>
-            </div>
+                  <FormInput
+                    name="btwNumber"
+                    label="BTW nummer (optioneel)"
+                    placeholder="NL123456789B01"
+                  />
+                </div>
+              </CardContent>
+            </Card>
           </WizardStep>
 
           <WizardNavigation

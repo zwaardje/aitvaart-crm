@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui";
+import { SubmitButton } from "@/components/forms/SubmitButton";
 
 interface WizardContextType {
   currentStep: number;
@@ -150,9 +151,7 @@ export function WizardNavigation({
         )}
 
         {isLastStep && (
-          <Button type="submit" form={formId} disabled={isNextDisabled}>
-            {finishLabel}
-          </Button>
+          <SubmitButton disabled={isNextDisabled}>{finishLabel}</SubmitButton>
         )}
       </div>
     </div>

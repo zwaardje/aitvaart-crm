@@ -15,9 +15,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { SearchResult } from "@/hooks/useSearch";
+import { FuneralCard } from "@/components/funerals/FuneralsCard";
+import { NotesCard } from "@/components/funerals/NotesCard";
+import { ContactsCard } from "@/components/funerals/ContactsCard";
 
 export default function DashboardPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const searchActions = useCallback(
     (): SmartSearchBarAction[] => [
       {
@@ -32,26 +37,36 @@ export default function DashboardPage() {
     []
   );
 
-  // Stable callback for search results
-  const handleSearchResultsChange = useCallback((results: any[]) => {
-    console.log(results);
-  }, []);
-
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <>
       <SmartSearchBar
         placeholder="Zoek in dashboard..."
-        onResultsChange={handleSearchResultsChange}
+        onResultsChange={setSearchResults}
         actions={searchActions()}
         entityTypes={["funeral", "note", "contact"]}
       />
 
-      <Funerals
-        filters={{
-          status: "active",
-        }}
-        handleCreateFuneral={() => setIsDialogOpen(true)}
-      />
+      {searchResults.length > 0 ? (
+        <div className="space-y-4">
+          {searchResults.map((result) =>
+            result.entity_type === "funeral" ? (
+              <FuneralCard key={result.entity_id} funeral={result.content} />
+            ) : result.entity_type === "note" ? (
+              <NotesCard key={result.entity_id} note={result} />
+            ) : result.entity_type === "contact" ? (
+              <ContactsCard key={result.entity_id} contact={result.content} />
+            ) : null
+          )}
+        </div>
+      ) : (
+        <Funerals
+          filters={{
+            status: ["planning", "active"],
+          }}
+          handleCreateFuneral={() => setIsDialogOpen(true)}
+        />
+      )}
+
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -60,6 +75,6 @@ export default function DashboardPage() {
           <IntakeForm />
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }

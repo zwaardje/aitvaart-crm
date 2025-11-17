@@ -123,7 +123,7 @@ export function SmartSearchBar({
           {/* More Actions Menu */}
           {actions.length > 0 && (
             <DropdownMenu>
-              <DropdownMenuTrigger>
+              <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="h-10 px-3 gap-2">
                   <RiMoreLine className="h-4 w-4" />
                   Meer

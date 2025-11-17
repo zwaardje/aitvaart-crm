@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "./card";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { RiArrowRightLine, RiArrowRightSLine } from "@remixicon/react";
+import { RiArrowRightSLine } from "@remixicon/react";
 
 interface GenericCardProps {
   title: string;
@@ -29,7 +29,6 @@ const Generic = ({
   actions,
   square,
 }: GenericCardProps) => {
-  console.log(to);
   return (
     <Card
       className={cn(

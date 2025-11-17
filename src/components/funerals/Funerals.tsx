@@ -1,122 +1,10 @@
 "use client";
 
 import { useFunerals, type FuneralFilters } from "@/hooks/useFunerals";
-import { useTasks } from "@/hooks/useTasks";
-import {
-  Skeleton,
-  Badge,
-  GenericCard,
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui";
-import { RiCrossLine, RiAddLine } from "@remixicon/react";
-import { format } from "date-fns";
-import { Link } from "@/components/ui";
-import { Spinner } from "@/components/ui/spinner/Spinner";
+import { Skeleton, GenericCard } from "@/components/ui";
+import { RiAddLine } from "@remixicon/react";
 import { Button } from "@/components/ui/Button";
-
-// Helper function to get funeral status display info
-function getFuneralStatusDisplay(funeral: any) {
-  const status = funeral.status || "planning";
-
-  const statusConfig = {
-    planning: {
-      label: "Planning",
-      color: "bg-yellow-100 text-yellow-700",
-    },
-    active: {
-      label: "Actief",
-      color: "bg-blue-100 text-blue-700",
-    },
-    completed: {
-      label: "Afgerond",
-      color: "bg-gray-100 text-gray-700",
-    },
-    cancelled: {
-      label: "Geannuleerd",
-      color: "bg-red-100 text-red-700",
-    },
-  };
-
-  return {
-    status,
-    ...statusConfig[status as keyof typeof statusConfig],
-  };
-}
-
-// Helper function to render team member avatars
-function renderTeamMembers(teamAssignments: any[], funeralDirector?: string) {
-  const avatars = [];
-
-  // Add funeral director first if available
-  if (funeralDirector) {
-    avatars.push(
-      <Avatar className="h-6 w-6 border-2 border-white">
-        <AvatarImage src={undefined} alt="Funeral Director" />
-        <AvatarFallback className="text-xs bg-gray-200 text-muted-foreground">
-          FD
-        </AvatarFallback>
-      </Avatar>
-    );
-  }
-
-  // Add team assignments if available
-  if (teamAssignments && teamAssignments.length > 0) {
-    // Sort by role priority: primary first, then assigned, then backup
-    const sortedAssignments = [...teamAssignments].sort((a, b) => {
-      const roleOrder = { primary: 0, assigned: 1, backup: 2 };
-      return (
-        (roleOrder[a.role as keyof typeof roleOrder] || 1) -
-        (roleOrder[b.role as keyof typeof roleOrder] || 1)
-      );
-    });
-
-    // Show max 2 team members (since funeral director takes 1 slot)
-    const displayAssignments = sortedAssignments.slice(0, 2);
-
-    displayAssignments.forEach((assignment) => {
-      const avatarColor = "bg-gray-200 text-muted-foreground border";
-
-      avatars.push(
-        <Avatar className="h-6 w-6 border-2 border-white">
-          <AvatarImage src={undefined} alt={`Team member ${assignment.role}`} />
-          <AvatarFallback className={`text-xs ${avatarColor}`}>
-            {assignment.role === "primary"
-              ? "P"
-              : assignment.role === "backup"
-              ? "B"
-              : "A"}
-          </AvatarFallback>
-        </Avatar>
-      );
-    });
-  }
-
-  return <div className="flex -space-x-2">{avatars}</div>;
-}
-
-// Component to fetch and display pending tasks for a funeral
-function FuneralPendingTasks({ funeralId }: { funeralId: string }) {
-  const { data: tasks, isLoading } = useTasks(funeralId);
-  const pendingTasks = tasks?.filter((task) => task.status !== "done") || [];
-
-  return (
-    <div className="flex items-center justify-between w-full">
-      <span className="text-sm font-medium text-gray-900">
-        Openstaande acties
-      </span>
-      <div className="flex items-center gap-2">
-        <Badge
-          variant="outline"
-          className="h-5 w-5 p-0 flex items-center justify-center text-xs"
-        >
-          {isLoading ? <Spinner size={24} /> : pendingTasks.length}
-        </Badge>
-      </div>
-    </div>
-  );
-}
+import { FuneralCard } from "./FuneralsCard";
 
 export function Funerals({
   filters,
@@ -129,7 +17,7 @@ export function Funerals({
   const isEmpty = !funerals || funerals.length === 0;
 
   return (
-    <section className="space-y-4 w-full">
+    <section className="flex flex-col pb-4 gap-4 w-full">
       {isLoading && isEmpty ? (
         <div className="space-y-4">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -153,64 +41,7 @@ export function Funerals({
       ) : (
         <>
           {funerals!.map((f, i) => (
-            <Link
-              className="hover:no-underline"
-              href={`/funerals/${f.id}`}
-              key={f.id}
-            >
-              <GenericCard
-                title={`${f.deceased?.first_names} ${f.deceased?.last_name}`}
-                actions={
-                  <div className="flex items-center gap-2">
-                    {/* Funeral Team Members */}
-                    {renderTeamMembers(
-                      [], // team_assignments not available yet
-                      f.funeral_director || undefined
-                    ) || (
-                      <div className="flex -space-x-2">
-                        <Avatar className="h-6 w-6 border-2 border-white">
-                          <AvatarImage src={undefined} alt="No team assigned" />
-                          <AvatarFallback className="text-xs bg-gray-100 text-gray-500">
-                            ?
-                          </AvatarFallback>
-                        </Avatar>
-                      </div>
-                    )}
-
-                    {/* Status Badge */}
-                    <Badge
-                      variant="secondary"
-                      className={`${
-                        getFuneralStatusDisplay(f).color
-                      } text-xs px-2 py-1`}
-                    >
-                      {getFuneralStatusDisplay(f).label}
-                    </Badge>
-                  </div>
-                }
-                content={
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <RiCrossLine className="h-3 w-3 text-gray-400 flex-shrink-0" />
-                      <span>
-                        {f.deceased?.date_of_death
-                          ? format(
-                              new Date(f.deceased.date_of_death),
-                              "dd-MM-yyyy"
-                            )
-                          : "-"}
-                      </span>
-                      <span>•</span>
-                      <span className="truncate">
-                        {f.deceased?.city || "Onbekend"}
-                      </span>
-                    </div>
-                  </div>
-                }
-                footer={<FuneralPendingTasks funeralId={f.id} />}
-                className="hover:shadow-md transition-shadow cursor-pointer"
-              />
-            </Link>
+            <FuneralCard key={f.id} funeral={f} />
           ))}
         </>
       )}

@@ -1,19 +1,12 @@
 "use client";
 
 import { useNotes } from "@/hooks";
-import { NoteEditForm, NoteDeleteForm } from "@/components/forms";
-import {
-  Card,
-  CardContent,
-  Skeleton,
-  Badge,
-  GenericCard,
-} from "@/components/ui";
+import { Card, CardContent, Skeleton } from "@/components/ui";
 import { useTranslations } from "next-intl";
-import { format } from "date-fns";
-import { RiAlertLine, RiFileTextLine } from "@remixicon/react";
+import { RiFileTextLine } from "@remixicon/react";
 import type { Database } from "@/types/database";
 import { useState, useMemo } from "react";
+import { NotesCard } from "./NotesCard";
 import type { SearchResult } from "@/hooks/useSearch";
 type FuneralNote = Database["public"]["Tables"]["funeral_notes"]["Row"] & {
   creator: Database["public"]["Tables"]["profiles"]["Row"] | null;
@@ -75,46 +68,7 @@ export function Notes({ funeralId }: NotesProps) {
       ) : (
         <div className="space-y-3">
           {displayNotes.map((note: FuneralNote) => (
-            <GenericCard
-              key={note.id}
-              title={note.title}
-              subtitle={format(
-                new Date(note.created_at!),
-                "dd MMM yyyy 'om' HH:mm"
-              )}
-              content={
-                <p className="text-gray-700 whitespace-pre-wrap">
-                  {note.content}
-                </p>
-              }
-              actions={
-                <>
-                  <NoteEditForm note={note} withDialog />
-                  <NoteDeleteForm note={note} withDialog />
-                </>
-              }
-              footer={
-                <div className="flex items-center justify-between w-full">
-                  <span>
-                    {note.creator && (
-                      <div className="flex items-center text-gray-500 text-xs">
-                        Notitie toegevoegd door:{" "}
-                        {note.creator.full_name || note.creator.company_name}
-                      </div>
-                    )}
-                  </span>
-                  {note.is_important && (
-                    <Badge
-                      variant="destructive"
-                      className="text-xs font-normal"
-                    >
-                      <RiAlertLine className="h-3 w-3 mr-1" />
-                      Belangrijk
-                    </Badge>
-                  )}
-                </div>
-              }
-            />
+            <NotesCard key={note.id} note={note} />
           ))}
         </div>
       )}

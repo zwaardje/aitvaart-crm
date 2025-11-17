@@ -10,7 +10,7 @@ type FuneralInsert = Database["public"]["Tables"]["funerals"]["Insert"];
 type FuneralUpdate = Database["public"]["Tables"]["funerals"]["Update"];
 
 // Extended funeral type with related data
-type FuneralWithRelations = Funeral & {
+export type FuneralWithRelations = Funeral & {
   client: Database["public"]["Tables"]["clients"]["Row"];
   deceased: Database["public"]["Tables"]["deceased"]["Row"];
 };
@@ -23,10 +23,17 @@ export interface FuneralFilters {
   signing_date_to?: string;
   created_at_from?: string;
   created_at_to?: string;
-  status?: "planning" | "active" | "completed" | "cancelled";
+  status?: ("planning" | "active" | "completed" | "cancelled")[];
 }
 
 export function useFunerals(filters?: FuneralFilters) {
+  const statusValues: FuneralFilters["status"] = filters?.status ?? [];
+  const validStatuses = statusValues.filter(
+    (value): any =>
+      typeof value === "string" &&
+      ["planning", "active", "completed", "cancelled"].includes(value)
+  );
+
   // Process filters for useGenericEntity
   const processedFilters = filters
     ? {
@@ -35,7 +42,9 @@ export function useFunerals(filters?: FuneralFilters) {
         ...(filters.funeral_director && {
           funeral_director: filters.funeral_director,
         }),
-        ...(filters.status && { status: filters.status }),
+        ...(validStatuses.length
+          ? { status: validStatuses as FuneralFilters["status"] }
+          : {}),
         // Date range filters
         ...(filters.signing_date_from && {
           signing_date_from: filters.signing_date_from,

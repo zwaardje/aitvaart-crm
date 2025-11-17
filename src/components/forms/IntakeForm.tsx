@@ -1,18 +1,58 @@
 "use client";
-
+import { useMemo } from "react";
 import { Form, FormInput, FormSelect } from "@/components/forms";
 import { Wizard, WizardStep, WizardNavigation } from "@/components/ui/Wizard";
 import { DialogFooter } from "@/components/ui";
 import { useMutation } from "@tanstack/react-query";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import {
+  useCurrentUserOrganization,
+  useOrganizationMembers,
+} from "@/hooks/useOrganizations";
+import type { OrganizationMember } from "@/types/multi-user";
+import { intakeSchemas, IntakeFormData } from "@/lib/validation";
 
 export function IntakeForm() {
+  const { data: currentOrganization } = useCurrentUserOrganization();
+  const organizationId =
+    currentOrganization?.organization_id ||
+    currentOrganization?.organization?.id ||
+    null;
+  const { data: organizationMembers, isLoading: organizationMembersLoading } =
+    useOrganizationMembers(organizationId ?? "");
+
+  const funeralDirectorOptions = useMemo(() => {
+    const typedMembers = organizationMembers as
+      | OrganizationMember[]
+      | undefined;
+    if (!typedMembers || typedMembers.length === 0) return [];
+
+    return typedMembers
+      .filter((member) => member.status === "active")
+      .map((member) => {
+        const name =
+          member.user?.full_name?.trim() ||
+          member.user?.company_name?.trim() ||
+          member.role?.trim();
+
+        return name
+          ? {
+              value: name,
+              label: name,
+            }
+          : null;
+      })
+      .filter(
+        (option): option is { value: string; label: string } => option !== null
+      );
+  }, [organizationMembers]);
+
   const createAllMutation = useMutation({
-    mutationFn: async (payload: {
-      deceased: any;
-      client: any;
-      funeral: any;
-    }) => {
+    mutationFn: async (payload: IntakeFormData) => {
+      if (!organizationId) {
+        throw new Error("Geen organisatiecontext gevonden");
+      }
+
       const supabase = getSupabaseBrowser();
       const {
         data: { user },
@@ -21,14 +61,22 @@ export function IntakeForm() {
 
       const { data: deceased, error: dErr } = await supabase
         .from("deceased")
-        .insert({ ...payload.deceased, entrepreneur_id: user.id })
+        .insert({
+          ...payload.deceased,
+          entrepreneur_id: user.id,
+          organization_id: organizationId,
+        })
         .select("id")
         .single();
       if (dErr) throw dErr;
 
       const { data: client, error: cErr } = await supabase
         .from("clients")
-        .insert({ ...payload.client, entrepreneur_id: user.id })
+        .insert({
+          ...payload.client,
+          entrepreneur_id: user.id,
+          organization_id: organizationId,
+        })
         .select("id")
         .single();
       if (cErr) throw cErr;
@@ -40,6 +88,7 @@ export function IntakeForm() {
         location: payload.funeral.location ?? null,
         signing_date: payload.funeral.signing_date ?? null,
         funeral_director: payload.funeral.funeral_director ?? null,
+        organization_id: organizationId,
       });
       if (fErr) throw fErr;
     },
@@ -48,13 +97,9 @@ export function IntakeForm() {
   return (
     <Form
       id="intake-form"
-      onSubmit={(values: any) =>
-        createAllMutation.mutate({
-          deceased: values.deceased,
-          client: values.client,
-          funeral: values.funeral,
-        })
-      }
+      canWatchErrors={true}
+      schema={intakeSchemas.form}
+      onSubmit={(values: IntakeFormData) => createAllMutation.mutate(values)}
     >
       <Wizard totalSteps={4}>
         <WizardStep step={1}>
@@ -192,22 +237,39 @@ export function IntakeForm() {
             <h3 className="col-span-full text-sm font-semibold text-muted-foreground">
               Uitvaartdetails
             </h3>
+            {funeralDirectorOptions.length > 0 ? (
+              <FormSelect
+                name="funeral.funeral_director"
+                label="Uitvaartverzorger"
+                placeholder={
+                  organizationMembersLoading
+                    ? "Teamleden laden..."
+                    : "Selecteer uitvaartverzorger"
+                }
+                options={funeralDirectorOptions}
+              />
+            ) : (
+              <FormInput
+                name="funeral.funeral_director"
+                label="Uitvaartverzorger"
+              />
+            )}
 
             <FormInput name="funeral.location" label="Locatie" />
-            <FormInput
-              name="funeral.signing_date"
-              type="date"
-              label="Datum van ondertekening"
-            />
-            <FormInput
-              name="funeral.funeral_director"
-              label="Uitvaartverzorger"
-            />
-            <FormInput
-              name="deceased.date_of_death"
-              type="date"
-              label="Overlijdensdatum"
-            />
+            <div className="flex items-center gap-2 justify-evenly">
+              <FormInput
+                className="w-full"
+                name="deceased.date_of_death"
+                type="date"
+                label="Overlijdensdatum"
+              />
+              <FormInput
+                className="w-full"
+                name="funeral.signing_date"
+                type="date"
+                label="Datum van ondertekening"
+              />
+            </div>
           </div>
         </WizardStep>
 
