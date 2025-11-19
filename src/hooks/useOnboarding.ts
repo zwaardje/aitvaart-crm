@@ -59,7 +59,9 @@ export function useOnboarding() {
 
   return {
     needsOnboarding:
-      (isAuthenticated && (!profile || !profile.onboarding_completed)) || false,
+      isAuthenticated &&
+      !authLoading &&
+      (!profile || !profile.onboarding_completed),
     profile: profile ?? null,
     isLoading: authLoading,
     isAuthenticated,

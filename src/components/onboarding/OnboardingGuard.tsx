@@ -15,7 +15,10 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
   const t = useTranslations();
 
   useEffect(() => {
+    // Wait for loading to complete before making redirect decisions
     if (isLoading) return;
+
+    // If authenticated and needs onboarding, redirect
     if (isAuthenticated && needsOnboarding) {
       router.replace("/onboarding");
     }
@@ -23,7 +26,8 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
 
   // While loading, block rendering to prevent flash
   if (isLoading) return null;
-  // If onboarding is needed, rendering is blocked by redirect
+
+  // If onboarding is needed, don't render children (redirect will happen)
   if (needsOnboarding) return null;
 
   return <>{children}</>;

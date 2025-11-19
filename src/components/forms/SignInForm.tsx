@@ -131,7 +131,7 @@ export function SignInForm() {
 
           <div className="flex flex-col justify-between gap-2 items-center">
             <SubmitButton className="w-full" isLoading={isLoading}>
-              {isLoading ? "Account aanmaken..." : "Account aanmaken"}
+              {isLoading ? "Inloggen..." : "Inloggen"}
             </SubmitButton>
 
             <span className="text-sm text-muted-foreground lowercase">Of</span>
