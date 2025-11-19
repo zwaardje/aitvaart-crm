@@ -2,7 +2,7 @@
   "name": "Aitvaart CRM",
   "short_name": "Aitvaart",
   "description": "Uitvaart CRM voor het beheren van uitvaarten, klanten en leveranciers",
-  "start_url": "/dashboard",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0a0a0a",
