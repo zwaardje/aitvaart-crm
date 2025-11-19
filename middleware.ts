@@ -45,45 +45,55 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
 
-  // If user is authenticated, check onboarding status before redirecting
+  // If user is authenticated, check onboarding status only when redirecting
   if (isAuthenticated) {
     // Allow access to onboarding page
     if (pathname === "/onboarding") {
       return response;
     }
 
-    // Check if user needs onboarding
-    let needsOnboarding = false;
-    if (user?.id) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("onboarding_completed")
-        .eq("id", user.id)
-        .single();
+    // Only check onboarding status when we need to redirect (auth pages, root)
+    // For other protected routes like /dashboard, let OnboardingGuard handle it
+    if (pathname.startsWith("/auth/") || pathname === "/") {
+      // Check if user needs onboarding
+      let needsOnboarding = false;
+      if (user?.id) {
+        try {
+          const { data: profile, error } = await supabase
+            .from("profiles")
+            .select("onboarding_completed")
+            .eq("id", user.id)
+            .single();
 
-      // If profile doesn't exist or onboarding is not completed, user needs onboarding
-      needsOnboarding = !profile || !profile.onboarding_completed;
-    }
-
-    // If user needs onboarding and not already on onboarding page, redirect
-    if (needsOnboarding && pathname !== "/onboarding") {
-      return NextResponse.redirect(new URL("/onboarding", request.url));
-    }
-
-    // If user is authenticated and trying to access auth pages, redirect appropriately
-    if (pathname.startsWith("/auth/")) {
-      if (needsOnboarding) {
-        return NextResponse.redirect(new URL("/onboarding", request.url));
+          // If profile doesn't exist (error PGRST116) or onboarding is not completed, user needs onboarding
+          if (error && error.code === "PGRST116") {
+            needsOnboarding = true;
+          } else if (!profile || !profile.onboarding_completed) {
+            needsOnboarding = true;
+          }
+        } catch (error) {
+          // If query fails, let OnboardingGuard handle it - don't block the request
+          console.error(
+            "Error checking onboarding status in middleware:",
+            error
+          );
+        }
       }
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
 
-    // If user is authenticated and on root page, redirect appropriately
-    if (pathname === "/") {
-      if (needsOnboarding) {
-        return NextResponse.redirect(new URL("/onboarding", request.url));
+      // Redirect based on onboarding status
+      if (pathname.startsWith("/auth/")) {
+        if (needsOnboarding) {
+          return NextResponse.redirect(new URL("/onboarding", request.url));
+        }
+        return NextResponse.redirect(new URL("/dashboard", request.url));
       }
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+
+      if (pathname === "/") {
+        if (needsOnboarding) {
+          return NextResponse.redirect(new URL("/onboarding", request.url));
+        }
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
     }
   }
 

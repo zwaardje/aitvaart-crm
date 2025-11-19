@@ -67,9 +67,9 @@ export function SignInForm() {
       }
 
       if (authData.user && authData.session) {
-        // Successfully signed in - redirect to dashboard
-        router.push("/dashboard");
-        router.refresh(); // Refresh to ensure session is updated
+        // Successfully signed in - use window.location for full page reload
+        // This ensures the session is fully initialized before components render
+        window.location.href = "/dashboard";
       }
     } catch (error) {
       setError("Er is een fout opgetreden. Probeer het opnieuw.");

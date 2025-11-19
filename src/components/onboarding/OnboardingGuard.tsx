@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useOnboarding } from "@/hooks/useOnboarding";
-import { useTranslations } from "next-intl";
+import { Spinner } from "@/components/ui/spinner/Spinner";
 
 interface OnboardingGuardProps {
   children: React.ReactNode;
@@ -12,7 +12,6 @@ interface OnboardingGuardProps {
 export function OnboardingGuard({ children }: OnboardingGuardProps) {
   const { needsOnboarding, isLoading, isAuthenticated } = useOnboarding();
   const router = useRouter();
-  const t = useTranslations();
 
   useEffect(() => {
     // Wait for loading to complete before making redirect decisions
@@ -24,11 +23,24 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
     }
   }, [needsOnboarding, isLoading, isAuthenticated, router]);
 
-  // While loading, block rendering to prevent flash
-  if (isLoading) return null;
+  // While loading, show spinner instead of blank page
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner />
+      </div>
+    );
+  }
 
   // If onboarding is needed, don't render children (redirect will happen)
-  if (needsOnboarding) return null;
+  // Show spinner briefly while redirect happens
+  if (needsOnboarding) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner />
+      </div>
+    );
+  }
 
   return <>{children}</>;
 }
