@@ -46,15 +46,14 @@ export function FuneralContactDeleteForm({
       </DialogTrigger>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Weet je het zeker?</DialogTitle>
+          <DialogTitle>Verwijder contactpersoon</DialogTitle>
         </DialogHeader>
-        <div className="space-y-6">
-          <div className="text-center">
+
+        <div className="flex w-full flex-col gap-4 p-2 ">
+          <div className="px-3">
             <p className="text-sm text-gray-500 mb-2">
-              Deze actie kan niet ongedaan worden gemaakt.
-            </p>
-            <p className="text-sm text-gray-500">
-              Hiermee wordt uw item definitief verwijderd.
+              Deze actie kan niet ongedaan worden gemaakt. Hiermee wordt uw item
+              definitief verwijderd.
             </p>
           </div>
 
@@ -68,7 +67,8 @@ export function FuneralContactDeleteForm({
             </Button>
             <Button
               onClick={handleConfirm}
-              className="bg-gray-900 text-white hover:bg-gray-800"
+              variant="destructive"
+              // className="bg-gray-900 text-white hover:bg-gray-800"
             >
               Verwijder
             </Button>

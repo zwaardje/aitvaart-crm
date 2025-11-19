@@ -42,7 +42,11 @@ export function FormSwitch({
           />
         )}
       />
-      {label && <Label htmlFor={inputId}>{label}</Label>}
+      {label && (
+        <Label htmlFor={inputId} className="text-xs text-muted-foreground">
+          {label}
+        </Label>
+      )}
       {error && <ErrorMessage message={error} />}
       {hint && !error && <p className="text-sm text-gray-500">{hint}</p>}
     </div>

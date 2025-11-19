@@ -12,9 +12,9 @@ import {
 import { ContextAwareVoiceAssistant } from "@/components/voice/ContextAwareVoiceAssistant";
 
 import { Button } from "@/components/ui/Button";
-import { SearchBar } from "@/components/ui/SearchBar";
+import { SearchBar, SearchContext } from "@/components/ui/SearchBar";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./dialog";
+import { Dialog, DialogContent } from "./dialog";
 
 import { cn } from "@/lib/utils";
 import { AIContextMetadata } from "@/types/ai-context";
@@ -25,6 +25,7 @@ export interface SmartSearchBarAction {
   icon?: React.ReactNode;
   onClick: () => void;
   disabled?: boolean;
+  searchContext?: SearchContext;
 }
 
 export interface SmartSearchBarProps {
@@ -32,10 +33,10 @@ export interface SmartSearchBarProps {
   placeholder?: string;
   onResultsChange?: (results: any[]) => void;
   actions?: SmartSearchBarAction[];
-  entityTypes?: ("funeral" | "note" | "cost" | "contact")[];
   className?: string;
   sticky?: boolean;
   aiContext?: AIContextMetadata;
+  searchContext?: SearchContext;
 }
 
 export function SmartSearchBar({
@@ -43,42 +44,23 @@ export function SmartSearchBar({
   placeholder = "Zoek...",
   onResultsChange,
   actions = [],
-  entityTypes,
   className,
   sticky = false,
   aiContext,
+  searchContext,
 }: SmartSearchBarProps) {
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-
-  // Get context-specific AI button label
-  const getAIButtonLabel = () => {
-    if (!aiContext) return "AI Assistant";
-
-    switch (aiContext.page) {
-      case "notes":
-        return "AI Notities";
-      case "costs":
-        return "AI Kosten";
-      case "contacts":
-        return "AI Contacten";
-      case "scenarios":
-        return "AI Scenario's";
-      case "documents":
-        return "AI Documenten";
-      default:
-        return "AI Assistant";
-    }
-  };
 
   return (
     <>
       <div
         className={cn(
           "relative flex items-center gap-2",
+          !sticky && "px-4 pt-2",
           !onResultsChange && "justify-end",
           sticky &&
-            "sticky top-[6.5rem] md:top-[3.5rem] z-20 bg-white py-3 -mx-4 px-4 border-b",
+            "sticky top-[6.5rem] md:top-[3.5rem] z-20 bg-white py-3 px-4 mx-0 border-b",
           className
         )}
       >
@@ -96,7 +78,7 @@ export function SmartSearchBar({
             <SearchBar
               placeholder={placeholder}
               onResultsChange={onResultsChange}
-              entityTypes={entityTypes}
+              searchContext={searchContext}
               className="w-full"
             />
           </div>

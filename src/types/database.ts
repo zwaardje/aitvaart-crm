@@ -1960,7 +1960,11 @@ export type Database = {
         Returns: boolean;
       };
       search_all_entities: {
-        Args: { limit_count?: number; search_term: string };
+        Args: {
+          limit_count?: number;
+          search_term: string;
+          funeral_id?: string;
+        };
         Returns: {
           content: string;
           created_at: string;

@@ -100,12 +100,12 @@ interface WizardNavigationProps {
   isNextDisabled?: boolean;
   isPreviousDisabled?: boolean;
   className?: string;
+  onClose: () => void;
 }
 
 export function WizardNavigation({
   onNext,
   onPrevious,
-  onFinish,
   nextLabel = "Volgende",
   previousLabel = "Vorige",
   finishLabel = "Voltooien",
@@ -114,8 +114,8 @@ export function WizardNavigation({
   isNextDisabled = false,
   isPreviousDisabled = false,
   className,
-  formId,
-}: WizardNavigationProps & { formId?: string }) {
+  onClose,
+}: WizardNavigationProps) {
   const { isFirstStep, isLastStep, goToNext, goToPrevious } = useWizard();
 
   const handleNext = () => {
@@ -131,6 +131,16 @@ export function WizardNavigation({
   return (
     <div className={cn("flex justify-between items-center pt-6", className)}>
       <div>
+        {isFirstStep && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            disabled={isPreviousDisabled}
+          >
+            Annuleren
+          </Button>
+        )}
         {showPrevious && !isFirstStep && (
           <Button
             type="button"

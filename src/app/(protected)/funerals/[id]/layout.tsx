@@ -2,11 +2,9 @@
 
 import { FUNERAL_TABS } from "@/constants/submenu";
 import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import React from "react";
 import { Submenu } from "@/components/layout";
-import { Content } from "@/components/layout";
 
 export default function FuneralLayout({
   children,
@@ -27,20 +25,19 @@ export default function FuneralLayout({
     }
   }, [params]);
   const pathname = usePathname();
-  const t = useTranslations();
 
   const base = `/funerals/${id}`;
 
   const items = FUNERAL_TABS.map((tab) => ({
     href: `${base}${tab.segment}`,
-    label: t(tab.label),
+    label: tab.label,
     isActive: pathname === `${base}${tab.segment}`,
   }));
 
   return (
     <>
       <Submenu items={items} />
-      <div className="p-2  w-full">{children}</div>
+      {children}
     </>
   );
 }

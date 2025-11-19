@@ -1,11 +1,9 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useTranslations } from "next-intl";
 import { RiSearchLine, RiCloseLine } from "@remixicon/react";
 import { Input } from "./input";
 import { Button } from "./Button";
-import { Badge } from "./badge";
 import { Spinner } from "./spinner/Spinner";
 import { useSearch } from "@/hooks/useSearch";
 import { cn } from "@/lib/utils";
@@ -16,6 +14,12 @@ interface SearchBarProps {
   className?: string;
   entityTypes?: ("note" | "cost" | "contact" | "funeral")[];
   limit?: number;
+  searchContext?: SearchContext;
+}
+
+export interface SearchContext {
+  entityTypes?: ("funeral" | "note" | "cost" | "contact")[];
+  filters?: Record<string, any>;
 }
 
 // Helper function to compare arrays by their content
@@ -34,13 +38,14 @@ export function SearchBar({
   onResultsChange,
   placeholder,
   className,
-  entityTypes,
+  searchContext,
   limit = 50,
 }: SearchBarProps) {
-  const t = useTranslations("search");
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+
+  const entityTypes = searchContext?.entityTypes || [];
 
   // Store callback in ref to avoid dependency issues
   const onResultsChangeRef = useRef(onResultsChange);
@@ -70,6 +75,7 @@ export function SearchBar({
     query: debouncedQuery,
     enabled: debouncedQuery.length > 1,
     limit,
+    filters: searchContext?.filters,
   });
 
   const filteredResults = useMemo(() => {
@@ -103,7 +109,7 @@ export function SearchBar({
 
           <Input
             type="text"
-            placeholder={placeholder || t("placeholder")}
+            placeholder={placeholder || "Zoek..."}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="pl-10 pr-10"
@@ -126,7 +132,9 @@ export function SearchBar({
 
         {/* Error message */}
         {search.error && (
-          <div className="mt-2 text-sm text-destructive">{t("error")}</div>
+          <div className="mt-2 text-sm text-destructive">
+            {search.error.message}
+          </div>
         )}
       </div>
     </div>

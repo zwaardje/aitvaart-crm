@@ -9,6 +9,7 @@ import { FormInput } from "./FormInput";
 import { FormSwitch } from "./FormSwitch";
 import { SubmitButton } from "./SubmitButton";
 import { Button, DialogClose, DialogFooter } from "@/components/ui";
+import { FormGroup } from "@/components/forms/FormGroup";
 import {
   Dialog,
   DialogContent,
@@ -118,31 +119,51 @@ export function FuneralContactForm({
       }
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <FormInput name="preferred_name" label="Voornaam" />
-        <FormInput name="last_name" label="Achternaam" />
-        <FormInput
-          name="email"
-          type="email"
-          label="E‑mail"
-          placeholder="naam@voorbeeld.nl"
-        />
-        <FormInput
-          name="phone_number"
-          type="tel"
-          label="Telefoon"
-          placeholder="06 12345678"
-        />
-        <FormInput
-          name="relation"
-          label="Relatie tot overledene"
-          placeholder="Partner, zoon, dochter..."
-          className="md:col-span-2"
-        />
-        <FormSwitch
-          name="is_primary"
-          label="Primair contactpersoon"
-          className="md:col-span-2"
-        />
+        <FormGroup title="Persoonsgegevens">
+          <div className="flex gap-3">
+            <FormInput
+              className="w-full flex-1"
+              name="preferred_name"
+              label="Voornaam"
+            />
+            <FormInput
+              className="w-full flex-1"
+              name="last_name"
+              label="Achternaam"
+            />
+          </div>
+        </FormGroup>
+        <FormGroup title="Contactgegevens">
+          <div className="flex gap-3">
+            <FormInput
+              className="w-full flex-1"
+              name="email"
+              type="email"
+              label="E‑mail"
+              placeholder="naam@voorbeeld.nl"
+            />
+            <FormInput
+              className="w-full flex-1"
+              name="phone_number"
+              type="tel"
+              label="Telefoon"
+              placeholder="06 12345678"
+            />
+          </div>
+        </FormGroup>
+        <FormGroup title="Relatie tot overledene">
+          <FormInput
+            name="relation"
+            label="Relatie tot overledene"
+            placeholder="Partner, zoon, dochter..."
+            className="md:col-span-2"
+          />
+          <FormSwitch
+            name="is_primary"
+            label="Primair contactpersoon"
+            className="md:col-span-2"
+          />
+        </FormGroup>
       </div>
       <DialogFooter className="mt-2 flex flex-row justify-between">
         <DialogClose asChild>

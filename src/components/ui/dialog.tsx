@@ -77,14 +77,14 @@ function DialogHeader({
     <div
       data-slot="dialog-header"
       className={cn(
-        "mx-auto flex min-h-[44.5px] w-full items-center justify-between border-b py-2 pr-2 pl-4",
+        "mx-auto flex min-h-[44.5px] w-full items-center justify-between py-2 pr-2 pl-4",
         className
       )}
       {...props}
     >
       {children}
       <DialogPrimitive.Close asChild>
-        <Button variant="ghost" icon>
+        <Button variant="outline" icon>
           <RiCloseLine />
           <span className="sr-only">Close</span>
         </Button>

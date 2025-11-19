@@ -14,8 +14,6 @@ import { SectionHeader } from "@/components/layout";
 import { DeceasedForm } from "@/components/forms";
 import { RiEditLine } from "@remixicon/react";
 import type { Database } from "@/types/database";
-import { useMutation } from "@tanstack/react-query";
-import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type Deceased = Database["public"]["Tables"]["deceased"]["Row"];
 

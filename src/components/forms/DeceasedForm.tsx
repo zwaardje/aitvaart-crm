@@ -19,6 +19,7 @@ import {
 import { RiEditLine } from "@remixicon/react";
 import type { Database } from "@/types/database";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { FormGroup } from "./FormGroup";
 
 export const deceasedFormSchema = schemas.deceased.update;
 export type DeceasedFormValues = z.infer<typeof deceasedFormSchema>;
@@ -87,32 +88,79 @@ export function DeceasedForm({
       defaultValues={defaultValues}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <FormInput name="first_names" label="Voornamen" />
-        <FormInput name="preferred_name" label="Roepnaam" />
-        <FormInput name="last_name" label="Achternaam" />
-        <FormSelect
-          name="gender"
-          label="Geslacht"
-          options={[
-            { value: "male", label: "Man" },
-            { value: "female", label: "Vrouw" },
-            { value: "other", label: "Anders" },
-          ]}
-          placeholder="Kies geslacht"
-        />
-        <FormInput name="date_of_birth" label="Geboortedatum" type="date" />
-        <FormInput name="place_of_birth" label="Geboorteplaats" />
-        <FormInput name="date_of_death" label="Overlijdensdatum" type="date" />
-        <FormInput
-          name="coffin_registration_number"
-          label="Kistregistratienummer"
-        />
+        <FormGroup title="Persoonsgegevens">
+          <div className="flex  gap-3">
+            <FormInput name="first_names" label="Voornamen" />
+            <FormInput name="preferred_name" label="Roepnaam" />
+            <FormInput name="last_name" label="Achternaam" />
+          </div>
+          <div className="flex gap-3 items-center">
+            <FormSelect
+              className="w-full flex-1"
+              name="gender"
+              label="Geslacht"
+              options={[
+                { value: "male", label: "Man" },
+                { value: "female", label: "Vrouw" },
+                { value: "other", label: "Anders" },
+              ]}
+              placeholder="Kies geslacht"
+            />
 
-        <FormInput name="street" label="Straat" />
-        <FormInput name="house_number" label="Huisnummer" />
-        <FormInput name="house_number_addition" label="Toevoeging" />
-        <FormInput name="postal_code" label="Postcode" />
-        <FormInput name="city" label="Plaats" />
+            <FormInput
+              className="w-full flex-1"
+              name="date_of_birth"
+              label="Geboortedatum"
+              type="date"
+            />
+            <FormInput
+              className="w-full flex-2"
+              name="place_of_birth"
+              label="Geboorteplaats"
+            />
+          </div>
+        </FormGroup>
+        <FormGroup title="Overlijdensgegevens">
+          <div className="flex gap-3">
+            <FormInput
+              className="w-full flex-1"
+              name="date_of_death"
+              label="Overlijdensdatum"
+              type="date"
+            />
+            <FormInput
+              className="w-full flex-2"
+              name="coffin_registration_number"
+              label="Kistregistratienummer"
+            />
+          </div>
+        </FormGroup>
+
+        <FormGroup title="Adresgegevens">
+          <div className="flex gap-3">
+            <FormInput className="w-full flex-2" name="street" label="Straat" />
+
+            <FormInput
+              className="w-full flex-1"
+              name="house_number"
+              label="Huisnummer"
+            />
+            <FormInput
+              className="w-full flex-1"
+              name="house_number_addition"
+              label="Toevoeging"
+            />
+          </div>
+          <div className="flex gap-3">
+            <FormInput
+              className="w-full flex-1"
+              name="postal_code"
+              label="Postcode"
+            />
+
+            <FormInput className="w-full flex-1" name="city" label="Plaats" />
+          </div>
+        </FormGroup>
       </div>
       {withDialog ? (
         <DialogFooter className="mt-2">

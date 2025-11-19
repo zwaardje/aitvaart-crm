@@ -167,7 +167,9 @@ export default function SuppliersSettingsPage() {
         <SmartSearchBar
           placeholder="Zoek leveranciers..."
           actions={searchActions()}
-          entityTypes={["contact"]}
+          searchContext={{
+            entityTypes: ["cost"],
+          }}
           onResultsChange={(results) =>
             setSearchQuery(results.map((result) => result.entity_id).join(", "))
           }

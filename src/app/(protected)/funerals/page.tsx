@@ -1,7 +1,8 @@
 "use client";
-import { Content } from "@/components/layout";
-import { Funerals } from "@/components/funerals/Funerals";
 import { useCallback, useState } from "react";
+import { SearchResult } from "@/hooks/useSearch";
+import { SearchResultCard } from "@/components/search/SearchResultCard";
+
 import {
   SmartSearchBarAction,
   SmartSearchBar,
@@ -14,9 +15,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { PageContent } from "@/components/layout/PageContent";
+import { Funerals } from "@/components/funerals/Funerals";
 
 export default function FuneralsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
 
   const searchActions = useCallback(
     (): SmartSearchBarAction[] => [
@@ -33,25 +37,37 @@ export default function FuneralsPage() {
   );
 
   return (
-    <Content>
-      <div className="p-2 w-full">
-        <SmartSearchBar
-          placeholder="Zoek in uitvaarten..."
-          onResultsChange={() => {}}
-          actions={searchActions()}
-          entityTypes={["funeral", "note", "contact"]}
-          sticky
-          aiContext={{
-            page: "funerals",
-            scope: "manage",
-            // funeralMode wordt niet gezet - AI zal zelf vragen welke modus
-          }}
-        />
+    <>
+      <SmartSearchBar
+        placeholder="Zoek in uitvaarten..."
+        onResultsChange={setSearchResults}
+        actions={searchActions()}
+        searchContext={{
+          filters: {
+            entityTypes: ["funeral"],
+          },
+        }}
+        aiContext={{
+          page: "funerals",
+          scope: "manage",
+        }}
+      />
 
-        <Funerals filters={{}} />
-      </div>
+      <PageContent>
+        {searchResults.length > 0 ? (
+          <div className="space-y-4">
+            {searchResults.map((result) => (
+              <SearchResultCard key={result.entity_id} result={result} />
+            ))}
+          </div>
+        ) : (
+          <Funerals
+            filters={{}}
+            handleCreateFuneral={() => setIsDialogOpen(true)}
+          />
+        )}
+      </PageContent>
 
-      {/* Nieuwe uitvaart dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -60,6 +76,6 @@ export default function FuneralsPage() {
           <IntakeForm />
         </DialogContent>
       </Dialog>
-    </Content>
+    </>
   );
 }

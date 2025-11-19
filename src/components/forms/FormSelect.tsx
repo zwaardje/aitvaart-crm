@@ -55,7 +55,7 @@ export function FormSelect({
           <Select value={field.value} onValueChange={field.onChange}>
             <SelectTrigger
               className={cn(
-                "h-9 text-xs",
+                "h-9 text-xs bg-white",
                 error && "border-red-500 focus-visible:ring-red-500",
                 className
               )}

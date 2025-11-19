@@ -79,7 +79,12 @@ export default function FuneralCostsPage({
             onResultsChange={() => {}}
             placeholder="Zoek in kosten..."
             actions={searchActions()}
-            entityTypes={["funeral", "note", "contact"]}
+            searchContext={{
+              entityTypes: ["funeral", "note", "contact"],
+              filters: {
+                funeralId: id,
+              },
+            }}
             sticky
           />
           <Costs funeralId={id} />

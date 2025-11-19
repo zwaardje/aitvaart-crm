@@ -20,6 +20,7 @@ interface UseSearchOptions {
   enabled?: boolean;
   limit?: number;
   sortBy?: SearchSortOption;
+  filters?: Record<string, any>;
 }
 
 export function useSearch({
@@ -27,9 +28,12 @@ export function useSearch({
   enabled = true,
   limit = 50,
   sortBy = "relevance",
+  filters,
 }: UseSearchOptions) {
+  const funeralId = filters?.funeralId || null;
+
   const searchQuery = useQuery({
-    queryKey: ["search", query, limit],
+    queryKey: ["search", query, limit, filters],
     queryFn: async (): Promise<SearchResult[]> => {
       if (!query.trim()) {
         return [];
@@ -54,6 +58,7 @@ export function useSearch({
         const { data, error } = await supabase.rpc("search_all_entities", {
           search_term: sanitizedQuery,
           limit_count: limit,
+          funeral_id: funeralId,
         });
 
         if (error) {

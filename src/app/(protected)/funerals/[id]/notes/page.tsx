@@ -65,7 +65,12 @@ export default function FuneralNotesPage({
             placeholder="Zoek in notities..."
             onResultsChange={() => {}}
             actions={searchActions()}
-            entityTypes={["funeral", "note", "contact"]}
+            searchContext={{
+              entityTypes: ["note"],
+              filters: {
+                funeralId: id,
+              },
+            }}
             sticky
             aiContext={{
               page: "notes",

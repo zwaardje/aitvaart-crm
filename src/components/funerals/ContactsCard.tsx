@@ -27,12 +27,15 @@ export function ContactsCard({
       title={`${contact.client?.preferred_name} ${contact.client?.last_name}`}
       subtitle={contact.relation || "-"}
       content={
-        <div className="text-sm">
-          <div className="truncate">{contact.client?.email ?? "-"}</div>
-          <div className="text-muted-foreground">
-            {contact.client?.phone_number ?? "-"}
+        contact.client?.email ||
+        (contact.client?.phone_number && (
+          <div className="text-sm">
+            <div className="truncate">{contact.client?.email}</div>
+            <div className="text-muted-foreground">
+              {contact.client?.phone_number}
+            </div>
           </div>
-        </div>
+        ))
       }
       actions={
         <>

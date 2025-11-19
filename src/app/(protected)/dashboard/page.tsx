@@ -16,9 +16,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { SearchResult } from "@/hooks/useSearch";
-import { FuneralCard } from "@/components/funerals/FuneralsCard";
-import { NotesCard } from "@/components/funerals/NotesCard";
-import { ContactsCard } from "@/components/funerals/ContactsCard";
+import { PageContent } from "@/components/layout/PageContent";
+import { SearchResultCard } from "@/components/search/SearchResultCard";
 
 export default function DashboardPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -43,29 +42,27 @@ export default function DashboardPage() {
         placeholder="Zoek in dashboard..."
         onResultsChange={setSearchResults}
         actions={searchActions()}
-        entityTypes={["funeral", "note", "contact"]}
+        searchContext={{
+          entityTypes: ["funeral", "note", "contact"],
+        }}
       />
 
-      {searchResults.length > 0 ? (
-        <div className="space-y-4">
-          {searchResults.map((result) =>
-            result.entity_type === "funeral" ? (
-              <FuneralCard key={result.entity_id} funeral={result.content} />
-            ) : result.entity_type === "note" ? (
-              <NotesCard key={result.entity_id} note={result} />
-            ) : result.entity_type === "contact" ? (
-              <ContactsCard key={result.entity_id} contact={result.content} />
-            ) : null
-          )}
-        </div>
-      ) : (
-        <Funerals
-          filters={{
-            status: ["planning", "active"],
-          }}
-          handleCreateFuneral={() => setIsDialogOpen(true)}
-        />
-      )}
+      <PageContent>
+        {searchResults.length > 0 ? (
+          <div className="space-y-4">
+            {searchResults.map((result) => (
+              <SearchResultCard key={result.entity_id} result={result} />
+            ))}
+          </div>
+        ) : (
+          <Funerals
+            filters={{
+              status: ["planning", "active"],
+            }}
+            handleCreateFuneral={() => setIsDialogOpen(true)}
+          />
+        )}
+      </PageContent>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>

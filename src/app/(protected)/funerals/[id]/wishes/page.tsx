@@ -17,12 +17,11 @@ import {
 } from "@/components/forms";
 import { useScenarios } from "@/hooks/useScenarios";
 import { Database } from "@/types/database";
-import { RiAddLine, RiCalendarLine } from "@remixicon/react";
+import { RiAddLine } from "@remixicon/react";
 import {
   SmartSearchBar,
   SmartSearchBarAction,
 } from "@/components/ui/SmartSearchBar";
-import { Content } from "@/components/layout";
 
 type FuneralScenario = Database["public"]["Tables"]["funeral_scenarios"]["Row"];
 
@@ -80,7 +79,12 @@ function ScenarioContent({ funeralId }: ScenarioContentProps) {
           <SmartSearchBar
             placeholder="Zoek in scenario..."
             actions={searchActions()}
-            entityTypes={["funeral", "note", "contact"]}
+            searchContext={{
+              entityTypes: ["funeral", "note", "contact"],
+              filters: {
+                funeralId: funeralId,
+              },
+            }}
             sticky
             aiContext={{
               page: "scenarios",

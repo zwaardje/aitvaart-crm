@@ -1,14 +1,13 @@
 "use client";
 
-import { useFuneral } from "@/hooks/useFunerals";
-import { Skeleton } from "@/components/ui";
-import { DeceasedCard } from "@/components/funerals/DeceasedCard";
+import { SearchResult } from "@/hooks/useSearch";
+import { FuneralContacts } from "@/components/funerals/FuneralContacts";
 import { useCallback, useEffect, useState } from "react";
 import {
   SmartSearchBar,
   SmartSearchBarAction,
 } from "@/components/ui/SmartSearchBar";
-import { RiAddLine, RiShare2Line } from "@remixicon/react";
+import { RiAddLine } from "@remixicon/react";
 import { FuneralContactForm } from "@/components/forms/FuneralContactForm";
 
 import {
@@ -18,12 +17,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { PageContent } from "@/components/layout/PageContent";
+import { SearchResultCard } from "@/components/search/SearchResultCard";
 
 export default function FuneralDetailsPage({
   params,
 }: {
   params: Promise<{ id: string }> | { id: string };
 }) {
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+
   const [id, setId] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<
     "funeral" | "share" | undefined
@@ -38,7 +40,6 @@ export default function FuneralDetailsPage({
       setId(params.id);
     }
   }, [params]);
-  const { funeral, isLoading } = useFuneral(id);
 
   const searchActions = useCallback(
     (): SmartSearchBarAction[] => [
@@ -54,52 +55,37 @@ export default function FuneralDetailsPage({
     []
   );
 
-  if (isLoading) {
-    return (
-      <PageContent>
-        <Skeleton className="h-10 w-64" />
-        <Skeleton className="h-32 w-full" />
-      </PageContent>
-    );
-  }
-
   return (
     <>
-      {!isLoading && funeral && (
-        <>
-          <SmartSearchBar
-            placeholder="Zoek in dashboard..."
-            actions={searchActions()}
-            searchContext={{
-              entityTypes: ["funeral", "contact"],
-              filters: {
-                funeralId: id,
-              },
-            }}
-            sticky
-            aiContext={{
-              page: "general",
-              funeralId: id,
-              scope: "manage",
-            }}
-          />
-          <PageContent>
-            <DeceasedCard deceased={funeral.deceased as any} />
-          </PageContent>
-        </>
-      )}
+      <SmartSearchBar
+        placeholder="Zoek in contacten..."
+        actions={searchActions()}
+        onResultsChange={setSearchResults}
+        sticky
+        searchContext={{
+          entityTypes: ["contact"],
+          filters: {
+            funeralId: id,
+          },
+        }}
+        aiContext={{
+          page: "general",
+          funeralId: id,
+          scope: "manage",
+        }}
+      />
+      <PageContent>
+        {searchResults.length > 0 ? (
+          <div className="space-y-4">
+            {searchResults.map((result) => (
+              <SearchResultCard key={result.entity_id} result={result} />
+            ))}
+          </div>
+        ) : (
+          <FuneralContacts funeralId={id} />
+        )}
+      </PageContent>
 
-      <Dialog
-        open={isDialogOpen === "share"}
-        onOpenChange={() => setIsDialogOpen(undefined)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Voeg medewerker toe</DialogTitle>
-          </DialogHeader>
-          Sharing is caring
-        </DialogContent>
-      </Dialog>
       <Dialog
         open={isDialogOpen === "funeral"}
         onOpenChange={() => setIsDialogOpen(undefined)}

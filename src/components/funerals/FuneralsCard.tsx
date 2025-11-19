@@ -44,9 +44,7 @@ function FuneralPendingTasks({ funeralId }: { funeralId: string }) {
 
   return (
     <div className="flex items-center justify-between w-full">
-      <span className="text-sm font-medium text-gray-900">
-        Openstaande acties
-      </span>
+      <span className="text-xs  text-gray-900">Openstaande acties</span>
       <div className="flex items-center gap-2">
         <Badge
           variant="outline"
