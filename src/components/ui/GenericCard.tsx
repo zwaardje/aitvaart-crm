@@ -7,7 +7,7 @@ import Link from "next/link";
 import { RiArrowRightSLine } from "@remixicon/react";
 
 interface GenericCardProps {
-  title: string;
+  title: string | ReactNode;
   subtitle?: string;
   icon?: ReactNode;
   content?: ReactNode;
@@ -63,14 +63,19 @@ const Generic = ({
           </div>
           {actions && <div className="flex items-center gap-2">{actions}</div>}
           {to && (
-            <div className="flex items-center gap-2">
+            <div
+              className={cn(
+                "flex items-center gap-2",
+                content && "absolute right-3 top-1/2 -translate-y-1/2"
+              )}
+            >
               <RiArrowRightSLine className="h-4 w-4" />
             </div>
           )}
         </div>
       </CardHeader>
       {content && (
-        <CardContent className="pt-0 pl-3 pr-3 pb-3">
+        <CardContent className={cn("pt-0 pl-3 pr-3 pb-3", to && "pr-20")}>
           <div className="prose prose-sm max-w-none text-sm">{content}</div>
         </CardContent>
       )}

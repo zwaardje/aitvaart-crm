@@ -36,7 +36,21 @@ export const commonSchemas = {
     z.string().min(1, "validation.required"),
   optionalString: z.string().optional(),
   date: z.string().optional().or(z.literal("")),
+  time: z
+    .string()
+    .regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, "validation.time.invalid")
+    .optional()
+    .or(z.literal("")),
   gender: z.enum(["male", "female", "other"]).optional(),
+  maritalStatus: z
+    .enum([
+      "single",
+      "married",
+      "divorced",
+      "widowed",
+      "registered_partnership",
+    ])
+    .optional(),
   title: z
     .string()
     .min(1, "validation.required")
@@ -172,13 +186,17 @@ const deceasedCreateSchema = z.object({
   place_of_birth: commonSchemas.optionalString,
   gender: commonSchemas.gender,
   social_security_number: commonSchemas.optionalString,
+  marital_status: commonSchemas.maritalStatus,
   date_of_death: commonSchemas.date,
+  place_of_death: commonSchemas.optionalString,
   street: commonSchemas.optionalString,
   house_number: commonSchemas.optionalString,
   house_number_addition: commonSchemas.optionalString,
   postal_code: commonSchemas.postalCode,
   city: commonSchemas.optionalString,
   coffin_registration_number: commonSchemas.optionalString,
+  insurance_company: commonSchemas.optionalString,
+  policy_number: commonSchemas.optionalString,
 });
 
 export const deceasedSchemas = {
@@ -193,6 +211,7 @@ const funeralCreateSchema = z
     client_id: z.string().uuid("validation.client.required"),
     location: commonSchemas.optionalString,
     signing_date: commonSchemas.date,
+    funeral_time: commonSchemas.time,
     funeral_director: commonSchemas.optionalString,
     deceased_death_date: commonSchemas.date,
   })

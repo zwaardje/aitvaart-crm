@@ -11,19 +11,29 @@ type FuneralContactInsert =
 type FuneralContactUpdate =
   Database["public"]["Tables"]["funeral_contacts"]["Update"];
 
-export function useFuneralContacts(funeralId: string | null) {
+export function useFuneralContacts(
+  funeralId: string | null,
+  clientId?: string | null
+) {
   const queryClient = useQueryClient();
   const userId = useCurrentUserId();
 
   const listQuery = useQuery({
-    queryKey: ["funeral-contacts", funeralId],
+    queryKey: ["funeral-contacts", funeralId, clientId],
     enabled: !!funeralId,
     queryFn: async (): Promise<FuneralContact[]> => {
       const supabase = getSupabaseBrowser();
-      const { data, error } = await supabase
+      let query = supabase
         .from("funeral_contacts")
         .select("*, client:clients(*)")
         .eq("funeral_id", funeralId!);
+
+      // Alleen filteren op client_id als deze is opgegeven
+      if (clientId) {
+        query = query.eq("client_id", clientId);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return (data ?? []) as any;
     },
