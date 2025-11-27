@@ -89,11 +89,13 @@ export function InsuranceDataEditForm({
             />
             <FormInput name="policy_number" label="Polisnummer" />
           </div>
-          <DialogFooter className="mt-4">
+          <DialogFooter className="mt-4 flex flex-row justify-between">
             <DialogClose asChild>
               <Button variant="outline">Annuleren</Button>
             </DialogClose>
-            <SubmitButton>Opslaan</SubmitButton>
+            <SubmitButton isLoading={updateMutation.isPending}>
+              Opslaan
+            </SubmitButton>
           </DialogFooter>
         </Form>
       </DialogContent>

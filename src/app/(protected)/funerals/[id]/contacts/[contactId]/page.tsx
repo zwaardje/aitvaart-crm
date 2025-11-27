@@ -57,23 +57,6 @@ export default function FuneralDetailsPage({
 
   return (
     <>
-      <SmartSearchBar
-        placeholder="Zoek in contacten..."
-        actions={searchActions()}
-        onResultsChange={setSearchResults}
-        sticky
-        searchContext={{
-          entityTypes: ["contact"],
-          filters: {
-            funeralId: id,
-          },
-        }}
-        aiContext={{
-          page: "general",
-          funeralId: id,
-          scope: "manage",
-        }}
-      />
       <PageContent>
         {searchResults.length > 0 ? (
           <div className="space-y-4">

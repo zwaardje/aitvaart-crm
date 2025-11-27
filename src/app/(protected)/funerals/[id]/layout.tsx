@@ -28,6 +28,11 @@ export default function FuneralLayout({
 
   const base = `/funerals/${id}`;
 
+  const pathSegments = pathname.split("/").filter(Boolean);
+
+  const hideSubmenu =
+    pathSegments.includes("deceased") || pathSegments.includes("contacts");
+
   const items = FUNERAL_TABS.map((tab) => ({
     href: `${base}${tab.segment}`,
     label: tab.label,
@@ -36,7 +41,7 @@ export default function FuneralLayout({
 
   return (
     <>
-      <Submenu items={items} />
+      {!hideSubmenu && <Submenu items={items} />}
       {children}
     </>
   );

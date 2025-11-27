@@ -15,7 +15,7 @@ export function Group({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 bg-slate-50/2 py-3",
+        "flex flex-col gap-3 bg-slate-50/2 ",
         border && "border border-slate-200 rounded-sm px-3",
         className
       )}

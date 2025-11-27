@@ -60,7 +60,7 @@ export function SmartSearchBar({
           !sticky && "px-4 pt-2",
           !onResultsChange && "justify-end",
           sticky &&
-            "sticky top-[6.5rem] md:top-[3.5rem] z-20 bg-white py-3 px-4 mx-0 border-b",
+            "sticky top-[6.5rem] md:top-[3.5rem] z-20 bg-white py-3 px-4 mx-0",
           className
         )}
       >

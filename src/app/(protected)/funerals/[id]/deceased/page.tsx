@@ -134,36 +134,7 @@ export default function DeceasedPage({
 
   return (
     <>
-      <SmartSearchBar
-        placeholder="Zoek in dashboard..."
-        actions={searchActions()}
-        searchContext={{
-          entityTypes: ["funeral", "contact"],
-          filters: {
-            funeralId: id,
-          },
-        }}
-        sticky
-        aiContext={{
-          page: "general",
-          funeralId: id,
-          scope: "manage",
-        }}
-      />
       <PageContent className="flex flex-col gap-4">
-        {/* Header with back button and name */}
-        <div className="flex items-center gap-4">
-          <Link href={`/funerals/${id}`}>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <RiArrowLeftLine className="h-4 w-4" />
-            </Button>
-          </Link>
-          <h1 className="text-2xl font-semibold">
-            {deceased.preferred_name || deceased.first_names}{" "}
-            {deceased.last_name}
-          </h1>
-        </div>
-
         {/* Persoonsgegevens Card */}
         <Card className="rounded-sm">
           <CardHeader className="pb-3 pl-3 pr-3 pt-3">
@@ -200,47 +171,55 @@ export default function DeceasedPage({
                   </div>
                 </div>
               </Group>
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Geslacht
+              <Group>
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Geboortedatum
+                  </div>
+                  <div className="font-medium">
+                    {formatDate(deceased.date_of_birth)}
+                  </div>
                 </div>
-                <div className="font-medium">{mapGender(deceased.gender)}</div>
-              </div>
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Geboortedatum
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Geboorteplaats
+                  </div>
+                  <div className="font-medium">
+                    {deceased.place_of_birth || "-"}
+                  </div>
                 </div>
-                <div className="font-medium">
-                  {formatDate(deceased.date_of_birth)}
+              </Group>
+              <Group>
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Geslacht
+                  </div>
+                  <div className="font-medium">
+                    {mapGender(deceased.gender)}
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Geboorteplaats
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Burgerlijke staat
+                  </div>
+                  <div className="font-medium">
+                    {mapMaritalStatus((deceased as any).marital_status)}
+                  </div>
                 </div>
-                <div className="font-medium">
-                  {deceased.place_of_birth || "-"}
+              </Group>
+
+              <Group>
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">BSN</div>
+                  <div className="font-medium">
+                    {deceased.social_security_number || "-"}
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">BSN</div>
-                <div className="font-medium">
-                  {deceased.social_security_number || "-"}
-                </div>
-              </div>
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Burgerlijke staat
-                </div>
-                <div className="font-medium">
-                  {mapMaritalStatus((deceased as any).marital_status)}
-                </div>
-              </div>
+              </Group>
             </div>
           </CardContent>
         </Card>
 
-        {/* Adresgegevens Card */}
         <Card className="rounded-sm">
           <CardHeader className="pb-3 pl-3 pr-3 pt-3">
             <div className="flex items-center justify-between">
@@ -252,36 +231,46 @@ export default function DeceasedPage({
           </CardHeader>
           <CardContent className="pt-0 pl-3 pr-3 pb-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div className="md:col-span-2">
-                <div className="text-muted-foreground text-xs mb-1">Straat</div>
-                <div className="font-medium">{deceased.street || "-"}</div>
-              </div>
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">Nummer</div>
-                <div className="font-medium">
-                  {deceased.house_number || "-"}
+              <Group>
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Straat
+                  </div>
+                  <div className="font-medium">{deceased.street || "-"}</div>
                 </div>
-              </div>
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Toevoeging
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Nummer
+                  </div>
+                  <div className="font-medium">
+                    {deceased.house_number || "-"}
+                  </div>
                 </div>
-                <div className="font-medium">
-                  {deceased.house_number_addition || "-"}
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Toevoeging
+                  </div>
+                  <div className="font-medium">
+                    {deceased.house_number_addition || "-"}
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Postcode
+              </Group>
+              <Group>
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Postcode
+                  </div>
+                  <div className="font-medium">
+                    {deceased.postal_code || "-"}
+                  </div>
                 </div>
-                <div className="font-medium">{deceased.postal_code || "-"}</div>
-              </div>
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Woonplaats
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Woonplaats
+                  </div>
+                  <div className="font-medium">{deceased.city || "-"}</div>
                 </div>
-                <div className="font-medium">{deceased.city || "-"}</div>
-              </div>
+              </Group>
             </div>
           </CardContent>
         </Card>
@@ -298,30 +287,34 @@ export default function DeceasedPage({
           </CardHeader>
           <CardContent className="pt-0 pl-3 pr-3 pb-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Datum overlijden
+              <Group>
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Datum overlijden
+                  </div>
+                  <div className="font-medium">
+                    {formatDate(deceased.date_of_death)}
+                  </div>
                 </div>
-                <div className="font-medium">
-                  {formatDate(deceased.date_of_death)}
+                <div>
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Plaats van overlijden
+                  </div>
+                  <div className="font-medium">
+                    {(deceased as any).place_of_death || "-"}
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Plaats van overlijden
+              </Group>
+              <Group>
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Kistregistratienummer
+                  </div>
+                  <div className="font-medium">
+                    {deceased.coffin_registration_number || "-"}
+                  </div>
                 </div>
-                <div className="font-medium">
-                  {(deceased as any).place_of_death || "-"}
-                </div>
-              </div>
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Kistregistratienummer
-                </div>
-                <div className="font-medium">
-                  {deceased.coffin_registration_number || "-"}
-                </div>
-              </div>
+              </Group>
             </div>
           </CardContent>
         </Card>
@@ -370,24 +363,26 @@ export default function DeceasedPage({
           </CardHeader>
           <CardContent className="pt-0 pl-3 pr-3 pb-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Uitvaartdatum
+              <Group>
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Uitvaartdatum
+                  </div>
+                  <div className="font-medium">
+                    {formatDate(funeral.signing_date)}
+                  </div>
                 </div>
-                <div className="font-medium">
-                  {formatDate(funeral.signing_date)}
+                <div>
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Uitvaarttijd
+                  </div>
+                  <div className="font-medium">
+                    {formatTime(
+                      (funeral as any).funeral_time as string | null | undefined
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Uitvaarttijd
-                </div>
-                <div className="font-medium">
-                  {formatTime(
-                    (funeral as any).funeral_time as string | null | undefined
-                  )}
-                </div>
-              </div>
+              </Group>
               <div className="md:col-span-2">
                 <div className="text-muted-foreground text-xs mb-1">
                   Uitvaartlocatie

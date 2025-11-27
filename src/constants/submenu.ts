@@ -39,7 +39,6 @@ export const SETTINGS_CHILD_TABS: SubmenuItemDef[] = [
 
 export const FUNERAL_TABS: SubmenuItemDef[] = [
   { key: "gegevens", label: "Gegevens", segment: "" },
-  { key: "contacten", label: "Contacten", segment: "/contacts" },
   { key: "acties", label: "Acties", segment: "/actions" },
   { key: "scenario", label: "Wensen", segment: "/wishes" },
   { key: "kosten", label: "Kosten", segment: "/costs" },

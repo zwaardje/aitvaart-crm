@@ -6,5 +6,7 @@ interface PageContentProps {
 }
 
 export function PageContent({ children, className }: PageContentProps) {
-  return <div className={cn("w-full p-4 pb-14", className)}>{children}</div>;
+  return (
+    <div className={cn("w-full p-4 pt-0 pb-14", className)}>{children}</div>
+  );
 }
