@@ -158,11 +158,13 @@ export const organizationSchemas = {
 
 // Client schemas
 const clientCreateSchema = z.object({
+  first_names: commonSchemas.optionalString,
   preferred_name: z.string().min(1, "validation.preferredName.required"),
   last_name: z.string().min(1, "validation.lastName.required"),
   gender: commonSchemas.gender,
   date_of_birth: commonSchemas.date,
   place_of_birth: commonSchemas.optionalString,
+  marital_status: commonSchemas.maritalStatus,
   street: commonSchemas.optionalString,
   house_number: commonSchemas.optionalString,
   house_number_addition: commonSchemas.optionalString,

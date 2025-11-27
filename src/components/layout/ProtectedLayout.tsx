@@ -6,6 +6,7 @@ import { AppHeader, MainNavigation } from "@/components/layout";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/ui/logo";
 import { useFuneralName } from "@/hooks/useFunerals";
+import { useContactName } from "@/hooks/useFuneralContacts";
 import { useMemo } from "react";
 import { Content } from "@/components/layout";
 
@@ -23,14 +24,25 @@ export function ProtectedLayout({
   const pathname = usePathname();
 
   const segments = pathname.split("/").filter(Boolean);
-  const funeralId = segments.find((segment) =>
+
+  // Find all UUIDs in the path
+  const uuids = segments.filter((segment) =>
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
       segment
     )
   );
 
+  const funeralId = uuids[0] || null;
+  const contactId = pathname.includes("/contacts/") ? uuids[1] || null : null;
+  const isDeceasedPage = pathname.includes("/deceased");
+  const isContactPage = pathname.includes("/contacts/") && contactId;
+
   const { data: funeralName, isLoading: isLoadingFuneralName } = useFuneralName(
     funeralId || ""
+  );
+
+  const { data: contactName, isLoading: isLoadingContactName } = useContactName(
+    contactId || ""
   );
 
   const showBackButton =
@@ -50,17 +62,28 @@ export function ProtectedLayout({
   const showMenu = pathname !== "/onboarding";
 
   const showDeceasedName = useMemo(() => {
-    return Boolean(pathname.includes("/funerals/") && funeralName);
-  }, [pathname, funeralName]);
+    return Boolean(isDeceasedPage && funeralName);
+  }, [isDeceasedPage, funeralName]);
+
+  const showContactNameInHeader = useMemo(() => {
+    return Boolean(isContactPage && contactName);
+  }, [isContactPage, contactName]);
+
+  // Determine which name to show: contact name has priority over funeral name
+  const displayName = showContactNameInHeader
+    ? contactName
+    : showDeceasedName
+    ? funeralName
+    : undefined;
 
   return (
     <AuthGuard>
       <AppHeader
-        showDeceasedName={showDeceasedName}
+        showDeceasedName={showDeceasedName || showContactNameInHeader}
         pageTitle={pageTitle()}
         showBackButton={showBackButton}
         onBackClick={onBackClick}
-        funeralName={funeralName ?? undefined}
+        funeralName={displayName ?? undefined}
         logo={<Logo />}
       />
       <Content>

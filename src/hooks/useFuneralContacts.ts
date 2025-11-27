@@ -108,3 +108,76 @@ export function useFuneralContacts(
     deleteContact: deleteMutation.mutateAsync,
   };
 }
+
+// Hook for getting contact name (client person's name)
+export function useContactName(contactId: string) {
+  return useQuery({
+    queryKey: ["contact-name", contactId],
+    queryFn: async () => {
+      if (
+        !contactId ||
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+          contactId
+        )
+      ) {
+        return null;
+      }
+
+      try {
+        const supabase = getSupabaseBrowser();
+
+        const { data, error } = await supabase
+          .from("funeral_contacts")
+          .select(
+            `
+            id,
+            client:clients(
+              preferred_name,
+              last_name
+            )
+          `
+          )
+          .eq("id", contactId)
+          .single();
+
+        if (error) {
+          // If it's an auth error, don't retry
+          if (
+            error.message?.includes("refresh_token_already_used") ||
+            error.message?.includes("Invalid Refresh Token")
+          ) {
+            console.warn("Auth token error, skipping retry:", error.message);
+            return null;
+          }
+          return null;
+        }
+
+        if (!data) {
+          return null;
+        }
+
+        // Return the client person's name
+        if (data.client) {
+          return `${data.client.preferred_name} ${data.client.last_name}`.trim();
+        }
+
+        return null;
+      } catch (error) {
+        console.error("Error fetching contact name:", error);
+        return null;
+      }
+    },
+    enabled: !!contactId && typeof window !== "undefined", // Only run on client side
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: (failureCount, error) => {
+      // Don't retry auth errors
+      if (
+        error?.message?.includes("refresh_token_already_used") ||
+        error?.message?.includes("Invalid Refresh Token")
+      ) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+}
