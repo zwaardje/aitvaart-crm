@@ -25,6 +25,7 @@ import { InsuranceDataEditForm } from "@/components/forms/InsuranceDataEditForm"
 import { FuneralDataEditForm } from "@/components/forms/FuneralDataEditForm";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { Group } from "@/components/ui/Group";
 
 type FuneralContact =
   Database["public"]["Tables"]["funeral_contacts"]["Row"] & {
@@ -175,26 +176,30 @@ export default function DeceasedPage({
           </CardHeader>
           <CardContent className="pt-0 pl-3 pr-3 pb-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Roepnaam
+              <Group>
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Roepnaam
+                  </div>
+                  <div className="font-medium">
+                    {deceased.preferred_name || "-"}
+                  </div>
                 </div>
-                <div className="font-medium">
-                  {deceased.preferred_name || "-"}
+                <div className="flex-1">
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Achternaam
+                  </div>
+                  <div className="font-medium">{deceased.last_name || "-"}</div>
                 </div>
-              </div>
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Achternaam
+                <div>
+                  <div className="text-muted-foreground text-xs mb-1">
+                    Voornamen
+                  </div>
+                  <div className="font-medium">
+                    {deceased.first_names || "-"}
+                  </div>
                 </div>
-                <div className="font-medium">{deceased.last_name || "-"}</div>
-              </div>
-              <div>
-                <div className="text-muted-foreground text-xs mb-1">
-                  Voornamen
-                </div>
-                <div className="font-medium">{deceased.first_names || "-"}</div>
-              </div>
+              </Group>
               <div>
                 <div className="text-muted-foreground text-xs mb-1">
                   Geslacht
