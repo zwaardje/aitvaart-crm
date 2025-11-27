@@ -99,6 +99,7 @@ export function IntakeForm() {
     <Form
       id="intake-form"
       schema={intakeSchemas.form}
+      canWatchErrors={true}
       onSubmit={(values: IntakeFormData) => createAllMutation.mutate(values)}
     >
       <Wizard totalSteps={4}>
