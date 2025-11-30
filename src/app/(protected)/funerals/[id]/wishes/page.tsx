@@ -22,6 +22,7 @@ import {
   SmartSearchBar,
   SmartSearchBarAction,
 } from "@/components/ui/SmartSearchBar";
+import { SECTION_LABELS, ITEM_TYPE_LABELS } from "@/constants/scenario-labels";
 
 type FuneralScenario = Database["public"]["Tables"]["funeral_scenarios"]["Row"];
 
@@ -32,25 +33,6 @@ interface ScenarioContentProps {
 function ScenarioContent({ funeralId }: ScenarioContentProps) {
   const { data: scenarios, isLoading } = useScenarios(funeralId);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-
-  const sectionLabels: Record<string, string> = {
-    soort_uitvaart: "Soort uitvaart",
-    verzorging_en_opbaring: "Verzorging en opbaring",
-    ceremonie: "Ceremonie",
-    kosten: "Kosten",
-  };
-
-  const itemTypeLabels: Record<string, string> = {
-    begrafenis: "Begrafenis",
-    crematie: "Crematie",
-    laatste_verzorging: "Laatste verzorging",
-    thanatopraxie: "Thanatopraxie",
-    opbaring: "Opbaring",
-    ceremonie: "Ceremonie",
-    muziek: "Muziek",
-    bloemen: "Bloemen",
-    transport: "Transport",
-  };
 
   const searchActions = useCallback(
     (): SmartSearchBarAction[] => [
@@ -100,9 +82,9 @@ function ScenarioContent({ funeralId }: ScenarioContentProps) {
                   key={scenario.id}
                   title={scenario.title}
                   subtitle={` ${
-                    sectionLabels[scenario.section] || scenario.section
+                    SECTION_LABELS[scenario.section] || scenario.section
                   } - ${
-                    itemTypeLabels[scenario.item_type] || scenario.item_type
+                    ITEM_TYPE_LABELS[scenario.item_type] || scenario.item_type
                   }`}
                   actions={
                     <div className="flex items-center gap-1">

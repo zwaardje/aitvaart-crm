@@ -11,6 +11,36 @@ type FuneralContactInsert =
 type FuneralContactUpdate =
   Database["public"]["Tables"]["funeral_contacts"]["Update"];
 
+export type FuneralContactWithClient = FuneralContact & {
+  client: Database["public"]["Tables"]["clients"]["Row"] | null;
+};
+
+/**
+ * Sorteert contactpersonen: primair contact bovenaan, daarna alfabetisch op naam
+ */
+export function sortFuneralContacts(
+  contacts: FuneralContactWithClient[]
+): FuneralContactWithClient[] {
+  return [...contacts].sort((a, b) => {
+    // Primair contact altijd bovenaan
+    if (a.is_primary && !b.is_primary) return -1;
+    if (!a.is_primary && b.is_primary) return 1;
+
+    // Daarna alfabetisch op naam (preferred_name, fallback naar last_name)
+    const nameA = (
+      a.client?.preferred_name ||
+      a.client?.last_name ||
+      ""
+    ).toLowerCase();
+    const nameB = (
+      b.client?.preferred_name ||
+      b.client?.last_name ||
+      ""
+    ).toLowerCase();
+    return nameA.localeCompare(nameB, "nl");
+  });
+}
+
 export function useFuneralContacts(
   funeralId: string | null,
   clientId?: string | null
@@ -35,7 +65,8 @@ export function useFuneralContacts(
 
       const { data, error } = await query;
       if (error) throw error;
-      return (data ?? []) as any;
+      const contacts = (data ?? []) as FuneralContactWithClient[];
+      return sortFuneralContacts(contacts);
     },
   });
 

@@ -2,12 +2,7 @@
 
 import { useFuneral } from "@/hooks/useFunerals";
 import { GenericCard } from "@/components/ui/GenericCard";
-import { useCallback, useEffect, useState } from "react";
-import {
-  SmartSearchBar,
-  SmartSearchBarAction,
-} from "@/components/ui/SmartSearchBar";
-import { RiAddLine } from "@remixicon/react";
+import { useEffect, useState } from "react";
 import { FuneralContactForm } from "@/components/forms/FuneralContactForm";
 import { useFuneralContacts } from "@/hooks/useFuneralContacts";
 
@@ -53,9 +48,8 @@ export default function FuneralDetailsPage({
     <>
       {funeral && contacts && (
         <>
-          <PageContent className="flex flex-col gap-4">
+          <PageContent className="flex flex-col gap-4 mt-4">
             <div className="flex flex-col gap-2">
-              <h3 className="text-sm font-medium">Nabestaanden</h3>
               {contacts.map((contact: FuneralContact, index: number) => (
                 <GenericCard
                   key={contact.id || index}

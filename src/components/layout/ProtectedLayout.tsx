@@ -56,6 +56,7 @@ export function ProtectedLayout({
     if (pathname.includes("/funerals")) return "Uitvaarten";
     if (pathname.includes("/suppliers")) return "Instellingen";
     if (pathname.includes("/intake")) return "Intake";
+    if (pathname.includes("/contacts")) return "Nabestaanden";
     return "Aitvaart CRM";
   };
 

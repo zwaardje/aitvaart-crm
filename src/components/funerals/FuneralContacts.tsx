@@ -5,7 +5,6 @@ import { useFuneralContacts } from "@/hooks";
 import type { Database } from "@/types/database";
 import { Skeleton } from "@/components/ui";
 import { ContactsCard } from "@/components/funerals/ContactsCard";
-import { useMemo } from "react";
 
 type ClientRow = Database["public"]["Tables"]["clients"]["Row"];
 type FuneralContactRow =
@@ -28,20 +27,7 @@ export function FuneralContacts({ funeralId }: Props) {
   const { contacts, isLoading, updateContact, deleteContact } =
     useFuneralContacts(funeralId);
 
-  const typedContacts = useMemo(
-    () => (contacts as unknown as ContactWithClient[]) ?? [],
-    [contacts]
-  );
-
-  const sortedContacts = useMemo(
-    () =>
-      typedContacts.sort((a, b) => {
-        if (a.is_primary && !b.is_primary) return -1;
-        if (!a.is_primary && b.is_primary) return 1;
-        return 0;
-      }),
-    [typedContacts]
-  );
+  const typedContacts = (contacts as unknown as ContactWithClient[]) ?? [];
 
   const onEdit = async (contact: ContactWithClient, data: EditForm) => {
     const supabase = getSupabaseBrowser();
@@ -96,7 +82,7 @@ export function FuneralContacts({ funeralId }: Props) {
         )}
         {!isLoading && typedContacts.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {sortedContacts.map((c) => (
+            {typedContacts.map((c) => (
               <ContactsCard
                 key={c.id}
                 contact={c}

@@ -134,7 +134,7 @@ export default function DeceasedPage({
 
   return (
     <>
-      <PageContent className="flex flex-col gap-4">
+      <PageContent className="flex flex-col gap-4 mt-4">
         {/* Persoonsgegevens Card */}
         <Card className="rounded-sm">
           <CardHeader className="pb-3 pl-3 pr-3 pt-3">

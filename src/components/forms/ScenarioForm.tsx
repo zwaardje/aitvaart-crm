@@ -18,31 +18,16 @@ import { SubmitButton } from "./SubmitButton";
 import { schemas, ScenarioFormData } from "@/lib/validation";
 import { useCreateScenarioWithDefaults } from "@/hooks/useScenarios";
 import { RiAddLine } from "@remixicon/react";
+import {
+  SECTION_OPTIONS,
+  ITEM_TYPE_OPTIONS,
+} from "@/constants/scenario-labels";
 
 interface ScenarioFormProps {
   withDialog?: boolean;
   funeralId: string;
   onSuccess?: () => void;
 }
-
-const SECTION_OPTIONS = [
-  { value: "soort_uitvaart", label: "Soort uitvaart" },
-  { value: "verzorging_en_opbaring", label: "Verzorging en opbaring" },
-  { value: "ceremonie", label: "Ceremonie" },
-  { value: "kosten", label: "Kosten" },
-];
-
-const ITEM_TYPE_OPTIONS = [
-  { value: "begrafenis", label: "Begrafenis" },
-  { value: "crematie", label: "Crematie" },
-  { value: "laatste_verzorging", label: "Laatste verzorging" },
-  { value: "thanatopraxie", label: "Thanatopraxie" },
-  { value: "opbaring", label: "Opbaring" },
-  { value: "ceremonie", label: "Ceremonie" },
-  { value: "muziek", label: "Muziek" },
-  { value: "bloemen", label: "Bloemen" },
-  { value: "transport", label: "Transport" },
-];
 
 export function ScenarioForm({
   withDialog = false,

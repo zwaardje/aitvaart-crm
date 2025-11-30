@@ -228,7 +228,7 @@ export default function ContactPage({
             </div>
           </CardHeader>
           <CardContent className="pt-0 pl-3 pr-3 pb-3">
-            <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <Group>
                 <div className="flex-1">
                   <div className="text-muted-foreground text-xs mb-1">
