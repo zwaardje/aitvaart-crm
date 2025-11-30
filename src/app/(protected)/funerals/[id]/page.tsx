@@ -2,8 +2,6 @@
 
 import { useFuneral } from "@/hooks/useFunerals";
 import { GenericCard } from "@/components/ui/GenericCard";
-
-import { DeceasedCard } from "@/components/funerals/DeceasedCard";
 import { useCallback, useEffect, useState } from "react";
 import {
   SmartSearchBar,

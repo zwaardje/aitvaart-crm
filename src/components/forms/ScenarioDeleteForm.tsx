@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 import { Button, DialogClose, DialogFooter } from "@/components/ui";
 import {
   Dialog,
@@ -28,7 +27,6 @@ export function ScenarioDeleteForm({
   scenario,
   onSuccess,
 }: ScenarioDeleteFormProps) {
-  const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
   const { mutateAsync: deleteScenario } = useDeleteScenario();
 
@@ -47,7 +45,7 @@ export function ScenarioDeleteForm({
   };
 
   const formContent = (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       <div>
         <p className="text-sm text-gray-500 mb-2">
           Deze actie kan niet ongedaan worden gemaakt.

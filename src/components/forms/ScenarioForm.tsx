@@ -18,6 +18,8 @@ import { SubmitButton } from "./SubmitButton";
 import { schemas, ScenarioFormData } from "@/lib/validation";
 import { useCreateScenarioWithDefaults } from "@/hooks/useScenarios";
 import { RiAddLine } from "@remixicon/react";
+import { Group } from "@/components/ui/Group";
+
 import {
   SECTION_OPTIONS,
   ITEM_TYPE_OPTIONS,
@@ -67,19 +69,23 @@ export function ScenarioForm({
       }}
     >
       <div className="space-y-4">
-        <FormSelect
-          name="section"
-          label="Sectie"
-          placeholder="Kies sectie"
-          options={SECTION_OPTIONS}
-        />
+        <Group>
+          <FormSelect
+            className="flex-1"
+            name="section"
+            label="Sectie"
+            placeholder="Kies sectie"
+            options={SECTION_OPTIONS}
+          />
 
-        <FormSelect
-          name="item_type"
-          label="Item type"
-          placeholder="Kies item type"
-          options={ITEM_TYPE_OPTIONS}
-        />
+          <FormSelect
+            className="flex-1"
+            name="item_type"
+            label="Item type"
+            placeholder="Kies item type"
+            options={ITEM_TYPE_OPTIONS}
+          />
+        </Group>
 
         <FormInput
           name="title"
@@ -94,18 +100,21 @@ export function ScenarioForm({
           placeholder="Typ hier de opmerking over het item"
           rows={3}
         />
+        <Group title="Extra informatie">
+          <FormInput
+            className="flex-1"
+            name="extra_field_label"
+            label="Extra veld label"
+            placeholder="Bijv. Verzorglocatie, Opbaarlocatie"
+          />
 
-        <FormInput
-          name="extra_field_label"
-          label="Extra veld label"
-          placeholder="Bijv. Verzorglocatie, Opbaarlocatie"
-        />
-
-        <FormInput
-          name="extra_field_value"
-          label="Extra veld waarde"
-          placeholder="Typ hier de waarde van het extra veld"
-        />
+          <FormInput
+            className="flex-1"
+            name="extra_field_value"
+            label="Extra veld waarde"
+            placeholder="Typ hier de waarde van het extra veld"
+          />
+        </Group>
 
         <DialogFooter className="mt-2 flex flex-row justify-between">
           <DialogClose asChild>
