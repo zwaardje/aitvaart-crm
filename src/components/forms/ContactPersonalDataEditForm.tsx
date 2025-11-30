@@ -96,8 +96,15 @@ export function ContactPersonalDataEditForm({
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["funeral-contacts"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["funeral-contact", funeralContact.id],
+      });
       await queryClient.invalidateQueries({ queryKey: ["clients"] });
+      await queryClient.invalidateQueries({ queryKey: ["clients", client.id] });
       await queryClient.invalidateQueries({ queryKey: ["funerals"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["funerals", funeralContact.funeral_id],
+      });
       setIsOpen(false);
       onSaved?.();
     },

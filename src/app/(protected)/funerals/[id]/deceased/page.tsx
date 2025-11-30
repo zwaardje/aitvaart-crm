@@ -142,7 +142,7 @@ export default function DeceasedPage({
               <CardTitle className="text-base font-medium">
                 Persoonsgegevens
               </CardTitle>
-              <PersonalDataEditForm deceased={deceased} />
+              <PersonalDataEditForm deceased={deceased} funeralId={id} />
             </div>
           </CardHeader>
           <CardContent className="pt-0 pl-3 pr-3 pb-3">
@@ -226,7 +226,7 @@ export default function DeceasedPage({
               <CardTitle className="text-base font-medium">
                 Adresgegevens
               </CardTitle>
-              <AddressDataEditForm deceased={deceased} />
+              <AddressDataEditForm deceased={deceased} funeralId={id} />
             </div>
           </CardHeader>
           <CardContent className="pt-0 pl-3 pr-3 pb-3">
@@ -282,7 +282,7 @@ export default function DeceasedPage({
               <CardTitle className="text-base font-medium">
                 Overlijdensgegevens
               </CardTitle>
-              <DeathDataEditForm deceased={deceased} />
+              <DeathDataEditForm deceased={deceased} funeralId={id} />
             </div>
           </CardHeader>
           <CardContent className="pt-0 pl-3 pr-3 pb-3">
@@ -326,7 +326,7 @@ export default function DeceasedPage({
               <CardTitle className="text-base font-medium">
                 Verzekeringgegevens
               </CardTitle>
-              <InsuranceDataEditForm deceased={deceased} />
+              <InsuranceDataEditForm deceased={deceased} funeralId={id} />
             </div>
           </CardHeader>
           <CardContent className="pt-0 pl-3 pr-3 pb-3">

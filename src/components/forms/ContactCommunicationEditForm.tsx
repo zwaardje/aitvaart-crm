@@ -33,11 +33,13 @@ type ClientRow = Database["public"]["Tables"]["clients"]["Row"];
 
 interface ContactCommunicationEditFormProps {
   client: ClientRow;
+  contactId?: string;
   onSaved?: () => void;
 }
 
 export function ContactCommunicationEditForm({
   client,
+  contactId,
   onSaved,
 }: ContactCommunicationEditFormProps) {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -54,8 +56,13 @@ export function ContactCommunicationEditForm({
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["clients"] });
+      await queryClient.invalidateQueries({ queryKey: ["clients", client.id] });
       await queryClient.invalidateQueries({ queryKey: ["funeral-contacts"] });
-      await queryClient.invalidateQueries({ queryKey: ["funerals"] });
+      if (contactId) {
+        await queryClient.invalidateQueries({
+          queryKey: ["funeral-contact", contactId],
+        });
+      }
       setIsOpen(false);
       onSaved?.();
     },

@@ -221,7 +221,10 @@ export default function ContactPage({
               <CardTitle className="text-base font-medium">
                 Adresgegevens
               </CardTitle>
-              <ContactAddressDataEditForm client={client} />
+              <ContactAddressDataEditForm
+                client={client}
+                contactId={contactId}
+              />
             </div>
           </CardHeader>
           <CardContent className="pt-0 pl-3 pr-3 pb-3">
@@ -273,7 +276,10 @@ export default function ContactPage({
               <CardTitle className="text-base font-medium">
                 Communicatie
               </CardTitle>
-              <ContactCommunicationEditForm client={client} />
+              <ContactCommunicationEditForm
+                client={client}
+                contactId={contactId}
+              />
             </div>
           </CardHeader>
           <CardContent className="pt-0 pl-3 pr-3 pb-3">

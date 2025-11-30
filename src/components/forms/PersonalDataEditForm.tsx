@@ -42,6 +42,7 @@ interface PersonalDataEditFormProps {
 
 export function PersonalDataEditForm({
   deceased,
+  funeralId,
   onSaved,
 }: PersonalDataEditFormProps) {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -58,7 +59,15 @@ export function PersonalDataEditForm({
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["deceased"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["deceased", deceased.id],
+      });
       await queryClient.invalidateQueries({ queryKey: ["funerals"] });
+      if (funeralId) {
+        await queryClient.invalidateQueries({
+          queryKey: ["funerals", funeralId],
+        });
+      }
       setIsOpen(false);
       onSaved?.();
     },

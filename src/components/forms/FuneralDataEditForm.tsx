@@ -52,6 +52,7 @@ export function FuneralDataEditForm({
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["funerals"] });
+      await queryClient.invalidateQueries({ queryKey: ["funerals", funeral.id] });
       setIsOpen(false);
       onSaved?.();
     },

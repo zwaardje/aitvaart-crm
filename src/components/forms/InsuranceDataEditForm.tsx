@@ -30,11 +30,13 @@ type DeceasedRow = Database["public"]["Tables"]["deceased"]["Row"];
 
 interface InsuranceDataEditFormProps {
   deceased: DeceasedRow;
+  funeralId?: string;
   onSaved?: () => void;
 }
 
 export function InsuranceDataEditForm({
   deceased,
+  funeralId,
   onSaved,
 }: InsuranceDataEditFormProps) {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -51,7 +53,15 @@ export function InsuranceDataEditForm({
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["deceased"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["deceased", deceased.id],
+      });
       await queryClient.invalidateQueries({ queryKey: ["funerals"] });
+      if (funeralId) {
+        await queryClient.invalidateQueries({
+          queryKey: ["funerals", funeralId],
+        });
+      }
       setIsOpen(false);
       onSaved?.();
     },
