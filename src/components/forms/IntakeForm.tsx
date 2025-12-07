@@ -171,23 +171,13 @@ function IntakeFormWizard({
                   },
                 ]}
               />
-               <FormSelect
+              <FormSelect
                 className="flex-1"
                 name="deceased.marital_status"
                 label="Burgerlijke staat"
                 options={MARITAL_STATUS_OPTIONS}
               />
             </Group>
-            <Group>
-             
-              <FormInput
-                className="w-full"
-                name="deceased.social_security_number"
-                label="BSN"
-              />
-            </Group>
-          </FormGroup>
-          <FormGroup title="Overlijdensgegevens">
             <Group>
               <FormSelect
                 className="flex-1"
@@ -197,8 +187,8 @@ function IntakeFormWizard({
               />
               <FormInput
                 className="flex-1"
-                name="deceased.coffin_registration_number"
-                label="Kistregistratienummer"
+                name="deceased.social_security_number"
+                label="BSN"
               />
             </Group>
           </FormGroup>
@@ -271,26 +261,28 @@ function IntakeFormWizard({
         <WizardStep step={4}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormGroup title="Uitvaartdetails">
-              {funeralDirectorOptions.length > 0 ? (
-                <FormSelect
-                  name="funeral.funeral_director"
-                  label="Uitvaartverzorger"
-                  placeholder={
-                    organizationMembersLoading
-                      ? "Teamleden laden..."
-                      : "Selecteer uitvaartverzorger"
-                  }
-                  options={funeralDirectorOptions}
-                />
-              ) : (
-                <FormInput
-                  name="funeral.funeral_director"
-                  label="Uitvaartverzorger"
-                />
-              )}
+              <Group>
+                {funeralDirectorOptions.length > 0 ? (
+                  <FormSelect
+                    name="funeral.funeral_director"
+                    label="Uitvaartverzorger"
+                    placeholder={
+                      organizationMembersLoading
+                        ? "Teamleden laden..."
+                        : "Selecteer uitvaartverzorger"
+                    }
+                    options={funeralDirectorOptions}
+                  />
+                ) : (
+                  <FormInput
+                    name="funeral.funeral_director"
+                    label="Uitvaartverzorger"
+                  />
+                )}
 
-              <FormInput name="funeral.location" label="Locatie" />
-              <div className="flex items-center gap-2 justify-evenly">
+                <FormInput name="funeral.location" label="Locatie" />
+              </Group>
+              <Group>
                 <FormInput
                   className="w-full"
                   name="deceased.date_of_death"
@@ -303,7 +295,14 @@ function IntakeFormWizard({
                   type="date"
                   label="Datum van ondertekening"
                 />
-              </div>
+              </Group>
+              <Group>
+                <FormInput
+                  className="flex-1"
+                  name="deceased.coffin_registration_number"
+                  label="Kistregistratienummer"
+                />
+              </Group>
             </FormGroup>
           </div>
         </WizardStep>
