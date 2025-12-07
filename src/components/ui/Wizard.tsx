@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui";
 import { SubmitButton } from "@/components/forms/SubmitButton";
@@ -33,6 +39,14 @@ interface WizardProps {
 
 export function Wizard({ children, totalSteps, className }: WizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
+
+  // Handle dynamic totalSteps changes
+  // If currentStep exceeds new totalSteps, adjust to the last valid step
+  useEffect(() => {
+    if (currentStep > totalSteps) {
+      setCurrentStep(totalSteps);
+    }
+  }, [totalSteps, currentStep]);
 
   const goToNext = () => {
     if (currentStep < totalSteps) {

@@ -7,7 +7,7 @@ import {
   SmartSearchBarAction,
   SmartSearchBar,
 } from "@/components/ui/SmartSearchBar";
-import { RiSettings3Line } from "@remixicon/react";
+import { RiCrossLine } from "@remixicon/react";
 import { IntakeForm } from "@/components/forms/IntakeForm";
 import {
   Dialog,
@@ -27,7 +27,7 @@ export default function FuneralsPage() {
       {
         id: "settings",
         label: "Nieuwe uitvaart",
-        icon: <RiSettings3Line className="h-4 w-4" />,
+        icon: <RiCrossLine className="h-4 w-4" />,
         onClick: () => {
           setIsDialogOpen(true);
         },
@@ -53,7 +53,7 @@ export default function FuneralsPage() {
         }}
       />
 
-      <PageContent>
+      <PageContent className="mt-4">
         {searchResults.length > 0 ? (
           <div className="space-y-4">
             {searchResults.map((result) => (

@@ -1,5 +1,6 @@
 "use client";
 import { useMemo } from "react";
+import { useFormContext } from "react-hook-form";
 import { Form, FormInput, FormSelect } from "@/components/forms";
 import { Wizard, WizardStep, WizardNavigation } from "@/components/ui/Wizard";
 import { DialogFooter } from "@/components/ui";
@@ -12,6 +13,9 @@ import {
 import type { OrganizationMember } from "@/types/multi-user";
 import { intakeSchemas, IntakeFormData } from "@/lib/validation";
 import { FormGroup } from "./FormGroup";
+import { FUNERAL_STATUS_OPTIONS } from "@/constants/funeral-status";
+import { Group } from "@/components/ui/Group";
+import { MARITAL_STATUS_OPTIONS } from "@/constants/form-options";
 
 export function IntakeForm() {
   const { data: currentOrganization } = useCurrentUserOrganization();
@@ -99,135 +103,171 @@ export function IntakeForm() {
     <Form
       id="intake-form"
       schema={intakeSchemas.form}
-      canWatchErrors={true}
       onSubmit={(values: IntakeFormData) => createAllMutation.mutate(values)}
     >
-      <Wizard totalSteps={4}>
-        <WizardStep step={1}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormGroup title="Gegevens van de overledene">
-              <div className="flex items-center gap-2 justify-evenly">
-                <FormInput
-                  className="w-full"
-                  name="deceased.first_names"
-                  label="Voornamen"
-                />
-                <FormInput
-                  className="w-full"
-                  name="deceased.last_name"
-                  label="Achternaam"
-                />
-              </div>
+      <IntakeFormWizard
+        funeralDirectorOptions={funeralDirectorOptions}
+        organizationMembersLoading={organizationMembersLoading}
+      />
+    </Form>
+  );
+}
 
-              <div className="flex items-center gap-2 justify-evenly">
-                <FormInput
-                  className="w-full"
-                  name="deceased.date_of_birth"
-                  type="date"
-                  label="Geboortedatum"
-                />
-                <FormInput
-                  className="w-full"
-                  name="deceased.place_of_birth"
-                  label="Geboorteplaats"
-                />
-              </div>
-              <div className="flex items-center gap-2 justify-evenly">
-                <FormSelect
-                  name="deceased.gender"
-                  label="Geslacht"
-                  options={[
-                    {
-                      value: "male",
-                      label: "Man",
-                    },
-                    {
-                      value: "female",
-                      label: "Vrouw",
-                    },
-                    {
-                      value: "other",
-                      label: "Anders",
-                    },
-                  ]}
-                />
-                <FormInput
-                  className="w-full"
-                  name="deceased.social_security_number"
-                  label="BSN"
-                />
-              </div>
+function IntakeFormWizard({
+  funeralDirectorOptions,
+  organizationMembersLoading,
+}: {
+  funeralDirectorOptions: { value: string; label: string }[];
+  organizationMembersLoading: boolean;
+}) {
+  const { watch } = useFormContext();
+  const status = watch("deceased.status");
 
+  // Calculate totalSteps dynamically: 3 if status is "planning", otherwise 4
+  const totalSteps = useMemo(() => {
+    return status === "planning" ? 3 : 4;
+  }, [status]);
+
+  return (
+    <Wizard totalSteps={totalSteps}>
+      <WizardStep step={1}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormGroup title="Gegevens van de overledene">
+            <Group>
+              <FormInput name="deceased.preferred_name" label="Roepnaam" />
+              <FormInput name="deceased.first_names" label="Voornamen" />
+              <FormInput name="deceased.last_name" label="Achternaam" />
+            </Group>
+
+            <Group>
               <FormInput
+                className="w-full"
+                name="deceased.date_of_birth"
+                type="date"
+                label="Geboortedatum"
+              />
+              <FormInput
+                className="w-full"
+                name="deceased.place_of_birth"
+                label="Geboorteplaats"
+              />
+            </Group>
+            <Group>
+              <FormSelect
+                name="deceased.gender"
+                label="Geslacht"
+                options={[
+                  {
+                    value: "male",
+                    label: "Man",
+                  },
+                  {
+                    value: "female",
+                    label: "Vrouw",
+                  },
+                  {
+                    value: "other",
+                    label: "Anders",
+                  },
+                ]}
+              />
+               <FormSelect
+                className="flex-1"
+                name="deceased.marital_status"
+                label="Burgerlijke staat"
+                options={MARITAL_STATUS_OPTIONS}
+              />
+            </Group>
+            <Group>
+             
+              <FormInput
+                className="w-full"
+                name="deceased.social_security_number"
+                label="BSN"
+              />
+            </Group>
+          </FormGroup>
+          <FormGroup title="Overlijdensgegevens">
+            <Group>
+              <FormSelect
+                className="flex-1"
+                name="deceased.status"
+                label="Status"
+                options={FUNERAL_STATUS_OPTIONS}
+              />
+              <FormInput
+                className="flex-1"
                 name="deceased.coffin_registration_number"
                 label="Kistregistratienummer"
               />
-            </FormGroup>
-          </div>
-        </WizardStep>
+            </Group>
+          </FormGroup>
+        </div>
+      </WizardStep>
 
-        <WizardStep step={2}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormGroup title="Adresgegevens">
+      <WizardStep step={2}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormGroup title="Adresgegevens">
+            <FormInput
+              name="deceased.street"
+              label="Straat"
+              className="w-full"
+            />
+            <div className="flex items-center gap-2 justify-evenly">
               <FormInput
-                name="deceased.street"
-                label="Straat"
+                name="deceased.house_number"
+                label="Huisnummer"
                 className="w-full"
               />
-              <div className="flex items-center gap-2 justify-evenly">
-                <FormInput
-                  name="deceased.house_number"
-                  label="Huisnummer"
-                  className="w-full"
-                />
-                <FormInput
-                  name="deceased.house_number_addition"
-                  label="Toevoeging"
-                  className="w-full"
-                />
-              </div>
-              <div className="flex items-center gap-2 justify-evenly">
-                <FormInput
-                  name="deceased.postal_code"
-                  label="Postcode"
-                  className="w-full"
-                />
-                <FormInput
-                  name="deceased.city"
-                  label="Plaats"
-                  className="w-full"
-                />
-              </div>
-            </FormGroup>
-          </div>
-        </WizardStep>
-
-        <WizardStep step={3}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormGroup title="Contactpersoon">
-              <div className="flex items-center gap-2 justify-evenly">
-                <FormInput
-                  name="client.preferred_name"
-                  label="Voornaam"
-                  className="w-full"
-                />
-                <FormInput
-                  name="client.last_name"
-                  label="Achternaam"
-                  className="w-full"
-                />
-              </div>
-              <FormInput name="client.phone_number" label="Telefoonnummer" />
               <FormInput
-                name="client.email"
-                label="E-mail"
-                type="email"
-                placeholder="naam@voorbeeld.nl"
+                name="deceased.house_number_addition"
+                label="Toevoeging"
+                className="w-full"
               />
-            </FormGroup>
-          </div>
-        </WizardStep>
+            </div>
+            <div className="flex items-center gap-2 justify-evenly">
+              <FormInput
+                name="deceased.postal_code"
+                label="Postcode"
+                className="w-full"
+              />
+              <FormInput
+                name="deceased.city"
+                label="Plaats"
+                className="w-full"
+              />
+            </div>
+          </FormGroup>
+        </div>
+      </WizardStep>
 
+      <WizardStep step={3}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormGroup title="Contactpersoon">
+            <div className="flex items-center gap-2 justify-evenly">
+              <FormInput
+                name="client.preferred_name"
+                label="Voornaam"
+                className="w-full"
+              />
+              <FormInput
+                name="client.last_name"
+                label="Achternaam"
+                className="w-full"
+              />
+            </div>
+            <FormInput name="client.phone_number" label="Telefoonnummer" />
+            <FormInput
+              name="client.email"
+              label="E-mail"
+              type="email"
+              placeholder="naam@voorbeeld.nl"
+            />
+          </FormGroup>
+        </div>
+      </WizardStep>
+
+      {status !== "planning" && (
         <WizardStep step={4}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormGroup title="Uitvaartdetails">
@@ -267,11 +307,11 @@ export function IntakeForm() {
             </FormGroup>
           </div>
         </WizardStep>
+      )}
 
-        <DialogFooter className="px-0 pb-0 pt-6">
-          <WizardNavigation finishLabel="Opslaan" onClose={() => {}} />
-        </DialogFooter>
-      </Wizard>
-    </Form>
+      <DialogFooter className="px-0 pb-0 pt-6">
+        <WizardNavigation finishLabel="Opslaan" onClose={() => {}} />
+      </DialogFooter>
+    </Wizard>
   );
 }

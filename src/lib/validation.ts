@@ -246,15 +246,17 @@ export const funeralSchemas = {
 
 // Intake form schema
 const intakeDeceasedSchema = z.object({
+  status: z.enum(["planning", "active", "completed", "cancelled"]),
   first_names: z.string().min(1, "validation.required"),
   last_name: z.string().min(1, "validation.required"),
+  preferred_name: z.string().min(1, "validation.required"),
   date_of_birth: z.string().min(1, "validation.required"),
   place_of_birth: z.string().min(1, "validation.required"),
   gender: z.enum(["male", "female", "other"], {
     errorMap: () => ({ message: "validation.required" }),
   }),
-  social_security_number: z.string().min(1, "validation.required"),
-  coffin_registration_number: z.string().min(1, "validation.required"),
+  social_security_number: z.string().optional(),
+  coffin_registration_number: z.string().optional(),
   street: z.string().min(1, "validation.required"),
   house_number: z.string().min(1, "validation.required"),
   house_number_addition: z.string().optional(),
@@ -262,16 +264,18 @@ const intakeDeceasedSchema = z.object({
     .string()
     .regex(/^[0-9]{4}\s?[A-Z]{2}$/i, "validation.postalCode.invalid"),
   city: z.string().min(1, "validation.required"),
-  date_of_death: z.string().min(1, "validation.required"),
+  date_of_death: z.string().optional(),
 });
 
 const intakeClientSchema = z.object({
-  preferred_name: z.string().min(1, "validation.required"),
-  last_name: z.string().min(1, "validation.required"),
+  preferred_name: z.string().optional(),
+  last_name: z.string().optional(),
   phone_number: z
     .string()
-    .regex(/^[\+]?[0-9\s\-\(\)]{10,}$/, "validation.phone.invalid"),
-  email: z.string().email("validation.email.invalid"),
+    .regex(/^[\+]?[0-9\s\-\(\)]{10,}$/, "validation.phone.invalid")
+    .optional()
+    .or(z.literal("")),
+  email: z.string().email("validation.email.invalid").optional(),
 });
 
 const intakeFuneralSchema = z.object({

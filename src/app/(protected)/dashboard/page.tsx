@@ -6,7 +6,7 @@ import {
   SmartSearchBar,
   SmartSearchBarAction,
 } from "@/components/ui/SmartSearchBar";
-import { RiAddLine } from "@remixicon/react";
+import { RiCrossLine } from "@remixicon/react";
 import { IntakeForm } from "@/components/forms/IntakeForm";
 import { useState } from "react";
 import {
@@ -27,7 +27,7 @@ export default function DashboardPage() {
       {
         id: "settings",
         label: "Nieuwe uitvaart",
-        icon: <RiAddLine className="h-4 w-4" />,
+        icon: <RiCrossLine className="h-4 w-4" />,
         onClick: () => {
           setIsDialogOpen(true);
         },
@@ -39,6 +39,7 @@ export default function DashboardPage() {
   return (
     <>
       <SmartSearchBar
+        className="mt-2"
         placeholder="Zoek in dashboard..."
         onResultsChange={setSearchResults}
         actions={searchActions()}
@@ -47,7 +48,7 @@ export default function DashboardPage() {
         }}
       />
 
-      <PageContent>
+      <PageContent className="mt-4">
         {searchResults.length > 0 ? (
           <div className="space-y-4">
             {searchResults.map((result) => (
