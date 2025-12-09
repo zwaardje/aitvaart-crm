@@ -12,6 +12,7 @@ import {
   ErrorMessage,
 } from "@/components/ui";
 import { cn } from "@/lib/utils";
+import { getNestedError } from "@/lib/form-utils";
 
 interface FormSelectProps {
   name: string;
@@ -38,7 +39,7 @@ export function FormSelect({
     formState: { errors },
   } = useFormContext();
   const inputId = useId();
-  const error = errors[name]?.message as string;
+  const error = getNestedError(errors, name);
 
   return (
     <div className={cn("space-y-1", className)}>

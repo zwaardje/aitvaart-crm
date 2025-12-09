@@ -246,7 +246,6 @@ export const funeralSchemas = {
 
 // Intake form schema
 const intakeDeceasedSchema = z.object({
-  status: z.enum(["planning", "active", "completed", "cancelled"]),
   first_names: z.string().min(1, "validation.required"),
   last_name: z.string().min(1, "validation.required"),
   preferred_name: z.string().min(1, "validation.required"),
@@ -255,6 +254,7 @@ const intakeDeceasedSchema = z.object({
   gender: z.enum(["male", "female", "other"], {
     errorMap: () => ({ message: "validation.required" }),
   }),
+  marital_status: commonSchemas.maritalStatus,
   social_security_number: z.string().optional(),
   coffin_registration_number: z.string().optional(),
   street: z.string().min(1, "validation.required"),
@@ -269,7 +269,13 @@ const intakeDeceasedSchema = z.object({
 
 const intakeClientSchema = z.object({
   preferred_name: z.string().optional(),
+  first_names: z.string().optional(),
   last_name: z.string().optional(),
+  street: z.string().optional(),
+  house_number: z.string().optional(),
+  house_number_addition: z.string().optional(),
+  postal_code: commonSchemas.postalCode,
+  city: z.string().optional(),
   phone_number: z
     .string()
     .regex(/^[\+]?[0-9\s\-\(\)]{10,}$/, "validation.phone.invalid")
@@ -279,9 +285,10 @@ const intakeClientSchema = z.object({
 });
 
 const intakeFuneralSchema = z.object({
-  funeral_director: z.string().min(1, "validation.required"),
-  location: z.string().min(1, "validation.required"),
-  signing_date: z.string().min(1, "validation.required"),
+  status: z.enum(["planning", "active", "completed", "cancelled"]).optional(),
+  funeral_director: z.string().optional(),
+  location: z.string().optional(),
+  signing_date: z.string().optional(),
 });
 
 export const intakeSchemas = {
@@ -289,14 +296,19 @@ export const intakeSchemas = {
     .object({
       deceased: intakeDeceasedSchema,
       client: intakeClientSchema,
-      funeral: intakeFuneralSchema,
+      funeral: intakeFuneralSchema.optional(), // Maak het hele object optional
     })
     .refine(
-      (data) =>
-        data.deceased.date_of_death &&
-        data.funeral.signing_date &&
-        new Date(data.deceased.date_of_death) <=
-          new Date(data.funeral.signing_date),
+      (data) => {
+        // Only validate date comparison when both dates are present
+        if (!data.deceased.date_of_death || !data.funeral?.signing_date) {
+          return true;
+        }
+        return (
+          new Date(data.deceased.date_of_death) <=
+          new Date(data.funeral.signing_date)
+        );
+      },
       {
         message:
           "De datum van ondertekening moet na de overlijdensdatum liggen",

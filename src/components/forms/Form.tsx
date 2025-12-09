@@ -114,7 +114,7 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
         {canWatchErrors && (
           <div className="rounded-md border border-red-200 bg-red-50 p-4">
             <h3 className="mb-2 font-semibold text-red-800">Form Errors:</h3>
-            <pre className="text-red-600">
+            <pre className="text-red-600 text-xs">
               {JSON.stringify(getSerializableErrors(), null, 2)}
             </pre>
           </div>

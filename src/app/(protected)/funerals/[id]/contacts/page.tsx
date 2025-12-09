@@ -60,7 +60,7 @@ export default function FuneralDetailsPage({
                         {contact.client?.preferred_name}
                       </h2>
                       {contact.is_primary && (
-                        <Badge size="sm" className="font-normal">
+                        <Badge size="xs" className="font-normal">
                           Opdrachtgever
                         </Badge>
                       )}

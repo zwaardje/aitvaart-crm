@@ -4,6 +4,7 @@ import { useFormContext } from "react-hook-form";
 import { useId } from "react";
 import { Input, Label, ErrorMessage } from "@/components/ui";
 import { cn } from "@/lib/utils";
+import { getNestedError } from "@/lib/form-utils";
 
 interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string;
@@ -28,7 +29,7 @@ export function FormInput({
     formState: { errors },
   } = useFormContext();
   const inputId = useId();
-  const error = errors[name]?.message as string;
+  const error = getNestedError(errors, name);
 
   return (
     <div className={cn("space-y-1", className)}>

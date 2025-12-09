@@ -78,7 +78,16 @@ export function IntakeForm() {
       const { data: client, error: cErr } = await supabase
         .from("clients")
         .insert({
-          ...payload.client,
+          preferred_name: payload.client.preferred_name || "",
+          last_name: payload.client.last_name || "",
+          first_names: payload.client.first_names,
+          street: payload.client.street,
+          house_number: payload.client.house_number,
+          house_number_addition: payload.client.house_number_addition,
+          postal_code: payload.client.postal_code,
+          city: payload.client.city,
+          phone_number: payload.client.phone_number,
+          email: payload.client.email,
           entrepreneur_id: user.id,
           organization_id: organizationId,
         })
@@ -86,16 +95,37 @@ export function IntakeForm() {
         .single();
       if (cErr) throw cErr;
 
-      const { error: fErr } = await supabase.from("funerals").insert({
-        deceased_id: deceased.id,
+      const { data: funeral, error: fErr } = await supabase
+        .from("funerals")
+        .insert({
+          deceased_id: deceased.id,
+          client_id: client.id,
+          entrepreneur_id: user.id,
+          status: payload.funeral?.status ?? "planning",
+          location: payload.funeral?.location ?? null,
+          signing_date: payload.funeral?.signing_date ?? null,
+          funeral_director: payload.funeral?.funeral_director ?? null,
+          organization_id: organizationId,
+        })
+        .select("id")
+        .single();
+      if (fErr) throw fErr;
+
+      // Create funeral contact to link client to funeral
+      // This ensures the opdrachtgever is properly linked as a contact
+      const { error: fcErr } = await supabase.from("funeral_contacts").insert({
+        funeral_id: funeral.id,
         client_id: client.id,
         entrepreneur_id: user.id,
-        location: payload.funeral.location ?? null,
-        signing_date: payload.funeral.signing_date ?? null,
-        funeral_director: payload.funeral.funeral_director ?? null,
         organization_id: organizationId,
+        is_primary: true,
+        relation: "Opdrachtgever",
       });
-      if (fErr) throw fErr;
+
+      // Ignore unique constraint violation (contact already exists)
+      if (fcErr && fcErr.code !== "23505") {
+        throw fcErr;
+      }
     },
   });
 
@@ -104,6 +134,7 @@ export function IntakeForm() {
       id="intake-form"
       schema={intakeSchemas.form}
       onSubmit={(values: IntakeFormData) => createAllMutation.mutate(values)}
+      canWatchErrors={true}
     >
       <IntakeFormWizard
         funeralDirectorOptions={funeralDirectorOptions}
@@ -121,7 +152,7 @@ function IntakeFormWizard({
   organizationMembersLoading: boolean;
 }) {
   const { watch } = useFormContext();
-  const status = watch("deceased.status");
+  const status = watch("funeral.status");
 
   // Calculate totalSteps dynamically: 3 if status is "planning", otherwise 4
   const totalSteps = useMemo(() => {
@@ -181,7 +212,7 @@ function IntakeFormWizard({
             <Group>
               <FormSelect
                 className="flex-1"
-                name="deceased.status"
+                name="funeral.status"
                 label="Status"
                 options={FUNERAL_STATUS_OPTIONS}
               />
@@ -233,26 +264,64 @@ function IntakeFormWizard({
 
       <WizardStep step={3}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormGroup title="Contactpersoon">
-            <div className="flex items-center gap-2 justify-evenly">
+          <FormGroup title="Opdrachtgever">
+            <Group>
               <FormInput
+                className="flex-1"
                 name="client.preferred_name"
-                label="Voornaam"
-                className="w-full"
+                label="Roepnaam"
               />
+              <FormInput
+                className="flex-1"
+                name="client.first_names"
+                label="Voornamen"
+              />
+
               <FormInput
                 name="client.last_name"
                 label="Achternaam"
-                className="w-full"
+                className="flex-1"
               />
-            </div>
-            <FormInput name="client.phone_number" label="Telefoonnummer" />
-            <FormInput
-              name="client.email"
-              label="E-mail"
-              type="email"
-              placeholder="naam@voorbeeld.nl"
-            />
+            </Group>
+            <Group>
+              <FormInput
+                className="flex-1"
+                name="client.street"
+                label="Straat"
+              />
+              <FormInput
+                className="flex-1"
+                name="client.house_number"
+                label="Huisnummer"
+              />
+              <FormInput
+                className="flex-1"
+                name="client.house_number_addition"
+                label="Toevoeging"
+              />
+            </Group>
+            <Group>
+              <FormInput
+                className="flex-1"
+                name="client.postal_code"
+                label="Postcode"
+              />
+              <FormInput className="flex-1" name="client.city" label="Plaats" />
+            </Group>
+            <Group>
+              <FormInput
+                className="flex-1"
+                name="client.phone_number"
+                label="Telefoonnummer"
+              />
+              <FormInput
+                className="flex-1"
+                name="client.email"
+                label="E-mail"
+                type="email"
+                placeholder="naam@voorbeeld.nl"
+              />
+            </Group>
           </FormGroup>
         </div>
       </WizardStep>
