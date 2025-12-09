@@ -47,7 +47,7 @@ export function Costs({ funeralId }: CostsProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="px-4">
       <div className="flex items-center justify-end">
         {!isEmpty && (
           <p className="text-sm text-gray-600 mt-1">

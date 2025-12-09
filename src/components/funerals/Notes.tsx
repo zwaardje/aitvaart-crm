@@ -50,7 +50,7 @@ export function Notes({ funeralId }: NotesProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="px-4">
       {isEmpty ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-8">

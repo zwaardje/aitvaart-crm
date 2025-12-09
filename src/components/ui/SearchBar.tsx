@@ -12,13 +12,13 @@ interface SearchBarProps {
   onResultsChange?: (results: any[]) => void;
   placeholder?: string;
   className?: string;
-  entityTypes?: ("note" | "cost" | "contact" | "funeral")[];
+  entityTypes?: ("note" | "cost" | "contact" | "funeral" | "scenario")[];
   limit?: number;
   searchContext?: SearchContext;
 }
 
 export interface SearchContext {
-  entityTypes?: ("funeral" | "note" | "cost" | "contact")[];
+  entityTypes?: ("funeral" | "note" | "cost" | "contact" | "scenario")[];
   filters?: Record<string, any>;
 }
 

@@ -1,35 +1,37 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { GenericCard } from "@/components/ui/GenericCard";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  ScenarioForm,
-  ScenarioEditForm,
-  ScenarioDeleteForm,
-} from "@/components/forms";
-import { useScenarios } from "@/hooks/useScenarios";
-import { Database } from "@/types/database";
+import { ScenarioForm } from "@/components/forms";
 import { RiAddLine } from "@remixicon/react";
 import {
   SmartSearchBar,
   SmartSearchBarAction,
 } from "@/components/ui/SmartSearchBar";
-import { SECTION_LABELS, ITEM_TYPE_LABELS } from "@/constants/scenario-labels";
-import { PageContent } from "@/components/layout/PageContent";
+import { Wishes } from "@/components/funerals/Wishes";
 
-interface ScenarioContentProps {
-  funeralId: string;
-}
-
-function ScenarioContent({ funeralId }: ScenarioContentProps) {
-  const { data: scenarios, isLoading } = useScenarios(funeralId);
+export default function ScenarioPage({
+  params,
+}: {
+  params: Promise<{ id: string }> | { id: string };
+}) {
+  const [id, setId] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (params instanceof Promise) {
+      params.then(({ id: resolvedId }) => {
+        setId(resolvedId);
+      });
+    } else {
+      setId(params.id);
+    }
+  }, [params]);
 
   const searchActions = useCallback(
     (): SmartSearchBarAction[] => [
@@ -47,94 +49,35 @@ function ScenarioContent({ funeralId }: ScenarioContentProps) {
 
   return (
     <>
-      <SmartSearchBar
-        placeholder="Zoek in scenario..."
-        actions={searchActions()}
-        searchContext={{
-          entityTypes: ["funeral", "note", "contact"],
-          filters: {
-            funeralId: funeralId,
-          },
-        }}
-        sticky
-        aiContext={{
-          page: "scenarios",
-          funeralId: funeralId,
-          scope: "manage",
-        }}
-      />
-
-      <PageContent className="flex flex-col gap-4">
-        {scenarios && scenarios.length > 0 && (
-          <div className="space-y-3">
-            {scenarios.map((scenario) => (
-              <GenericCard
-                key={scenario.id}
-                title={scenario.title}
-                subtitle={` ${
-                  SECTION_LABELS[scenario.section] || scenario.section
-                } - ${
-                  ITEM_TYPE_LABELS[scenario.item_type] || scenario.item_type
-                }`}
-                actions={
-                  <div className="flex items-center gap-1">
-                    <ScenarioEditForm scenario={scenario} withDialog={true} />
-                    <ScenarioDeleteForm scenario={scenario} withDialog={true} />
-                  </div>
-                }
-                content={
-                  <div className="space-y-2">
-                    {scenario.description && (
-                      <p className="text-sm text-gray-600">
-                        {scenario.description}
-                      </p>
-                    )}
-                    {scenario.extra_field_label &&
-                      scenario.extra_field_value && (
-                        <div className="text-sm">
-                          <span className="text-gray-500">
-                            {scenario.extra_field_label}:
-                          </span>
-                          <span className="ml-1 text-gray-900">
-                            {scenario.extra_field_value}
-                          </span>
-                        </div>
-                      )}
-                  </div>
-                }
-              />
-            ))}
-          </div>
-        )}
-      </PageContent>
+      <div className="space-y-4 w-full">
+        <SmartSearchBar
+          placeholder="Zoek in wensen..."
+          actions={searchActions()}
+          onResultsChange={() => {}}
+          searchContext={{
+            entityTypes: ["scenario"],
+            filters: {
+              funeralId: id,
+            },
+          }}
+          sticky
+          aiContext={{
+            page: "scenarios",
+            funeralId: id,
+            scope: "manage",
+          }}
+        />
+        <Wishes funeralId={id} />
+      </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Nieuw scenario item</DialogTitle>
           </DialogHeader>
-          <ScenarioForm funeralId={funeralId} />
+          <ScenarioForm funeralId={id} />
         </DialogContent>
       </Dialog>
     </>
   );
-}
-
-export default function ScenarioPage({
-  params,
-}: {
-  params: Promise<{ id: string }> | { id: string };
-}) {
-  const [id, setId] = useState<string>("");
-
-  useEffect(() => {
-    if (params instanceof Promise) {
-      params.then(({ id: resolvedId }) => {
-        setId(resolvedId);
-      });
-    } else {
-      setId(params.id);
-    }
-  }, [params]);
-  return <ScenarioContent funeralId={id} />;
 }

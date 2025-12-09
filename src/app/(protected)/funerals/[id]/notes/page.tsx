@@ -1,8 +1,6 @@
 "use client";
 
-import { useFuneral } from "@/hooks/useFunerals";
 import { Notes } from "@/components/funerals/Notes";
-import { Skeleton } from "@/components/ui";
 import { useCallback, useEffect, useState } from "react";
 import { RiBookLine } from "@remixicon/react";
 import {
@@ -34,7 +32,6 @@ export default function FuneralNotesPage({
       setId(params.id);
     }
   }, [params]);
-  const { funeral, isLoading } = useFuneral(id);
 
   const searchActions = useCallback(
     (): SmartSearchBarAction[] => [
@@ -52,35 +49,26 @@ export default function FuneralNotesPage({
 
   return (
     <>
-      {isLoading && (
-        <div className="space-y-4 w-full">
-          <Skeleton className="h-10 w-64" />
-          <Skeleton className="h-32 w-full" />
-        </div>
-      )}
-
-      {!isLoading && funeral && (
-        <div className="space-y-4 w-full">
-          <SmartSearchBar
-            placeholder="Zoek in notities..."
-            onResultsChange={() => {}}
-            actions={searchActions()}
-            searchContext={{
-              entityTypes: ["note"],
-              filters: {
-                funeralId: id,
-              },
-            }}
-            sticky
-            aiContext={{
-              page: "notes",
+      <div className="space-y-4 w-full">
+        <SmartSearchBar
+          placeholder="Zoek in notities..."
+          onResultsChange={() => {}}
+          actions={searchActions()}
+          searchContext={{
+            entityTypes: ["note"],
+            filters: {
               funeralId: id,
-              scope: "manage",
-            }}
-          />
-          <Notes funeralId={id} />
-        </div>
-      )}
+            },
+          }}
+          sticky
+          aiContext={{
+            page: "notes",
+            funeralId: id,
+            scope: "manage",
+          }}
+        />
+        <Notes funeralId={id} />
+      </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
