@@ -94,3 +94,4 @@ export {
 } from "./tooltip";
 export { SmartSearchBar, type SmartSearchBarAction } from "./SmartSearchBar";
 export { TaskList } from "../tasks";
+export { EmptyState } from "./EmptyState";

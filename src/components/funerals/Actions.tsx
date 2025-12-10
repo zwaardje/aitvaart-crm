@@ -1,7 +1,7 @@
 "use client";
 
 import { useTasks, useTaskTypes, useStartTask, useCompleteTask } from "@/hooks";
-import { Card, CardContent, Skeleton, Button, Badge } from "@/components/ui";
+import { Skeleton, Button, Badge, EmptyState } from "@/components/ui";
 import {
   RiCheckLine,
   RiPlayLine,
@@ -125,19 +125,11 @@ export function Actions({ funeralId }: ActionsProps) {
   return (
     <div className="px-4">
       {isEmpty ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-8">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-              <RiCheckLine className="h-6 w-6 text-gray-400" />
-            </div>
-            <h4 className="mt-4 text-lg font-medium text-gray-900">
-              Geen acties
-            </h4>
-            <p className="mt-2 text-sm text-gray-500 text-center">
-              Alle taken zijn voltooid
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<RiCheckLine className="h-6 w-6 text-gray-400" />}
+          title="Geen acties"
+          description="Alle taken zijn voltooid"
+        />
       ) : (
         <div className="space-y-3">
           {displayTasks.map((task: TaskWithDetails) => {

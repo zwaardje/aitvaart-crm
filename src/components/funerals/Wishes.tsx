@@ -1,7 +1,7 @@
 "use client";
 
 import { useScenarios } from "@/hooks/useScenarios";
-import { Card, CardContent, Skeleton } from "@/components/ui";
+import { Skeleton, EmptyState } from "@/components/ui";
 import { RiHeartLine } from "@remixicon/react";
 import type { Database } from "@/types/database";
 import { useState, useMemo } from "react";
@@ -58,19 +58,11 @@ export function Wishes({ funeralId }: WishesProps) {
   return (
     <div className="px-4">
       {isEmpty ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-8">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-              <RiHeartLine className="h-6 w-6 text-gray-400" />
-            </div>
-            <h4 className="mt-4 text-lg font-medium text-gray-900">
-              Nog geen wensen
-            </h4>
-            <p className="mt-2 text-sm text-gray-500 text-center">
-              Voeg wensen toe voor deze uitvaart
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<RiHeartLine className="h-6 w-6 text-gray-400" />}
+          title="Nog geen wensen"
+          description="Voeg wensen toe voor deze uitvaart"
+        />
       ) : (
         <div className="space-y-3">
           {displayScenarios.map((scenario: FuneralScenario) => (

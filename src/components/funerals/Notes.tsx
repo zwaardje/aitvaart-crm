@@ -1,7 +1,7 @@
 "use client";
 
 import { useNotes } from "@/hooks";
-import { Card, CardContent, Skeleton } from "@/components/ui";
+import { Skeleton, EmptyState } from "@/components/ui";
 import { useTranslations } from "next-intl";
 import { RiFileTextLine } from "@remixicon/react";
 import type { Database } from "@/types/database";
@@ -52,19 +52,11 @@ export function Notes({ funeralId }: NotesProps) {
   return (
     <div className="px-4">
       {isEmpty ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-8">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-              <RiFileTextLine className="h-6 w-6 text-gray-400" />
-            </div>
-            <h4 className="mt-4 text-lg font-medium text-gray-900">
-              {t("empty.title")}
-            </h4>
-            <p className="mt-2 text-sm text-gray-500 text-center">
-              {t("empty.description")}
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<RiFileTextLine className="h-6 w-6 text-gray-400" />}
+          title={t("empty.title")}
+          description={t("empty.description")}
+        />
       ) : (
         <div className="space-y-3">
           {displayNotes.map((note: FuneralNote) => (

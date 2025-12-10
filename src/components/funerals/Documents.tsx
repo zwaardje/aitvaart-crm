@@ -1,12 +1,13 @@
 "use client";
 
 import { useDocuments } from "@/hooks/useDocuments";
-import { Card, CardContent, Skeleton, Button } from "@/components/ui";
+import { Skeleton, Button, EmptyState } from "@/components/ui";
 import { RiFileLine, RiDownloadLine } from "@remixicon/react";
 import type { Database } from "@/types/database";
 import { useState, useMemo } from "react";
 import { GenericCard } from "@/components/ui/GenericCard";
-import { DocumentsEditForm, DocumentsDeleteForm } from "@/components/forms";
+import { DocumentsEditForm } from "@/components/forms/DocumentsEditForm";
+import { DocumentsDeleteForm } from "@/components/forms/DocumentsDeleteForm";
 import type { SearchResult } from "@/hooks/useSearch";
 
 type Document = Database["public"]["Tables"]["documents"]["Row"];
@@ -97,19 +98,11 @@ export function Documents({ funeralId }: DocumentsProps) {
   return (
     <div className="px-4">
       {isEmpty ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-8">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-              <RiFileLine className="h-6 w-6 text-gray-400" />
-            </div>
-            <h4 className="mt-4 text-lg font-medium text-gray-900">
-              Nog geen documenten
-            </h4>
-            <p className="mt-2 text-sm text-gray-500 text-center">
-              Upload uw eerste document voor deze uitvaart
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<RiFileLine className="h-6 w-6 text-gray-400" />}
+          title="Nog geen documenten"
+          description="Upload uw eerste document voor deze uitvaart"
+        />
       ) : (
         <div className="space-y-3">
           {displayDocuments.map((document: Document) => (
