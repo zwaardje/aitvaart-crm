@@ -40,10 +40,6 @@ export function EntityDeleteButton({ pathname }: EntityDeleteButtonProps) {
   const isLastSegmentUuid =
     uuids.length > 0 && lastSegment === uuids[uuids.length - 1];
 
-  if (!isLastSegmentUuid || uuids.length === 0) {
-    return null;
-  }
-
   const funeralId = uuids[0] || null;
   const contactId =
     pathname.includes("/contacts/") && uuids.length > 1
@@ -56,12 +52,9 @@ export function EntityDeleteButton({ pathname }: EntityDeleteButtonProps) {
     ? "funeral"
     : null;
 
-  if (!entityType) {
-    return null;
-  }
-
   // Get delete functions based on entity type
   // Use useGenericEntity with enabled: false to get delete function without fetching data
+  // Hooks must be called unconditionally, before any early returns
   const { delete: deleteFuneral, isDeleting: isDeletingFuneral } =
     useGenericEntity({
       tableName: "funerals",
@@ -69,6 +62,15 @@ export function EntityDeleteButton({ pathname }: EntityDeleteButtonProps) {
     });
 
   const { deleteContact } = useFuneralContacts(funeralId || null);
+
+  // Early returns after all hooks
+  if (!isLastSegmentUuid || uuids.length === 0) {
+    return null;
+  }
+
+  if (!entityType) {
+    return null;
+  }
 
   const handleDelete = async () => {
     try {

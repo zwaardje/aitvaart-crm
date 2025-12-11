@@ -45,7 +45,11 @@ export function SearchBar({
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
-  const entityTypes = searchContext?.entityTypes || [];
+  // Memoize entityTypes to avoid creating new array on every render
+  const entityTypes = useMemo(
+    () => searchContext?.entityTypes || [],
+    [searchContext?.entityTypes]
+  );
 
   // Store callback in ref to avoid dependency issues
   const onResultsChangeRef = useRef(onResultsChange);
