@@ -19,6 +19,7 @@ interface AppHeaderProps {
   pageTitle?: string;
   showBackButton?: boolean;
   onBackClick?: () => void;
+  deleteButton?: React.ReactNode;
 }
 
 export function AppHeader({
@@ -29,6 +30,7 @@ export function AppHeader({
   pageTitle,
   showBackButton = false,
   onBackClick,
+  deleteButton,
 }: AppHeaderProps) {
   const router = useRouter();
 
@@ -84,7 +86,7 @@ export function AppHeader({
           {displayTitle}
         </h1>
       </div>
-      <div className="flex items-center w-10"></div>
+      <div className="flex items-center w-10 justify-end">{deleteButton}</div>
     </header>
   );
 }

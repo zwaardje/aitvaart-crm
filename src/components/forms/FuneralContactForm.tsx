@@ -4,10 +4,11 @@ import * as React from "react";
 import { useState } from "react";
 import { z } from "zod";
 import { schemas } from "@/lib/validation";
-import { Form } from "./Form";
-import { FormInput } from "./FormInput";
-import { FormSwitch } from "./FormSwitch";
-import { SubmitButton } from "./SubmitButton";
+import { Form } from "@/components/forms/Form";
+import { FormInput } from "@/components/forms/FormInput";
+import { FormSwitch } from "@/components/forms/FormSwitch";
+import { FormSelect } from "@/components/forms/FormSelect";
+import { SubmitButton } from "@/components/forms/SubmitButton";
 import { Button, DialogClose, DialogFooter } from "@/components/ui";
 import { FormGroup } from "@/components/forms/FormGroup";
 import {
@@ -152,12 +153,20 @@ export function FuneralContactForm({
           </div>
         </FormGroup>
         <FormGroup title="Relatie tot overledene">
-          <FormInput
+          <FormSelect
             name="relation"
-            label="Relatie tot overledene"
-            placeholder="Partner, zoon, dochter..."
+            label="Kies een relatie"
             className="md:col-span-2"
+            placeholder="Kies een relatie"
+            options={[
+              { value: "partner", label: "Partner" },
+              { value: "son", label: "Zoon" },
+              { value: "daughter", label: "Dochter" },
+              { value: "father", label: "Vader" },
+              { value: "mother", label: "Moeder" },
+            ]}
           />
+
           <FormSwitch
             name="is_primary"
             label="Primair contactpersoon"

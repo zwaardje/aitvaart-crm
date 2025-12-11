@@ -9,6 +9,7 @@ import { useFuneralName } from "@/hooks/useFunerals";
 import { useContactName } from "@/hooks/useFuneralContacts";
 import { useMemo } from "react";
 import { Content } from "@/components/layout";
+import { EntityDeleteButton } from "./EntityDeleteButton";
 
 interface ProtectedLayoutProps {
   children: React.ReactNode;
@@ -77,6 +78,12 @@ export function ProtectedLayout({
     ? funeralName
     : undefined;
 
+  // Check if URL ends with a UUID
+  const lastSegment = segments[segments.length - 1];
+  const isLastSegmentUuid =
+    uuids.length > 0 && lastSegment === uuids[uuids.length - 1];
+  const showDeleteButton = isLastSegmentUuid && uuids.length > 0;
+
   return (
     <AuthGuard>
       <AppHeader
@@ -86,6 +93,11 @@ export function ProtectedLayout({
         onBackClick={onBackClick}
         funeralName={displayName ?? undefined}
         logo={<Logo />}
+        deleteButton={
+          showDeleteButton ? (
+            <EntityDeleteButton pathname={pathname} />
+          ) : undefined
+        }
       />
       <Content>
         {requireOnboarding ? (
