@@ -60,7 +60,7 @@ export function Notes({ funeralId }: NotesProps) {
       ) : (
         <div className="space-y-3">
           {displayNotes.map((note: FuneralNote) => (
-            <NotesCard key={note.id} note={note} />
+            <NotesCard key={note.id} note={note} funeralId={funeralId} />
           ))}
         </div>
       )}

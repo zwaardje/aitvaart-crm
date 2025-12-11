@@ -9,10 +9,16 @@ type FuneralNote = Database["public"]["Tables"]["funeral_notes"]["Row"] & {
   creator: Database["public"]["Tables"]["profiles"]["Row"] | null;
 };
 
-export function NotesCard({ note }: { note: FuneralNote }) {
+interface NotesCardProps {
+  note: FuneralNote;
+  funeralId?: string;
+}
+
+export function NotesCard({ note, funeralId }: NotesCardProps) {
   return (
     <GenericCard
       key={note.id}
+      to={funeralId ? `/funerals/${funeralId}/notes/${note.id}` : undefined}
       title={note.title}
       subtitle={
         note.created_at && isValid(new Date(note.created_at))

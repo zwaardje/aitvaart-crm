@@ -108,6 +108,7 @@ export function Documents({ funeralId }: DocumentsProps) {
           {displayDocuments.map((document: Document) => (
             <GenericCard
               key={document.id}
+              to={`/funerals/${funeralId}/documents/${document.id}`}
               title={document.file_name}
               subtitle={`${formatFileSize(
                 document.file_size || 0
@@ -119,7 +120,11 @@ export function Documents({ funeralId }: DocumentsProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleDownload(document)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleDownload(document);
+                    }}
                     className="text-blue-600 hover:text-blue-700"
                   >
                     <RiDownloadLine className="h-4 w-4" />

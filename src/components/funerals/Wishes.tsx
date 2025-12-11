@@ -68,6 +68,7 @@ export function Wishes({ funeralId }: WishesProps) {
           {displayScenarios.map((scenario: FuneralScenario) => (
             <GenericCard
               key={scenario.id}
+              to={`/funerals/${funeralId}/wishes/${scenario.id}`}
               title={scenario.title}
               subtitle={`${
                 SECTION_LABELS[scenario.section] || scenario.section

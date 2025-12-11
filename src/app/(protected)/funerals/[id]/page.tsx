@@ -10,6 +10,11 @@ import {
 import { RiAddLine } from "@remixicon/react";
 import { FuneralContactForm } from "@/components/forms/FuneralContactForm";
 import { useFuneralContacts } from "@/hooks/useFuneralContacts";
+import { useCosts } from "@/hooks/useCosts";
+import { useDocuments } from "@/hooks/useDocuments";
+import { useNotes } from "@/hooks/useNotes";
+import { useScenarios } from "@/hooks/useScenarios";
+import { format } from "date-fns";
 
 import {
   Dialog,
@@ -48,6 +53,10 @@ export default function FuneralDetailsPage({
 
   const { funeral } = useFuneral(id);
   const { contacts } = useFuneralContacts(id);
+  const { costs } = useCosts(id);
+  const { documents } = useDocuments(id);
+  const { notes } = useNotes(id);
+  const { data: scenarios } = useScenarios(id);
 
   const searchActions = useCallback(
     (): SmartSearchBarAction[] => [
@@ -139,10 +148,137 @@ export default function FuneralDetailsPage({
                       )}
                     </div>
                   }
-                  subtitle={contact.relation ?? undefined}
+                  subtitle={contact.relation || undefined}
                 />
               ))}
             </div>
+            {costs && costs.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <h3 className="text-sm font-medium">Kosten</h3>
+                {costs.slice(0, 3).map((cost) => (
+                  <GenericCard
+                    key={cost.id}
+                    to={`/funerals/${id}/costs/${cost.id}`}
+                    title={
+                      <div className="flex items-center gap-4">
+                        <h2 className="text-lg font-medium">
+                          {cost.product_name}
+                        </h2>
+                      </div>
+                    }
+                    subtitle={`Aantal: ${
+                      cost.quantity
+                    } - Stukprijs: €${cost.unit_price.toFixed(2)}`}
+                    content={
+                      cost.notes ? (
+                        <p className="text-sm text-gray-600">{cost.notes}</p>
+                      ) : undefined
+                    }
+                    footer={
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        €{cost.total_price?.toFixed(2)} incl. btw
+                      </div>
+                    }
+                  />
+                ))}
+              </div>
+            )}
+            {documents && documents.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <h3 className="text-sm font-medium">Documenten</h3>
+                {documents.slice(0, 3).map((document) => (
+                  <GenericCard
+                    key={document.id}
+                    to={`/funerals/${id}/documents/${document.id}`}
+                    title={
+                      <div className="flex items-center gap-4">
+                        <h2 className="text-lg font-medium">
+                          {document.file_name}
+                        </h2>
+                      </div>
+                    }
+                    subtitle={
+                      document.created_at
+                        ? format(
+                            new Date(document.created_at),
+                            "dd MMM yyyy 'om' HH:mm"
+                          )
+                        : undefined
+                    }
+                    content={
+                      document.description ? (
+                        <p className="text-sm text-gray-600">
+                          {document.description}
+                        </p>
+                      ) : undefined
+                    }
+                  />
+                ))}
+              </div>
+            )}
+            {notes && notes.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <h3 className="text-sm font-medium">Notities</h3>
+                {notes.slice(0, 3).map((note) => (
+                  <GenericCard
+                    key={note.id}
+                    to={`/funerals/${id}/notes/${note.id}`}
+                    title={
+                      <div className="flex items-center gap-4">
+                        <h2 className="text-lg font-medium">{note.title}</h2>
+                      </div>
+                    }
+                    subtitle={
+                      note.created_at
+                        ? format(
+                            new Date(note.created_at),
+                            "dd MMM yyyy 'om' HH:mm"
+                          )
+                        : undefined
+                    }
+                    content={
+                      note.content ? (
+                        <p className="text-sm text-gray-600 line-clamp-2">
+                          {note.content}
+                        </p>
+                      ) : undefined
+                    }
+                  />
+                ))}
+              </div>
+            )}
+            {scenarios && scenarios.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <h3 className="text-sm font-medium">Wensen</h3>
+                {scenarios.slice(0, 3).map((scenario) => (
+                  <GenericCard
+                    key={scenario.id}
+                    to={`/funerals/${id}/wishes/${scenario.id}`}
+                    title={
+                      <div className="flex items-center gap-4">
+                        <h2 className="text-lg font-medium">
+                          {scenario.title}
+                        </h2>
+                      </div>
+                    }
+                    subtitle={scenario.description || undefined}
+                    content={
+                      scenario.extra_field_label &&
+                      scenario.extra_field_value ? (
+                        <div className="text-sm">
+                          <span className="text-gray-500">
+                            {scenario.extra_field_label}:
+                          </span>
+                          <span className="ml-1 text-gray-900">
+                            {scenario.extra_field_value}
+                          </span>
+                        </div>
+                      ) : undefined
+                    }
+                  />
+                ))}
+              </div>
+            )}
           </PageContent>
         </>
       )}

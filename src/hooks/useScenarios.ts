@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import { useCurrentUserId } from "@/lib/auth-utils";
-import { useGenericEntity } from "./useGenericEntity";
+import { useGenericEntity, useSingleEntity } from "./useGenericEntity";
 import { Database } from "@/types/database";
 
 type FuneralScenario = Database["public"]["Tables"]["funeral_scenarios"]["Row"];
@@ -119,4 +119,22 @@ export function useCreateScenarioWithDefaults() {
   };
 
   return { createScenarioWithDefaults };
+}
+
+// Hook for fetching a single scenario
+export function useScenario(id: string) {
+  const entity = useSingleEntity({
+    tableName: "funeral_scenarios",
+    id,
+    select: "*",
+  });
+
+  return {
+    scenario: entity.data as FuneralScenario | null,
+    isLoading: entity.isLoading,
+    error: entity.error,
+    updateScenario: entity.update,
+    isUpdating: entity.isUpdating,
+    refetch: entity.refetch,
+  };
 }

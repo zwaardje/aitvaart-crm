@@ -67,6 +67,7 @@ export function Costs({ funeralId }: CostsProps) {
           {costs.map((cost: FuneralSupplier) => (
             <GenericCard
               key={cost.id}
+              to={`/funerals/${funeralId}/costs/${cost.id}`}
               title={cost.product_name}
               subtitle={`Aantal: ${
                 cost.quantity
@@ -93,7 +94,7 @@ export function Costs({ funeralId }: CostsProps) {
                     )}
                   </div>
                   <div className="flex items-center gap-2 text-xs text-gray-600">
-                    `{} • € {`${cost.total_price?.toFixed(2)} incl. btw`}
+                    €{cost.total_price?.toFixed(2)} incl. btw
                   </div>
                 </>
               }
