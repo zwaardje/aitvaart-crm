@@ -50,14 +50,23 @@ export function ProtectedLayout({
     pathname !== "/dashboard" &&
     !pathname.includes("/settings/") &&
     !pathname.endsWith("/funerals") &&
+    !pathname.includes("/onboarding") &&
     !pathname.includes("/intake");
 
   const pageTitle = () => {
-    if (pathname === "/dashboard") return "Dashboard";
-    if (pathname.includes("/funerals")) return "Uitvaarten";
     if (pathname.includes("/suppliers")) return "Instellingen";
     if (pathname.includes("/intake")) return "Intake";
     if (pathname.includes("/contacts")) return "Nabestaanden";
+    if (pathname.includes("/notes")) return "Notities";
+    if (pathname.includes("/wishes")) return "Wensen";
+    if (pathname.includes("/costs")) return "Kosten";
+    if (pathname.includes("/documents")) return "Documenten";
+    if (pathname.includes("/actions")) return "Acties";
+    if (pathname.includes("/scenarios")) return "Scenario's";
+    if (pathname.includes("/funerals")) return "Uitvaarten";
+    if (pathname === "/dashboard") return "Dashboard";
+    if (pathname === "/onboarding") return "Onboarding";
+
     return "Aitvaart CRM";
   };
 
@@ -86,20 +95,22 @@ export function ProtectedLayout({
 
   return (
     <AuthGuard>
-      <AppHeader
-        showDeceasedName={showDeceasedName || showContactNameInHeader}
-        pageTitle={pageTitle()}
-        showBackButton={showBackButton}
-        onBackClick={onBackClick}
-        funeralName={displayName ?? undefined}
-        logo={<Logo />}
-        deleteButton={
-          showDeleteButton ? (
-            <EntityDeleteButton pathname={pathname} />
-          ) : undefined
-        }
-      />
-      <Content>
+      {pathname !== "/onboarding" && (
+        <AppHeader
+          showDeceasedName={showDeceasedName || showContactNameInHeader}
+          pageTitle={pageTitle()}
+          showBackButton={showBackButton}
+          onBackClick={onBackClick}
+          funeralName={displayName ?? undefined}
+          logo={<Logo />}
+          deleteButton={
+            showDeleteButton ? (
+              <EntityDeleteButton pathname={pathname} />
+            ) : undefined
+          }
+        />
+      )}
+      <Content className={pathname === "/onboarding" ? "h-[100vh]" : ""}>
         {requireOnboarding ? (
           <OnboardingGuard>{children}</OnboardingGuard>
         ) : (

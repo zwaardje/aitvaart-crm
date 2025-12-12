@@ -17,6 +17,7 @@ interface FormProps {
   defaultValues?: Record<string, any>;
   children: React.ReactNode;
   onSubmit: (data: any) => void;
+  onError?: (errors: any) => void;
   className?: string;
   schema?: z.ZodSchema<any>;
   serverErrors?: Error | string;
@@ -31,6 +32,7 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
     defaultValues,
     children,
     onSubmit,
+    onError,
     className,
     schema,
     canWatch = false,
@@ -103,7 +105,7 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
       <form
         ref={ref}
         id={formId}
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit, onError)}
         className={cn("flex w-full flex-col gap-4 p-2", className)}
         noValidate
       >

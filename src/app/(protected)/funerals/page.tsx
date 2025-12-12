@@ -36,6 +36,8 @@ export default function FuneralsPage() {
     []
   );
 
+  console.log(searchResults);
+
   return (
     <>
       <SmartSearchBar

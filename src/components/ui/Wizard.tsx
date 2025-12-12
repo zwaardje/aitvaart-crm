@@ -10,6 +10,11 @@ import React, {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui";
 import { SubmitButton } from "@/components/forms/SubmitButton";
+import {
+  RiArrowLeftLine,
+  RiArrowRightLine,
+  RiCheckLine,
+} from "@remixicon/react";
 
 interface WizardContextType {
   currentStep: number;
@@ -114,7 +119,7 @@ interface WizardNavigationProps {
   isNextDisabled?: boolean;
   isPreviousDisabled?: boolean;
   className?: string;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 export function WizardNavigation({
@@ -143,39 +148,58 @@ export function WizardNavigation({
   };
 
   return (
-    <div className={cn("flex justify-between items-center pt-6", className)}>
-      <div>
-        {isFirstStep && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onClose}
-            disabled={isPreviousDisabled}
-          >
-            Annuleren
-          </Button>
-        )}
-        {showPrevious && !isFirstStep && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handlePrevious}
-            disabled={isPreviousDisabled}
-          >
-            {previousLabel}
-          </Button>
-        )}
-      </div>
+    <div
+      className={cn("flex justify-between items-center pt-6 gap-4", className)}
+    >
+      {isFirstStep ||
+        (showPrevious && (
+          <div>
+            {isFirstStep && onClose && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                disabled={isPreviousDisabled}
+              >
+                Annuleren
+              </Button>
+            )}
+            {showPrevious && !isFirstStep && (
+              <Button
+                className="flex items-center gap-2"
+                type="button"
+                variant="outline"
+                onClick={handlePrevious}
+                disabled={isPreviousDisabled}
+              >
+                <RiArrowLeftLine className="w-4 h-4" />
+                {previousLabel}
+              </Button>
+            )}
+          </div>
+        ))}
 
-      <div className="flex gap-2">
+      <div className="flex flex-1 gap-2">
         {showNext && !isLastStep && (
-          <Button type="button" onClick={handleNext} disabled={isNextDisabled}>
+          <Button
+            className="w-full flex items-center gap-2"
+            type="button"
+            onClick={handleNext}
+            disabled={isNextDisabled}
+          >
             {nextLabel}
+            <RiArrowRightLine className="w-4 h-4" />
           </Button>
         )}
 
         {isLastStep && (
-          <SubmitButton disabled={isNextDisabled}>{finishLabel}</SubmitButton>
+          <SubmitButton
+            className="w-full flex items-center gap-2"
+            disabled={isNextDisabled}
+          >
+            <RiCheckLine className="w-4 h-4" />
+            {finishLabel}
+          </SubmitButton>
         )}
       </div>
     </div>
@@ -190,51 +214,21 @@ export function WizardProgress({ className }: WizardProgressProps) {
   const { currentStep, totalSteps } = useWizard();
 
   return (
-    <div className={cn("mb-6", className)}>
-      <div className="flex items-center justify-between">
+    <div className={cn("mb-6 mt-6", className)}>
+      <div className="flex items-center gap-4 px-4">
         {Array.from({ length: totalSteps }, (_, index) => {
           const stepNumber = index + 1;
+          const isActive = stepNumber === currentStep;
           const isCompleted = stepNumber < currentStep;
-          const isCurrent = stepNumber === currentStep;
-          const isUpcoming = stepNumber > currentStep;
 
           return (
-            <div key={stepNumber} className="flex items-center">
-              <div
-                className={cn(
-                  "flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium transition-colors",
-                  {
-                    "bg-primary text-primary-foreground": isCurrent,
-                    "bg-secondary text-secondary-foreground": isCompleted,
-                    "bg-muted text-muted-foreground": isUpcoming,
-                  }
-                )}
-              >
-                {isCompleted ? (
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                ) : (
-                  stepNumber
-                )}
-              </div>
-              {index < totalSteps - 1 && (
-                <div
-                  className={cn("flex-1 h-0.5 mx-3", {
-                    "bg-primary": stepNumber < currentStep,
-                    "bg-muted": stepNumber >= currentStep,
-                  })}
-                />
-              )}
-            </div>
+            <div
+              key={stepNumber}
+              className={cn("flex-1 h-1 rounded-md transition-colors", {
+                "bg-primary": isActive || isCompleted,
+                "bg-muted border border-primary/20 ": !isActive && !isCompleted,
+              })}
+            />
           );
         })}
       </div>

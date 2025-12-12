@@ -46,7 +46,9 @@ export default function WishPage({
       <Card className="rounded-sm">
         <CardHeader className="pb-3 pl-3 pr-3 pt-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium">Wensinformatie</CardTitle>
+            <CardTitle className="text-base font-medium">
+              Wensinformatie
+            </CardTitle>
             <div className="flex items-center gap-2">
               <ScenarioEditForm scenario={scenario} withDialog={true} />
               <ScenarioDeleteForm scenario={scenario} withDialog={true} />
@@ -57,15 +59,11 @@ export default function WishPage({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <Group>
               <div className="flex-1">
-                <div className="text-muted-foreground text-xs mb-1">
-                  Titel
-                </div>
+                <div className="text-muted-foreground text-xs mb-1">Titel</div>
                 <div className="text-sm">{scenario.title || "-"}</div>
               </div>
               <div className="flex-1">
-                <div className="text-muted-foreground text-xs mb-1">
-                  Sectie
-                </div>
+                <div className="text-muted-foreground text-xs mb-1">Sectie</div>
                 <div className="text-sm">
                   {SECTION_LABELS[scenario.section] || scenario.section || "-"}
                 </div>
@@ -74,18 +72,18 @@ export default function WishPage({
 
             <Group>
               <div className="flex-1">
-                <div className="text-muted-foreground text-xs mb-1">
-                  Type
-                </div>
+                <div className="text-muted-foreground text-xs mb-1">Type</div>
                 <div className="text-sm">
-                  {ITEM_TYPE_LABELS[scenario.item_type] || scenario.item_type || "-"}
+                  {ITEM_TYPE_LABELS[scenario.item_type] ||
+                    scenario.item_type ||
+                    "-"}
                 </div>
               </div>
               <div className="flex-1">
-                <div className="text-muted-foreground text-xs mb-1">
-                  Actief
+                <div className="text-muted-foreground text-xs mb-1">Actief</div>
+                <div className="text-sm">
+                  {scenario.is_active ? "Ja" : "Nee"}
                 </div>
-                <div className="text-sm">{scenario.is_active ? "Ja" : "Nee"}</div>
               </div>
             </Group>
 
@@ -112,4 +110,3 @@ export default function WishPage({
     </PageContent>
   );
 }
-

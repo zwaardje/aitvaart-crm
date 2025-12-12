@@ -13,7 +13,7 @@ export function Content({ children, className }: ContentProps) {
     <div
       className={cn(
         "h-[calc(100vh-10rem)]",
-        "mx-auto max-w-7xl w-full flex flex-col",
+        "max-w-7xl w-full flex flex-col",
         className
       )}
     >

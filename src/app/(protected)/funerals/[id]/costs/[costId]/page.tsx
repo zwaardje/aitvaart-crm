@@ -11,7 +11,9 @@ import { format } from "date-fns";
 export default function CostPage({
   params,
 }: {
-  params: Promise<{ id: string; costId: string }> | { id: string; costId: string };
+  params:
+    | Promise<{ id: string; costId: string }>
+    | { id: string; costId: string };
 }) {
   const [funeralId, setFuneralId] = useState<string>("");
   const [costId, setCostId] = useState<string>("");
@@ -44,7 +46,9 @@ export default function CostPage({
       <Card className="rounded-sm">
         <CardHeader className="pb-3 pl-3 pr-3 pt-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium">Kosteninformatie</CardTitle>
+            <CardTitle className="text-base font-medium">
+              Kosteninformatie
+            </CardTitle>
             <div className="flex items-center gap-2">
               <CostEditForm cost={cost} />
               <CostDeleteForm cost={cost} />
@@ -64,17 +68,13 @@ export default function CostPage({
                 <div className="text-muted-foreground text-xs mb-1">
                   Leverancier
                 </div>
-                <div className="text-sm">
-                  {cost.supplier?.name || "-"}
-                </div>
+                <div className="text-sm">{cost.supplier?.name || "-"}</div>
               </div>
             </Group>
 
             <Group>
               <div className="flex-1">
-                <div className="text-muted-foreground text-xs mb-1">
-                  Aantal
-                </div>
+                <div className="text-muted-foreground text-xs mb-1">Aantal</div>
                 <div className="text-sm">{cost.quantity || "-"}</div>
               </div>
               <div className="flex-1">
@@ -93,7 +93,8 @@ export default function CostPage({
                   Totaalprijs
                 </div>
                 <div className="text-sm font-medium">
-                  €{cost.total_price ? cost.total_price.toFixed(2) : "-"} incl. btw
+                  €{cost.total_price ? cost.total_price.toFixed(2) : "-"} incl.
+                  btw
                 </div>
               </div>
               <div className="flex-1">
@@ -102,7 +103,10 @@ export default function CostPage({
                 </div>
                 <div className="text-sm">
                   {cost.created_at
-                    ? format(new Date(cost.created_at), "dd MMM yyyy 'om' HH:mm")
+                    ? format(
+                        new Date(cost.created_at),
+                        "dd MMM yyyy 'om' HH:mm"
+                      )
                     : "-"}
                 </div>
               </div>
@@ -122,4 +126,3 @@ export default function CostPage({
     </PageContent>
   );
 }
-

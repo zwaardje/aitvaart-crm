@@ -13,7 +13,12 @@ import {
   SmartSearchBar,
   SmartSearchBarAction,
 } from "@/components/ui/SmartSearchBar";
-import { Wishes } from "@/components/funerals/Wishes";
+import { useScenarios } from "@/hooks/useScenarios";
+import { GenericCard } from "@/components/ui/GenericCard";
+import { SECTION_LABELS, ITEM_TYPE_LABELS } from "@/constants/scenario-labels";
+import type { Database } from "@/types/database";
+
+type FuneralScenario = Database["public"]["Tables"]["funeral_scenarios"]["Row"];
 
 export default function ScenarioPage({
   params,
@@ -32,6 +37,8 @@ export default function ScenarioPage({
       setId(params.id);
     }
   }, [params]);
+
+  const { data: scenarios } = useScenarios(id);
 
   const searchActions = useCallback(
     (): SmartSearchBarAction[] => [
@@ -67,7 +74,22 @@ export default function ScenarioPage({
             scope: "manage",
           }}
         />
-        <Wishes funeralId={id} />
+        <div className="px-4">
+          <div className="space-y-3">
+            {scenarios?.map((scenario: FuneralScenario) => (
+              <GenericCard
+                key={scenario.id}
+                to={`/funerals/${id}/wishes/${scenario.id}`}
+                title={scenario.title}
+                subtitle={`${
+                  SECTION_LABELS[scenario.section] || scenario.section
+                } - ${
+                  ITEM_TYPE_LABELS[scenario.item_type] || scenario.item_type
+                }`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

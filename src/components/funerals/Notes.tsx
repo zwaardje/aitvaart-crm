@@ -1,13 +1,12 @@
 "use client";
 
 import { useNotes } from "@/hooks";
-import { Skeleton, EmptyState } from "@/components/ui";
-import { useTranslations } from "next-intl";
-import { RiFileTextLine } from "@remixicon/react";
 import type { Database } from "@/types/database";
 import { useState, useMemo } from "react";
-import { NotesCard } from "./NotesCard";
+import { GenericCard } from "@/components/ui/GenericCard";
+import { format, isValid } from "date-fns";
 import type { SearchResult } from "@/hooks/useSearch";
+
 type FuneralNote = Database["public"]["Tables"]["funeral_notes"]["Row"] & {
   creator: Database["public"]["Tables"]["profiles"]["Row"] | null;
 };
@@ -17,8 +16,7 @@ interface NotesProps {
 }
 
 export function Notes({ funeralId }: NotesProps) {
-  const { notes, isLoading } = useNotes(funeralId);
-  const t = useTranslations("notes");
+  const { notes } = useNotes(funeralId);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
 
   // Show search results if available, otherwise show all notes
@@ -31,39 +29,22 @@ export function Notes({ funeralId }: NotesProps) {
       : notes || [];
   }, [searchResults, notes]);
 
-  const isEmpty = !displayNotes || displayNotes.length === 0;
-
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">{t("title")}</h3>
-          <Skeleton className="h-9 w-24" />
-        </div>
-        <div className="space-y-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-32" />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="px-4">
-      {isEmpty ? (
-        <EmptyState
-          icon={<RiFileTextLine className="h-6 w-6 text-gray-400" />}
-          title={t("empty.title")}
-          description={t("empty.description")}
-        />
-      ) : (
-        <div className="space-y-3">
-          {displayNotes.map((note: FuneralNote) => (
-            <NotesCard key={note.id} note={note} funeralId={funeralId} />
-          ))}
-        </div>
-      )}
+      <div className="space-y-3">
+        {displayNotes.map((note: FuneralNote) => (
+          <GenericCard
+            key={note.id}
+            to={`/funerals/${funeralId}/notes/${note.id}`}
+            title={note.title}
+            subtitle={
+              note.created_at && isValid(new Date(note.created_at))
+                ? format(new Date(note.created_at), "dd MMM yyyy 'om' HH:mm")
+                : "Onbekend"
+            }
+          />
+        ))}
+      </div>
     </div>
   );
 }
