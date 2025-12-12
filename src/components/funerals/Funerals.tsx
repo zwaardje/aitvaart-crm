@@ -18,13 +18,7 @@ export function Funerals({
 
   return (
     <section className="flex flex-col pb-4 gap-4 w-full">
-      {isLoading && isEmpty ? (
-        <div className="space-y-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-32 rounded-lg" />
-          ))}
-        </div>
-      ) : isEmpty ? (
+      {isEmpty ? (
         <GenericCard
           className="bg-gray-100"
           title="Geen uitvaarten gevonden"

@@ -2,7 +2,12 @@
 import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { Form, FormInput, FormSelect } from "@/components/forms";
-import { Wizard, WizardStep, WizardNavigation } from "@/components/ui/Wizard";
+import {
+  Wizard,
+  WizardStep,
+  WizardNavigation,
+  WizardProgress,
+} from "@/components/ui/Wizard";
 import { DialogFooter } from "@/components/ui";
 import { useMutation } from "@tanstack/react-query";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
@@ -134,7 +139,6 @@ export function IntakeForm() {
       id="intake-form"
       schema={intakeSchemas.form}
       onSubmit={(values: IntakeFormData) => createAllMutation.mutate(values)}
-      canWatchErrors={true}
     >
       <IntakeFormWizard
         funeralDirectorOptions={funeralDirectorOptions}
@@ -154,17 +158,17 @@ function IntakeFormWizard({
   const { watch } = useFormContext();
   const status = watch("funeral.status");
 
-  // Calculate totalSteps dynamically: 3 if status is "planning", otherwise 4
   const totalSteps = useMemo(() => {
     return status === "planning" ? 3 : 4;
   }, [status]);
 
   return (
     <Wizard totalSteps={totalSteps}>
+      <WizardProgress />
       <WizardStep step={1}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormGroup title="Gegevens van de overledene">
-            <Group>
+            <Group direction="column">
               <FormInput name="deceased.preferred_name" label="Roepnaam" />
               <FormInput name="deceased.first_names" label="Voornamen" />
               <FormInput name="deceased.last_name" label="Achternaam" />
