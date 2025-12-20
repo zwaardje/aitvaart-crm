@@ -50,7 +50,7 @@ export function FuneralCard({ funeral }: { funeral: FuneralWithRelations }) {
         }
         content={
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-gray-600 font-thin">
               <RiCrossLine className="h-3 w-3 text-gray-400 flex-shrink-0" />
               <span>
                 {funeral.deceased?.date_of_death

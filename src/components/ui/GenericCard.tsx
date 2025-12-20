@@ -38,7 +38,7 @@ const Generic = ({
         square && "aspect-square"
       )}
     >
-      <CardHeader className="pb-3 pl-3 pr-3 pt-3">
+      <CardHeader className="pl-3 pr-3 pt-3 pb-0">
         <div
           className={cn(
             "flex items-start justify-between",
@@ -48,7 +48,7 @@ const Generic = ({
           <div className="flex-1">
             <CardTitle
               className={cn(
-                "flex flex-col items-start gap-2 text-sm",
+                "flex flex-col items-start gap-2 text-normal capitalize",
                 to && "font-normal"
               )}
             >

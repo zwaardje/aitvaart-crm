@@ -12,6 +12,7 @@ import { z } from "zod";
 import { cn } from "@/lib/utils";
 import { Alert } from "@/components/ui/Alert";
 import { watch } from "fs";
+import { useWizardErrorContext } from "./WizardErrorContext";
 
 interface FormProps {
   defaultValues?: Record<string, any>;
@@ -52,6 +53,8 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
   const { handleSubmit, setError, formState, watch } = methods;
   const autoId = useId();
   const formId = id ?? autoId;
+  const contextOnError = useWizardErrorContext();
+  const effectiveOnError = onError || contextOnError;
 
   let formValues = {};
   if (canWatch) {
@@ -105,7 +108,7 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
       <form
         ref={ref}
         id={formId}
-        onSubmit={handleSubmit(onSubmit, onError)}
+        onSubmit={handleSubmit(onSubmit, effectiveOnError)}
         className={cn("flex w-full flex-col gap-4 p-2", className)}
         noValidate
       >

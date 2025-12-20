@@ -50,22 +50,37 @@ export function FuneralContactForm({
 }: FuneralContactFormProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { createContact } = useFuneralContacts(funeralId!);
+  const { createContact } = useFuneralContacts(funeralId || null);
 
   const onCreate = async (data: z.infer<typeof funeralContactFormSchema>) => {
+    // Validate funeralId
+    if (!funeralId) {
+      throw new Error("Geen uitvaart ID beschikbaar");
+    }
+
     const supabase = getSupabaseBrowser();
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) throw new Error("Geen gebruiker aangemeld");
 
+    // Update other contacts to not be primary if this one is primary
     if (data.is_primary) {
-      await supabase
+      const { error: updateError } = await supabase
         .from("funeral_contacts")
         .update({ is_primary: false })
         .eq("funeral_id", funeralId);
+
+      if (updateError) {
+        console.error(
+          "Fout bij bijwerken primaire contactpersonen:",
+          updateError
+        );
+        // Don't throw, continue with creation
+      }
     }
 
+    // Create client record
     const { data: client, error: cErr } = await supabase
       .from("clients")
       .insert({
@@ -77,15 +92,60 @@ export function FuneralContactForm({
       })
       .select("id")
       .single();
-    if (cErr) throw cErr;
 
-    await createContact({
-      funeral_id: funeralId,
-      client_id: client.id,
-      relation: data.relation || null,
-      is_primary: !!data.is_primary,
-      notes: null,
-    });
+    if (cErr) {
+      console.error("Fout bij aanmaken contactpersoon:", cErr);
+      const errorMessage =
+        cErr.message || cErr.details || cErr.hint || "Onbekende fout";
+      throw new Error(`Fout bij aanmaken contactpersoon: ${errorMessage}`);
+    }
+
+    if (!client?.id) {
+      throw new Error("Geen client ID ontvangen na aanmaken contactpersoon");
+    }
+
+    // Create funeral contact link
+    try {
+      await createContact({
+        funeral_id: funeralId,
+        client_id: client.id,
+        relation: data.relation || null,
+        is_primary: !!data.is_primary,
+        notes: null,
+      });
+    } catch (contactError: unknown) {
+      console.error(
+        "Fout bij koppelen contactpersoon aan uitvaart:",
+        contactError
+      );
+
+      // Extract error message from Supabase error or generic error
+      let errorMessage = "Onbekende fout";
+      if (contactError && typeof contactError === "object") {
+        if (
+          "message" in contactError &&
+          typeof contactError.message === "string"
+        ) {
+          errorMessage = contactError.message;
+        } else if (
+          "details" in contactError &&
+          typeof contactError.details === "string"
+        ) {
+          errorMessage = contactError.details;
+        } else if (
+          "hint" in contactError &&
+          typeof contactError.hint === "string"
+        ) {
+          errorMessage = contactError.hint;
+        }
+      } else if (contactError instanceof Error) {
+        errorMessage = contactError.message;
+      }
+
+      throw new Error(
+        `Fout bij koppelen contactpersoon aan uitvaart: ${errorMessage}`
+      );
+    }
   };
 
   const handleSubmit = async (data: FuneralContactFormValues) => {
@@ -98,9 +158,19 @@ export function FuneralContactForm({
       if (withDialog) {
         setIsOpen(false);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error submitting contact form:", error);
-      throw error;
+
+      // Ensure we throw a proper Error object with a message
+      if (error instanceof Error) {
+        throw error;
+      } else if (error && typeof error === "object" && "message" in error) {
+        throw new Error(String(error.message));
+      } else {
+        throw new Error(
+          "Er is een onbekende fout opgetreden bij het opslaan van het contact"
+        );
+      }
     }
   };
 

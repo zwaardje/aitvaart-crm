@@ -215,7 +215,7 @@ export function WizardProgress({ className }: WizardProgressProps) {
 
   return (
     <div className={cn("mb-6 mt-6", className)}>
-      <div className="flex items-center gap-4 px-4">
+      <div className="flex items-center gap-4">
         {Array.from({ length: totalSteps }, (_, index) => {
           const stepNumber = index + 1;
           const isActive = stepNumber === currentStep;

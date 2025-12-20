@@ -10,8 +10,9 @@ import {
   WizardNavigation,
   WizardProgress,
 } from "@/components/ui";
-import { useWizard } from "@/components/ui/Wizard";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { useWizardErrorNavigation } from "@/hooks/useWizardErrorNavigation";
+import type { FieldToStepMap } from "@/types/wizard";
 import {
   Card,
   CardHeader,
@@ -36,7 +37,7 @@ const onboardingSchema = z.object({
 type OnboardingFormData = z.infer<typeof onboardingSchema>;
 
 // Mapping van velden naar wizard stappen
-const fieldToStepMap: Record<string, number> = {
+const fieldToStepMap: FieldToStepMap = {
   // Stap 1
   companyName: 1,
   fullName: 1,
@@ -251,39 +252,6 @@ export function OnboardingForm() {
   const router = useRouter();
   const { completeOnboarding, isCompletingOnboarding } = useOnboarding();
 
-  const findFirstStepWithError = (errors: any): number | null => {
-    if (!errors || Object.keys(errors).length === 0) {
-      return null;
-    }
-
-    let firstErrorStep: number | null = null;
-
-    // Itereer door alle error velden
-    const checkErrors = (errorObj: any, path: string = "") => {
-      for (const [key, value] of Object.entries(errorObj)) {
-        const currentPath = path ? `${path}.${key}` : key;
-
-        if (value && typeof value === "object") {
-          if ("message" in value) {
-            // Dit is een error object met een message
-            const step = fieldToStepMap[currentPath];
-            if (step !== undefined) {
-              if (firstErrorStep === null || step < firstErrorStep) {
-                firstErrorStep = step;
-              }
-            }
-          } else {
-            // Nested object, recursief doorzoeken
-            checkErrors(value, currentPath);
-          }
-        }
-      }
-    };
-
-    checkErrors(errors);
-    return firstErrorStep;
-  };
-
   const onSubmit = async (data: any) => {
     setError("");
 
@@ -297,21 +265,10 @@ export function OnboardingForm() {
     }
   };
 
-  const onError = (errors: any) => {
-    // Wanneer er validatiefouten zijn, navigeer naar de eerste stap met een error
-    const firstErrorStep = findFirstStepWithError(errors);
-    if (firstErrorStep !== null) {
-      // We moeten de wizard context gebruiken, maar we zijn buiten de Wizard component
-      // Daarom moeten we de onError handler binnen de Wizard plaatsen
-    }
-  };
-
   return (
     <Wizard totalSteps={3} className="h-full flex flex-col">
       <OnboardingFormWithErrorHandler
         onSubmit={onSubmit}
-        onError={onError}
-        findFirstStepWithError={findFirstStepWithError}
         error={error}
         isCompletingOnboarding={isCompletingOnboarding}
       />
@@ -321,26 +278,14 @@ export function OnboardingForm() {
 
 function OnboardingFormWithErrorHandler({
   onSubmit,
-  onError,
-  findFirstStepWithError,
   error,
   isCompletingOnboarding,
 }: {
   onSubmit: (data: any) => Promise<void>;
-  onError: (errors: any) => void;
-  findFirstStepWithError: (errors: any) => number | null;
   error: string;
   isCompletingOnboarding: boolean;
 }) {
-  const { goToStep } = useWizard();
-
-  const handleError = (errors: any) => {
-    const firstErrorStep = findFirstStepWithError(errors);
-    if (firstErrorStep !== null) {
-      goToStep(firstErrorStep);
-    }
-    onError(errors);
-  };
+  const handleError = useWizardErrorNavigation(fieldToStepMap);
 
   return (
     <Form

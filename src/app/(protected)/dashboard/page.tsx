@@ -68,7 +68,7 @@ export default function DashboardPage() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Nieuwe uitvaart</DialogTitle>
+            <DialogTitle>Nieuwe begeleiding</DialogTitle>
           </DialogHeader>
           <IntakeForm />
         </DialogContent>

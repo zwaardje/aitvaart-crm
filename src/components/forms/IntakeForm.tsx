@@ -8,6 +8,9 @@ import {
   WizardNavigation,
   WizardProgress,
 } from "@/components/ui/Wizard";
+import { useWizardErrorNavigation } from "@/hooks/useWizardErrorNavigation";
+import type { FieldToStepMap } from "@/types/wizard";
+import { WizardErrorProvider } from "./WizardErrorContext";
 import { DialogFooter } from "@/components/ui";
 import { useMutation } from "@tanstack/react-query";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
@@ -21,6 +24,43 @@ import { FormGroup } from "./FormGroup";
 import { FUNERAL_STATUS_OPTIONS } from "@/constants/funeral-status";
 import { Group } from "@/components/ui/Group";
 import { MARITAL_STATUS_OPTIONS } from "@/constants/form-options";
+
+// Mapping van velden naar wizard stappen voor IntakeForm
+const intakeFieldToStepMap: FieldToStepMap = {
+  // Stap 1: Gegevens van de overledene (basis)
+  "deceased.preferred_name": 1,
+  "deceased.first_names": 1,
+  "deceased.last_name": 1,
+  "deceased.date_of_birth": 1,
+  "deceased.place_of_birth": 1,
+  "deceased.gender": 1,
+  "deceased.marital_status": 1,
+  "deceased.social_security_number": 1,
+  "funeral.status": 1,
+  // Stap 2: Adresgegevens overledene
+  "deceased.street": 2,
+  "deceased.house_number": 2,
+  "deceased.house_number_addition": 2,
+  "deceased.postal_code": 2,
+  "deceased.city": 2,
+  // Stap 3: Opdrachtgever
+  "client.preferred_name": 3,
+  "client.first_names": 3,
+  "client.last_name": 3,
+  "client.street": 3,
+  "client.house_number": 3,
+  "client.house_number_addition": 3,
+  "client.postal_code": 3,
+  "client.city": 3,
+  "client.phone_number": 3,
+  "client.email": 3,
+  // Stap 4: Uitvaartdetails (alleen als status !== "planning")
+  "funeral.funeral_director": 4,
+  "funeral.location": 4,
+  "funeral.signing_date": 4,
+  "deceased.date_of_death": 4,
+  "deceased.coffin_registration_number": 4,
+};
 
 export function IntakeForm() {
   const { data: currentOrganization } = useCurrentUserOrganization();
@@ -140,7 +180,7 @@ export function IntakeForm() {
       schema={intakeSchemas.form}
       onSubmit={(values: IntakeFormData) => createAllMutation.mutate(values)}
     >
-      <IntakeFormWizard
+      <IntakeFormWrapper
         funeralDirectorOptions={funeralDirectorOptions}
         organizationMembersLoading={organizationMembersLoading}
       />
@@ -148,7 +188,7 @@ export function IntakeForm() {
   );
 }
 
-function IntakeFormWizard({
+function IntakeFormWrapper({
   funeralDirectorOptions,
   organizationMembersLoading,
 }: {
@@ -164,6 +204,45 @@ function IntakeFormWizard({
 
   return (
     <Wizard totalSteps={totalSteps}>
+      <IntakeFormWizardWithErrorHandler
+        funeralDirectorOptions={funeralDirectorOptions}
+        organizationMembersLoading={organizationMembersLoading}
+      />
+    </Wizard>
+  );
+}
+
+function IntakeFormWizardWithErrorHandler({
+  funeralDirectorOptions,
+  organizationMembersLoading,
+}: {
+  funeralDirectorOptions: { value: string; label: string }[];
+  organizationMembersLoading: boolean;
+}) {
+  const handleError = useWizardErrorNavigation(intakeFieldToStepMap);
+
+  return (
+    <WizardErrorProvider onError={handleError}>
+      <IntakeFormWizard
+        funeralDirectorOptions={funeralDirectorOptions}
+        organizationMembersLoading={organizationMembersLoading}
+      />
+    </WizardErrorProvider>
+  );
+}
+
+function IntakeFormWizard({
+  funeralDirectorOptions,
+  organizationMembersLoading,
+}: {
+  funeralDirectorOptions: { value: string; label: string }[];
+  organizationMembersLoading: boolean;
+}) {
+  const { watch } = useFormContext();
+  const status = watch("funeral.status");
+
+  return (
+    <>
       <WizardProgress />
       <WizardStep step={1}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -384,6 +463,6 @@ function IntakeFormWizard({
       <DialogFooter className="px-0 pb-0 pt-6">
         <WizardNavigation finishLabel="Opslaan" onClose={() => {}} />
       </DialogFooter>
-    </Wizard>
+    </>
   );
 }

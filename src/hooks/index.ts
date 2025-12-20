@@ -19,3 +19,4 @@ export * from "./usePermissions";
 export * from "./useInvites";
 export * from "./useTaskTypes";
 export * from "./useTasks";
+export * from "./useWizardErrorNavigation";
