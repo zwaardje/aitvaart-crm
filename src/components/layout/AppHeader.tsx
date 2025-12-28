@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { RiArrowLeftLine } from "@remixicon/react";
-import { Button, Breadcrumb } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
 interface Breadcrumb {
@@ -19,7 +19,6 @@ interface AppHeaderProps {
   pageTitle?: string;
   showBackButton?: boolean;
   onBackClick?: () => void;
-  deleteButton?: React.ReactNode;
 }
 
 export function AppHeader({
@@ -30,7 +29,6 @@ export function AppHeader({
   pageTitle,
   showBackButton = false,
   onBackClick,
-  deleteButton,
 }: AppHeaderProps) {
   const router = useRouter();
 
@@ -60,23 +58,23 @@ export function AppHeader({
   return (
     <header
       className={cn(
-        "w-full flex justify-between items-center px-4 py-2 z-40 bg-gray-100",
+        "w-full flex justify-between items-center px-4 py-2 z-40 bg-white",
         "sticky top-0",
         className
       )}
     >
       {showBackButton && (
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
           onClick={showBackButton && handleBackClick}
-          className="shrink-0 h-10 w-10 rounded-lg bg-gray-100 hover:bg-gray-200"
+          className="shrink-0 h-10 w-10 rounded-lg"
         >
           <RiArrowLeftLine className="h-5 w-5" />
         </Button>
       )}
       {!showBackButton && (
-        <div className="shrink-0 flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer">
+        <div className="shrink-0 flex items-center justify-center h-10 w-10 rounded-lgcursor-pointer">
           {logo}
         </div>
       )}
@@ -86,7 +84,6 @@ export function AppHeader({
           {displayTitle}
         </h1>
       </div>
-      <div className="flex items-center w-10 justify-end">{deleteButton}</div>
     </header>
   );
 }

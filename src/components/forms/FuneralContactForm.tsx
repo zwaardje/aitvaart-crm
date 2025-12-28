@@ -35,6 +35,7 @@ export type FuneralContactFormValues = z.infer<typeof funeralContactFormSchema>;
 
 interface FuneralContactFormProps {
   withDialog?: boolean;
+  closeDialog?: () => void;
   funeralId?: string;
   defaultValues?: FuneralContactFormValues;
   onSubmit?: (data: FuneralContactFormValues) => void | Promise<void>;
@@ -43,6 +44,7 @@ interface FuneralContactFormProps {
 
 export function FuneralContactForm({
   withDialog = false,
+  closeDialog,
   funeralId,
   defaultValues,
   onSubmit: onSubmitProp,
@@ -113,6 +115,10 @@ export function FuneralContactForm({
         is_primary: !!data.is_primary,
         notes: null,
       });
+
+      console.log("Contact created");
+
+      return true;
     } catch (contactError: unknown) {
       console.error(
         "Fout bij koppelen contactpersoon aan uitvaart:",
@@ -153,10 +159,15 @@ export function FuneralContactForm({
       if (onSubmitProp) {
         await onSubmitProp(data);
       } else {
+        console.log("Creating contact");
         await onCreate(data);
       }
+      console.log("Contact created");
       if (withDialog) {
         setIsOpen(false);
+      }
+      if (closeDialog) {
+        closeDialog?.();
       }
     } catch (error: unknown) {
       console.error("Error submitting contact form:", error);

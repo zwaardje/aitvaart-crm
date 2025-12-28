@@ -20,6 +20,7 @@ import {
 import { PageContent } from "@/components/layout/PageContent";
 import { Database } from "@/types/database";
 import { Badge } from "@/components/ui/badge";
+import { getRelationText } from "@/lib/display-helpers";
 
 type FuneralContact =
   Database["public"]["Tables"]["funeral_contacts"]["Row"] & {
@@ -105,7 +106,7 @@ export default function FuneralDetailsPage({
                         ? new Date(
                             funeral.deceased.date_of_death
                           ).toLocaleDateString("nl-NL")
-                        : "-"}
+                        : "Onbekend"}
                     </span>
                   </div>
                   <div className="flex flex-1 flex-col items-end">
@@ -113,9 +114,11 @@ export default function FuneralDetailsPage({
                       Geboorteplaats
                     </span>
                     <span className="text-sm">
-                      {funeral.deceased.place_of_birth
-                        ? funeral.deceased.place_of_birth
-                        : "-"}
+                      {funeral.deceased.date_of_death
+                        ? new Date(
+                            funeral.deceased.date_of_death
+                          ).toLocaleDateString("nl-NL")
+                        : "Onbekend"}
                     </span>
                   </div>
                 </div>
@@ -130,7 +133,8 @@ export default function FuneralDetailsPage({
                   title={
                     <div className="flex items-center gap-4">
                       <h2 className="text-lg font-medium">
-                        {contact.client?.preferred_name}
+                        {contact.client?.preferred_name ?? ""}{" "}
+                        {contact.client?.last_name ?? ""}
                       </h2>
                       {contact.is_primary && (
                         <Badge size="sm" className="font-normal">
@@ -139,7 +143,7 @@ export default function FuneralDetailsPage({
                       )}
                     </div>
                   }
-                  subtitle={contact.relation || undefined}
+                  subtitle={getRelationText(contact.relation) || undefined}
                 />
               ))}
             </div>
@@ -166,7 +170,10 @@ export default function FuneralDetailsPage({
           <DialogHeader>
             <DialogTitle>Nieuw contact</DialogTitle>
           </DialogHeader>
-          <FuneralContactForm funeralId={id} />
+          <FuneralContactForm
+            funeralId={id}
+            closeDialog={() => setIsDialogOpen(undefined)}
+          />
         </DialogContent>
       </Dialog>
     </>

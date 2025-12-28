@@ -1,12 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useState } from "react";
-import {
-  SmartSearchBar,
-  SmartSearchBarAction,
-} from "@/components/ui/SmartSearchBar";
-import { RiAddLine, RiArrowLeftLine } from "@remixicon/react";
+import { useEffect, useState } from "react";
 import { FuneralContactForm } from "@/components/forms/FuneralContactForm";
 import {
   Dialog,
@@ -22,57 +17,20 @@ import { ContactAddressDataEditForm } from "@/components/forms/ContactAddressDat
 import { ContactCommunicationEditForm } from "@/components/forms/ContactCommunicationEditForm";
 import { Group } from "@/components/ui/Group";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { Badge } from "@/components/ui/badge";
+import { usePathname } from "next/navigation";
+import { EntityDeleteButton } from "@/components/layout/EntityDeleteButton";
+import { formatDate } from "@/lib/format-helpers";
+import {
+  mapGender,
+  mapMaritalStatus,
+  getRelationText,
+} from "@/lib/display-helpers";
 
 type FuneralContact =
   Database["public"]["Tables"]["funeral_contacts"]["Row"] & {
     client: Database["public"]["Tables"]["clients"]["Row"] | null;
   };
-
-// Helper function to format dates
-const formatDate = (date: string | null | undefined): string => {
-  if (!date) return "-";
-  try {
-    return new Date(date).toLocaleDateString("nl-NL", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  } catch {
-    return "-";
-  }
-};
-
-// Helper function to map gender
-const mapGender = (gender: string | null | undefined): string => {
-  switch (gender) {
-    case "male":
-      return "Man";
-    case "female":
-      return "Vrouw";
-    case "other":
-      return "Anders";
-    default:
-      return "-";
-  }
-};
-
-// Helper function to map marital status
-const mapMaritalStatus = (status: string | null | undefined): string => {
-  switch (status) {
-    case "single":
-      return "Ongehuwd";
-    case "married":
-      return "Getrouwd";
-    case "divorced":
-      return "Gescheiden";
-    case "widowed":
-      return "Weduwe/Weduwnaar";
-    case "registered_partnership":
-      return "Geregistreerd partnerschap";
-    default:
-      return "-";
-  }
-};
 
 export default function ContactPage({
   params,
@@ -86,6 +44,8 @@ export default function ContactPage({
   const [isDialogOpen, setIsDialogOpen] = useState<
     "funeral" | "share" | undefined
   >(undefined);
+
+  const pathname = usePathname();
 
   useEffect(() => {
     if (params instanceof Promise) {
@@ -124,6 +84,22 @@ export default function ContactPage({
   return (
     <>
       <PageContent className="flex flex-col gap-4 mt-4">
+        <div className="flex justify-between gap-2">
+          <div className="flex flex-col gap-2">
+            {contact.is_primary && (
+              <Badge size="sm" className="font-normal max-w-fit">
+                Opdrachtgever
+              </Badge>
+            )}
+            <h1 className="text-2xl font-medium">
+              {client.preferred_name} {client.last_name}
+            </h1>
+          </div>
+          <div className="flex items-end justify-center">
+            <EntityDeleteButton pathname={pathname} />
+          </div>
+        </div>
+
         {/* Persoonsgegevens Card */}
         <Card className="rounded-sm">
           <CardHeader className="pb-3 pl-3 pr-3 pt-3">
@@ -207,7 +183,9 @@ export default function ContactPage({
                   <div className="text-muted-foreground text-xs mb-1">
                     Relatie tot overledene
                   </div>
-                  <div className="text-sm">{contact.relation || "-"}</div>
+                  <div className="text-sm">
+                    {getRelationText(contact.relation)}
+                  </div>
                 </div>
               </Group>
             </div>

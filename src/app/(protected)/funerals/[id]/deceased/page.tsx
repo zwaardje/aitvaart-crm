@@ -26,68 +26,14 @@ import { FuneralDataEditForm } from "@/components/forms/FuneralDataEditForm";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Group } from "@/components/ui/Group";
+import { Badge } from "@/components/ui/badge";
+import { formatDate, formatTime } from "@/lib/format-helpers";
+import { mapGender, mapMaritalStatus } from "@/lib/display-helpers";
 
 type FuneralContact =
   Database["public"]["Tables"]["funeral_contacts"]["Row"] & {
     client: Database["public"]["Tables"]["clients"]["Row"] | null;
   };
-
-// Helper function to format dates
-const formatDate = (date: string | null | undefined): string => {
-  if (!date) return "-";
-  try {
-    return new Date(date).toLocaleDateString("nl-NL", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  } catch {
-    return "-";
-  }
-};
-
-// Helper function to format time
-const formatTime = (time: string | null | undefined): string => {
-  if (!time) return "-";
-  // If time is in HH:MM:SS format, extract HH:MM
-  if (time.includes(":")) {
-    const parts = time.split(":");
-    return `${parts[0]}:${parts[1]}`;
-  }
-  return time;
-};
-
-// Helper function to map gender
-const mapGender = (gender: string | null | undefined): string => {
-  switch (gender) {
-    case "male":
-      return "Man";
-    case "female":
-      return "Vrouw";
-    case "other":
-      return "Anders";
-    default:
-      return "-";
-  }
-};
-
-// Helper function to map marital status
-const mapMaritalStatus = (status: string | null | undefined): string => {
-  switch (status) {
-    case "single":
-      return "Ongehuwd";
-    case "married":
-      return "Getrouwd";
-    case "divorced":
-      return "Gescheiden";
-    case "widowed":
-      return "Weduwe/Weduwnaar";
-    case "registered_partnership":
-      return "Geregistreerd partnerschap";
-    default:
-      return "-";
-  }
-};
 
 export default function DeceasedPage({
   params,
@@ -135,7 +81,13 @@ export default function DeceasedPage({
   return (
     <>
       <PageContent className="flex flex-col gap-4 mt-4">
-        {/* Persoonsgegevens Card */}
+        <div className="flex justify-between gap-2">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl font-medium">
+              {deceased.preferred_name} {deceased.last_name}
+            </h1>
+          </div>
+        </div>
         <Card className="rounded-sm">
           <CardHeader className="pb-3 pl-3 pr-3 pt-3">
             <div className="flex items-center justify-between">

@@ -29,24 +29,30 @@ export function FormSwitch({
   const error = errors[name]?.message as string;
 
   return (
-    <div className={cn("flex flex-row items-center gap-2", className)}>
+    <div className={cn("flex flex-col gap-2", className)}>
       <Controller
         name={name}
         control={control}
         rules={validation}
         render={({ field }) => (
-          <Switch
-            checked={field.value ?? false}
-            onCheckedChange={field.onChange}
-            {...rest}
-          />
+          <>
+            {label && (
+              <Label
+                htmlFor={inputId}
+                className="text-xs text-muted-foreground"
+              >
+                {label}
+              </Label>
+            )}
+            <Switch
+              checked={field.value ?? false}
+              onCheckedChange={field.onChange}
+              {...rest}
+            />
+          </>
         )}
       />
-      {label && (
-        <Label htmlFor={inputId} className="text-xs text-muted-foreground">
-          {label}
-        </Label>
-      )}
+
       {error && <ErrorMessage message={error} />}
       {hint && !error && <p className="text-sm text-gray-500">{hint}</p>}
     </div>

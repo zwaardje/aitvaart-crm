@@ -126,8 +126,8 @@ export function ContactPersonalDataEditForm({
         | "widowed"
         | "registered_partnership"
         | undefined) ?? undefined,
-    relation: funeralContact.relation ?? "",
-    is_primary: funeralContact.is_primary ?? false,
+    relation: (funeralContact.relation as string | undefined) ?? undefined,
+    is_primary: (funeralContact.is_primary as boolean | undefined) ?? false,
   };
 
   const handleSubmit = async (values: ContactPersonalDataFormValues) => {
@@ -138,7 +138,7 @@ export function ContactPersonalDataEditForm({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-          <RiEditLine className="h-3 w-3" />
+          <RiEditLine className="h-5 w-5" />
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -211,10 +211,23 @@ export function ContactPersonalDataEditForm({
               />
             </Group>
             <Group>
-              <FormInput
+              <FormSelect
                 className="flex-1"
                 name="relation"
                 label="Relatie tot overledene"
+                options={[
+                  { value: "spouse", label: "Echtgenoot/Echtgenote" },
+                  { value: "child", label: "Kind" },
+                  { value: "parent", label: "Ouder" },
+                  { value: "sister", label: "Zus" },
+                  { value: "brother", label: "Broer" },
+                  { value: "grandfather", label: "Opa" },
+                  { value: "grandmother", label: "Oma" },
+                  { value: "grandchild", label: "Kleinkind" },
+                  { value: "cousin", label: "Cousin" },
+                  { value: "friend", label: "Vriend" },
+                  { value: "other", label: "Anders" },
+                ]}
               />
               <FormSwitch
                 className="flex-1"

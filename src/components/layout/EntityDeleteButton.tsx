@@ -121,9 +121,9 @@ export function EntityDeleteButton({ pathname }: EntityDeleteButtonProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="shrink-0 h-10 w-10 rounded-lg bg-gray-100 hover:bg-gray-200"
+          className="shrink-0 h-10 w-10 border border-gray-200 hover:border-gray-300"
         >
-          <RiDeleteBinLine className="h-5 w-5" />
+          <RiDeleteBinLine className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">

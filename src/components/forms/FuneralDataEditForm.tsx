@@ -18,6 +18,7 @@ import {
 import { RiEditLine } from "@remixicon/react";
 import type { Database } from "@/types/database";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { formatTime } from "@/lib/format-helpers";
 
 const funeralDataSchema = z.object({
   signing_date: schemas.common.date,
@@ -52,27 +53,19 @@ export function FuneralDataEditForm({
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["funerals"] });
-      await queryClient.invalidateQueries({ queryKey: ["funerals", funeral.id] });
+      await queryClient.invalidateQueries({
+        queryKey: ["funerals", funeral.id],
+      });
       setIsOpen(false);
       onSaved?.();
     },
   });
 
-  // Format time from database (HH:MM:SS) to input format (HH:MM)
-  const formatTime = (time: string | null | undefined): string => {
-    if (!time) return "";
-    // If time is in HH:MM:SS format, extract HH:MM
-    if (time.includes(":")) {
-      const parts = time.split(":");
-      return `${parts[0]}:${parts[1]}`;
-    }
-    return time;
-  };
-
   const defaultValues: FuneralDataFormValues = {
     signing_date: funeral.signing_date ?? "",
     funeral_time: formatTime(
-      (funeral as any).funeral_time as string | null | undefined
+      (funeral as any).funeral_time as string | null | undefined,
+      false
     ),
     location: funeral.location ?? "",
   };

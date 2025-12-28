@@ -9,6 +9,7 @@ import { GenericCard } from "@/components/ui/GenericCard";
 import { DocumentsEditForm } from "@/components/forms/DocumentsEditForm";
 import { DocumentsDeleteForm } from "@/components/forms/DocumentsDeleteForm";
 import type { SearchResult } from "@/hooks/useSearch";
+import { formatFileSize, formatDateTime } from "@/lib/format-helpers";
 
 type Document = Database["public"]["Tables"]["documents"]["Row"];
 
@@ -36,24 +37,6 @@ export function Documents({ funeralId }: DocumentsProps) {
     }
     return documents || [];
   }, [searchResults, documents]);
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("nl-NL", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   const handleDownload = async (doc: Document) => {
     try {
@@ -112,7 +95,7 @@ export function Documents({ funeralId }: DocumentsProps) {
               title={document.file_name}
               subtitle={`${formatFileSize(
                 document.file_size || 0
-              )} • ${formatDate(
+              )} • ${formatDateTime(
                 document.created_at || new Date().toISOString()
               )}`}
               actions={
