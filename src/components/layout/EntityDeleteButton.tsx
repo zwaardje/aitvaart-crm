@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { RiDeleteBinLine } from "@remixicon/react";
 import { Button } from "@/components/ui";
 import {
@@ -15,12 +15,13 @@ import {
 } from "@/components/ui/dialog";
 import { useGenericEntity } from "@/hooks/useGenericEntity";
 import { useFuneralContacts } from "@/hooks/useFuneralContacts";
+import { useDeleteScenario } from "@/hooks/useScenarios";
 
 interface EntityDeleteButtonProps {
   pathname: string;
 }
 
-type EntityType = "funeral" | "contact" | null;
+type EntityType = "funeral" | "contact" | "wishes" | null;
 
 export function EntityDeleteButton({ pathname }: EntityDeleteButtonProps) {
   const router = useRouter();
@@ -45,12 +46,20 @@ export function EntityDeleteButton({ pathname }: EntityDeleteButtonProps) {
     pathname.includes("/contacts/") && uuids.length > 1
       ? uuids[uuids.length - 1]
       : null;
+  const wishesId =
+    pathname.includes("/wishes/") && uuids.length > 1
+      ? uuids[uuids.length - 1]
+      : null;
 
-  const entityType: EntityType = contactId
-    ? "contact"
-    : funeralId
-    ? "funeral"
-    : null;
+  // Determine entity type based on which ID is present
+  const getEntityType = (): EntityType => {
+    if (contactId) return "contact";
+    if (wishesId) return "wishes";
+    if (funeralId) return "funeral";
+    return null;
+  };
+
+  const entityType = getEntityType();
 
   // Get delete functions based on entity type
   // Use useGenericEntity with enabled: false to get delete function without fetching data
@@ -62,6 +71,8 @@ export function EntityDeleteButton({ pathname }: EntityDeleteButtonProps) {
     });
 
   const { deleteContact } = useFuneralContacts(funeralId || null);
+
+  const { mutateAsync: deleteScenario } = useDeleteScenario();
 
   // Early returns after all hooks
   if (!isLastSegmentUuid || uuids.length === 0) {
@@ -83,6 +94,10 @@ export function EntityDeleteButton({ pathname }: EntityDeleteButtonProps) {
         await deleteContact(contactId);
         router.push(`/funerals/${funeralId}/contacts`);
       }
+      if (entityType === "wishes" && wishesId) {
+        await deleteScenario(wishesId);
+        router.push(`/funerals/${funeralId}/wishes`);
+      }
 
       setIsOpen(false);
     } catch (error) {
@@ -100,6 +115,9 @@ export function EntityDeleteButton({ pathname }: EntityDeleteButtonProps) {
     if (entityType === "contact") {
       return "Verwijder contactpersoon";
     }
+    if (entityType === "wishes") {
+      return "Verwijder wens";
+    }
     return "Verwijder item";
   };
 
@@ -109,6 +127,9 @@ export function EntityDeleteButton({ pathname }: EntityDeleteButtonProps) {
     }
     if (entityType === "contact") {
       return "Deze actie kan niet ongedaan worden gemaakt. Hiermee wordt de contactpersoon definitief verwijderd.";
+    }
+    if (entityType === "wishes") {
+      return "Deze actie kan niet ongedaan worden gemaakt. Hiermee wordt de wens definitief verwijderd.";
     }
     return "Deze actie kan niet ongedaan worden gemaakt. Hiermee wordt het item definitief verwijderd.";
   };
