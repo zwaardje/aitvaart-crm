@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/SmartSearchBar";
 import { useScenarios } from "@/hooks/useScenarios";
 import { GenericCard } from "@/components/ui/GenericCard";
-import { SECTION_LABELS, ITEM_TYPE_LABELS } from "@/constants/scenario-labels";
 import type { Database } from "@/types/database";
+import { truncateText } from "@/lib/display-helpers";
 
 type FuneralScenario = Database["public"]["Tables"]["funeral_scenarios"]["Row"];
 
@@ -81,9 +81,7 @@ export default function ScenarioPage({
                 key={scenario.id}
                 to={`/funerals/${id}/wishes/${scenario.id}`}
                 title={scenario.title}
-                subtitle={
-                  scenario.description ? scenario.description : undefined
-                }
+                subtitle={truncateText(scenario.description, 80)}
               />
             ))}
           </div>
