@@ -460,10 +460,10 @@ export const schemas = {
   scenarios: {
     create: z.object({
       funeral_id: z.string().uuid("validation.uuid.invalid"),
-      section: z.string().min(1, "validation.required"),
-      item_type: z.string().min(1, "validation.required"),
+      section: z.string().min(1, "validation.required").optional(),
+      item_type: z.string().min(1, "validation.required").optional(),
       title: commonSchemas.title,
-      description: commonSchemas.content.optional(),
+      description: commonSchemas.content.min(1, "validation.required"),
       extra_field_label: z.string().optional(),
       extra_field_value: z.string().optional(),
       order_in_section: z.number().int().min(0).optional(),

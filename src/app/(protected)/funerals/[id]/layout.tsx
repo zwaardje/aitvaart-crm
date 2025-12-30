@@ -15,6 +15,17 @@ export default function FuneralLayout({
 }) {
   const [id, setId] = useState<string>("");
 
+  const pathname = usePathname();
+  const base = `/funerals/${id}`;
+  const pathSegments = pathname.split("/").filter(Boolean);
+
+  // Find all UUIDs in the path
+  const uuids = pathSegments.filter((segment) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      segment
+    )
+  );
+
   useEffect(() => {
     if (params instanceof Promise) {
       params.then(({ id: resolvedId }) => {
@@ -24,14 +35,11 @@ export default function FuneralLayout({
       setId(params.id);
     }
   }, [params]);
-  const pathname = usePathname();
-
-  const base = `/funerals/${id}`;
-
-  const pathSegments = pathname.split("/").filter(Boolean);
 
   const hideSubmenu =
-    pathSegments.includes("deceased") || pathSegments.includes("contacts");
+    pathSegments.includes("deceased") ||
+    pathSegments.includes("contacts") ||
+    (pathSegments.includes("wishes") && uuids.length === 2);
 
   const items = FUNERAL_TABS.map((tab) => ({
     href: `${base}${tab.segment}`,

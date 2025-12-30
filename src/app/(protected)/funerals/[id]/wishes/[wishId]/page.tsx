@@ -7,6 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScenarioEditForm, ScenarioDeleteForm } from "@/components/forms";
 import { Group } from "@/components/ui/Group";
 import { SECTION_LABELS, ITEM_TYPE_LABELS } from "@/constants/scenario-labels";
+import { Badge } from "@/components/ui/badge";
+import { EntityDeleteButton } from "@/components/layout/EntityDeleteButton";
+import { usePathname } from "next/navigation";
+import { formatDate } from "@/lib/format-helpers";
 
 export default function WishPage({
   params,
@@ -17,6 +21,7 @@ export default function WishPage({
 }) {
   const [funeralId, setFuneralId] = useState<string>("");
   const [wishId, setWishId] = useState<string>("");
+  const pathname = usePathname();
 
   useEffect(() => {
     if (params instanceof Promise) {
@@ -42,69 +47,39 @@ export default function WishPage({
 
   return (
     <PageContent className="flex flex-col gap-4 mt-4">
+      <div className="flex justify-between gap-2">
+        <div className="flex flex-col gap-2">
+          {scenario.created_at && (
+            <Badge size="sm" className="font-normal max-w-fit">
+              Aangemaakt op {formatDate(scenario.created_at)}
+            </Badge>
+          )}
+          <h1 className="text-2xl font-medium">{scenario.title}</h1>
+        </div>
+        <div className="flex items-end justify-center">
+          <EntityDeleteButton pathname={pathname} />
+        </div>
+      </div>
+
       {/* Wensinformatie Card */}
       <Card className="rounded-sm">
         <CardHeader className="pb-3 pl-3 pr-3 pt-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base font-medium">
-              Wensinformatie
+              Beschrijving
             </CardTitle>
             <div className="flex items-center gap-2">
               <ScenarioEditForm scenario={scenario} withDialog={true} />
-              <ScenarioDeleteForm scenario={scenario} withDialog={true} />
             </div>
           </div>
         </CardHeader>
         <CardContent className="pt-0 pl-3 pr-3 pb-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <Group>
-              <div className="flex-1">
-                <div className="text-muted-foreground text-xs mb-1">Titel</div>
-                <div className="text-sm">{scenario.title || "-"}</div>
-              </div>
-              <div className="flex-1">
-                <div className="text-muted-foreground text-xs mb-1">Sectie</div>
-                <div className="text-sm">
-                  {SECTION_LABELS[scenario.section] || scenario.section || "-"}
-                </div>
-              </div>
-            </Group>
-
-            <Group>
-              <div className="flex-1">
-                <div className="text-muted-foreground text-xs mb-1">Type</div>
-                <div className="text-sm">
-                  {ITEM_TYPE_LABELS[scenario.item_type] ||
-                    scenario.item_type ||
-                    "-"}
-                </div>
-              </div>
-              <div className="flex-1">
-                <div className="text-muted-foreground text-xs mb-1">Actief</div>
-                <div className="text-sm">
-                  {scenario.is_active ? "Ja" : "Nee"}
-                </div>
-              </div>
-            </Group>
-
-            {scenario.description && (
-              <div className="col-span-2">
-                <div className="text-muted-foreground text-xs mb-1">
-                  Beschrijving
-                </div>
-                <div className="text-sm">{scenario.description}</div>
-              </div>
-            )}
-
-            {scenario.extra_field_label && scenario.extra_field_value && (
-              <div className="col-span-2">
-                <div className="text-muted-foreground text-xs mb-1">
-                  {scenario.extra_field_label}
-                </div>
-                <div className="text-sm">{scenario.extra_field_value}</div>
-              </div>
-            )}
-          </div>
+          {scenario.description && (
+            <div className="col-span-2">
+              <div className="text-muted-foreground text-xs mb-1"></div>
+              <div className="text-sm">{scenario.description}</div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </PageContent>

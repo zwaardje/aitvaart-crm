@@ -13,26 +13,21 @@ import {
 import { Form } from "@/components/forms/Form";
 import { FormInput } from "./FormInput";
 import { FormTextarea } from "./FormTextarea";
-import { FormSelect } from "./FormSelect";
 import { SubmitButton } from "./SubmitButton";
 import { schemas, ScenarioFormData } from "@/lib/validation";
 import { useCreateScenarioWithDefaults } from "@/hooks/useScenarios";
 import { RiAddLine } from "@remixicon/react";
-import { Group } from "@/components/ui/Group";
-
-import {
-  SECTION_OPTIONS,
-  ITEM_TYPE_OPTIONS,
-} from "@/constants/scenario-labels";
 
 interface ScenarioFormProps {
   withDialog?: boolean;
   funeralId: string;
   onSuccess?: () => void;
+  closeDialog?: () => void;
 }
 
 export function ScenarioForm({
   withDialog = false,
+  closeDialog,
   funeralId,
   onSuccess,
 }: ScenarioFormProps) {
@@ -44,6 +39,9 @@ export function ScenarioForm({
       await createScenarioWithDefaults(data);
       if (withDialog) {
         setIsOpen(false);
+      }
+      if (closeDialog) {
+        closeDialog();
       }
       onSuccess?.();
       console.log("Scenario item succesvol toegevoegd");
@@ -59,34 +57,11 @@ export function ScenarioForm({
       onSubmit={handleSubmit}
       defaultValues={{
         funeral_id: funeralId,
-        section: "",
-        item_type: "",
         title: "",
         description: "",
-        extra_field_label: "",
-        extra_field_value: "",
-        order_in_section: 0,
       }}
     >
       <div className="space-y-4">
-        <Group>
-          <FormSelect
-            className="flex-1"
-            name="section"
-            label="Sectie"
-            placeholder="Kies sectie"
-            options={SECTION_OPTIONS}
-          />
-
-          <FormSelect
-            className="flex-1"
-            name="item_type"
-            label="Item type"
-            placeholder="Kies item type"
-            options={ITEM_TYPE_OPTIONS}
-          />
-        </Group>
-
         <FormInput
           name="title"
           label="Titel"
@@ -98,23 +73,8 @@ export function ScenarioForm({
           name="description"
           label="Opmerking"
           placeholder="Typ hier de opmerking over het item"
-          rows={3}
+          rows={20}
         />
-        <Group title="Extra informatie">
-          <FormInput
-            className="flex-1"
-            name="extra_field_label"
-            label="Extra veld label"
-            placeholder="Bijv. Verzorglocatie, Opbaarlocatie"
-          />
-
-          <FormInput
-            className="flex-1"
-            name="extra_field_value"
-            label="Extra veld waarde"
-            placeholder="Typ hier de waarde van het extra veld"
-          />
-        </Group>
 
         <DialogFooter className="mt-2 flex flex-row justify-between">
           <DialogClose asChild>

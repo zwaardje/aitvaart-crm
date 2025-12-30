@@ -75,17 +75,15 @@ export default function ScenarioPage({
           }}
         />
         <div className="px-4">
-          <div className="space-y-3">
+          <div className="flex flex-col gap-2">
             {scenarios?.map((scenario: FuneralScenario) => (
               <GenericCard
                 key={scenario.id}
                 to={`/funerals/${id}/wishes/${scenario.id}`}
                 title={scenario.title}
-                subtitle={`${
-                  SECTION_LABELS[scenario.section] || scenario.section
-                } - ${
-                  ITEM_TYPE_LABELS[scenario.item_type] || scenario.item_type
-                }`}
+                subtitle={
+                  scenario.description ? scenario.description : undefined
+                }
               />
             ))}
           </div>
@@ -97,7 +95,10 @@ export default function ScenarioPage({
           <DialogHeader>
             <DialogTitle>Nieuw scenario item</DialogTitle>
           </DialogHeader>
-          <ScenarioForm funeralId={id} />
+          <ScenarioForm
+            funeralId={id}
+            closeDialog={() => setIsDialogOpen(false)}
+          />
         </DialogContent>
       </Dialog>
     </>

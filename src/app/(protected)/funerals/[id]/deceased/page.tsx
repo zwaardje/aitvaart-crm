@@ -114,7 +114,9 @@ export default function DeceasedPage({
                   </div>
                   <div className="font-medium">{deceased.last_name || "-"}</div>
                 </div>
-                <div>
+              </Group>
+              <Group>
+                <div className="flex-1">
                   <div className="text-muted-foreground text-xs mb-1">
                     Voornamen
                   </div>
@@ -190,6 +192,8 @@ export default function DeceasedPage({
                   </div>
                   <div className="font-medium">{deceased.street || "-"}</div>
                 </div>
+              </Group>
+              <Group>
                 <div className="flex-1">
                   <div className="text-muted-foreground text-xs mb-1">
                     Nummer

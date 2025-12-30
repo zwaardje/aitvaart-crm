@@ -33,13 +33,6 @@ export function ProtectedLayout({
     )
   );
 
-  const funeralId = uuids[0] || null;
-  const contactId = pathname.includes("/contacts/") ? uuids[1] || null : null;
-
-  const { data: funeralName, isLoading: isLoadingFuneralName } = useFuneralName(
-    funeralId || ""
-  );
-
   const showBackButton =
     pathname !== "/dashboard" &&
     !pathname.includes("/settings/") &&
@@ -53,6 +46,7 @@ export function ProtectedLayout({
     if (pathname.includes("/contacts")) return " ";
     if (pathname.includes("/deceased")) return " ";
     if (pathname.includes("/notes")) return "Notities";
+    if (pathname.includes("/wishes") && uuids.length == 1) return "Wens";
     if (pathname.includes("/wishes")) return "Wensen";
     if (pathname.includes("/costs")) return "Kosten";
     if (pathname.includes("/documents")) return "Documenten";
@@ -69,9 +63,6 @@ export function ProtectedLayout({
   };
 
   const showMenu = pathname !== "/onboarding";
-
-  // Check if URL ends with a UUID
-  const lastSegment = segments[segments.length - 1];
 
   return (
     <AuthGuard>

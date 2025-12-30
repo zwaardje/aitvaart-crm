@@ -14,17 +14,11 @@ import {
 import { Form } from "@/components/forms/Form";
 import { FormInput } from "./FormInput";
 import { FormTextarea } from "./FormTextarea";
-import { FormSelect } from "./FormSelect";
 import { SubmitButton } from "./SubmitButton";
 import { schemas, ScenarioUpdateFormData } from "@/lib/validation";
 import { useUpdateScenario } from "@/hooks/useScenarios";
 import { Database } from "@/types/database";
 import { RiEditLine } from "@remixicon/react";
-import {
-  SECTION_OPTIONS,
-  ITEM_TYPE_OPTIONS,
-} from "@/constants/scenario-labels";
-import { Group } from "@/components/ui/Group";
 
 type FuneralScenario = Database["public"]["Tables"]["funeral_scenarios"]["Row"];
 
@@ -32,12 +26,14 @@ interface ScenarioEditFormProps {
   withDialog?: boolean;
   scenario: FuneralScenario;
   onSuccess?: () => void;
+  closeDialog?: () => void;
 }
 
 export function ScenarioEditForm({
   withDialog = false,
   scenario,
   onSuccess,
+  closeDialog,
 }: ScenarioEditFormProps) {
   const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
@@ -48,6 +44,9 @@ export function ScenarioEditForm({
       await updateScenario({ id: scenario.id, data });
       if (withDialog) {
         setIsOpen(false);
+      }
+      if (closeDialog) {
+        closeDialog();
       }
       onSuccess?.();
       console.log("Scenario item succesvol bijgewerkt");
@@ -62,34 +61,11 @@ export function ScenarioEditForm({
       schema={schemas.scenarios.update}
       onSubmit={handleSubmit}
       defaultValues={{
-        section: scenario.section,
-        item_type: scenario.item_type,
         title: scenario.title,
         description: scenario.description || "",
-        extra_field_label: scenario.extra_field_label || "",
-        extra_field_value: scenario.extra_field_value || "",
-        order_in_section: scenario.order_in_section || 0,
       }}
     >
       <div className="space-y-4">
-        <Group>
-          <FormSelect
-            className="flex-1"
-            name="section"
-            label="Sectie"
-            placeholder="Kies sectie"
-            options={SECTION_OPTIONS}
-          />
-
-          <FormSelect
-            className="flex-1"
-            name="item_type"
-            label="Item type"
-            placeholder="Kies item type"
-            options={ITEM_TYPE_OPTIONS}
-          />
-        </Group>
-
         <FormInput
           name="title"
           label="Titel"
@@ -101,24 +77,8 @@ export function ScenarioEditForm({
           name="description"
           label="Opmerking"
           placeholder="Typ hier de opmerking over het item"
-          rows={8}
+          rows={20}
         />
-
-        <Group title="Extra informatie">
-          <FormInput
-            className="flex-1"
-            name="extra_field_label"
-            label="Extra veld label"
-            placeholder="Bijv. Verzorglocatie, Opbaarlocatie"
-          />
-
-          <FormInput
-            className="flex-1"
-            name="extra_field_value"
-            label="Extra veld waarde"
-            placeholder="Typ hier de waarde van het extra veld"
-          />
-        </Group>
 
         {withDialog && (
           <DialogFooter className="mt-2 flex flex-row justify-between">
