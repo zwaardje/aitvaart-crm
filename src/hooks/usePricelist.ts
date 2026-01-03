@@ -25,14 +25,25 @@ export function usePricelist() {
 
   const listQuery = useQuery({
     queryKey: ["pricelist", organizationId],
-    queryFn: async (): Promise<PricelistItemRow[]> => {
+    queryFn: async (): Promise<
+      (PricelistItemRow & {
+        supplier: Database["public"]["Tables"]["suppliers"]["Row"] | null;
+      })[]
+    > => {
       const supabase = getSupabaseBrowser();
       const { data, error } = await supabase
         .from("pricelist_items")
-        .select("*")
+        .select(
+          `
+          *,
+          supplier:suppliers(*)
+        `
+        )
         .order("title", { ascending: true });
       if (error) throw error;
-      return (data || []) as PricelistItemRow[];
+      return (data || []) as (PricelistItemRow & {
+        supplier: Database["public"]["Tables"]["suppliers"]["Row"] | null;
+      })[];
     },
     enabled: !!organizationId,
     staleTime: 60_000,
@@ -105,6 +116,8 @@ export function usePricelist() {
   return {
     items: (listQuery.data || []) as PricelistItemRow[],
     isLoading: listQuery.isLoading,
+    isFetching: listQuery.isFetching,
+    isPending: listQuery.isPending,
     error: listQuery.error,
     createItem: createMutation.mutate,
     isCreating: createMutation.isPending,

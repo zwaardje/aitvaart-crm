@@ -1508,6 +1508,7 @@ export type Database = {
           postal_code?: string | null;
           type?: string | null;
           updated_at?: string | null;
+          website?: string | null;
         };
         Update: {
           address?: string | null;
@@ -1524,6 +1525,7 @@ export type Database = {
           postal_code?: string | null;
           type?: string | null;
           updated_at?: string | null;
+          website?: string | null;
         };
         Relationships: [
           {
@@ -1538,6 +1540,88 @@ export type Database = {
             columns: ["organization_id"];
             isOneToOne: false;
             referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      pricelist_items: {
+        Row: {
+          ai_remark: string | null;
+          category: string | null;
+          created_at: string | null;
+          default_quantity: number;
+          description: string | null;
+          entrepreneur_id: string;
+          id: string;
+          organization_id: string;
+          price_incl: number;
+          subcategory: string | null;
+          subtitle: string | null;
+          supplier_id: string | null;
+          title: string;
+          unit: string | null;
+          updated_at: string | null;
+          vat_rate: number | null;
+          website_url: string | null;
+        };
+        Insert: {
+          ai_remark?: string | null;
+          category?: string | null;
+          created_at?: string | null;
+          default_quantity?: number;
+          description?: string | null;
+          entrepreneur_id: string;
+          id?: string;
+          organization_id: string;
+          price_incl: number;
+          subcategory?: string | null;
+          subtitle?: string | null;
+          supplier_id?: string | null;
+          title: string;
+          unit?: string | null;
+          updated_at?: string | null;
+          vat_rate?: number | null;
+          website_url?: string | null;
+        };
+        Update: {
+          ai_remark?: string | null;
+          category?: string | null;
+          created_at?: string | null;
+          default_quantity?: number;
+          description?: string | null;
+          entrepreneur_id?: string;
+          id?: string;
+          organization_id?: string;
+          price_incl?: number;
+          subcategory?: string | null;
+          subtitle?: string | null;
+          supplier_id?: string | null;
+          title?: string;
+          unit?: string | null;
+          updated_at?: string | null;
+          vat_rate?: number | null;
+          website_url?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "pricelist_items_entrepreneur_id_fkey";
+            columns: ["entrepreneur_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "pricelist_items_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "pricelist_items_supplier_id_fkey";
+            columns: ["supplier_id"];
+            isOneToOne: false;
+            referencedRelation: "suppliers";
             referencedColumns: ["id"];
           }
         ];

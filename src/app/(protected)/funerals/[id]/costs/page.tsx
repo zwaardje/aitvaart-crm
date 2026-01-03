@@ -1,8 +1,6 @@
 "use client";
 
-import { useFuneral } from "@/hooks/useFunerals";
 import { Costs } from "@/components/funerals/Costs";
-import { Skeleton } from "@/components/ui";
 import { useEffect, useState, useCallback } from "react";
 import { RiStoreLine, RiMoneyEuroBoxLine } from "@remixicon/react";
 import { SupplierForm } from "@/components/forms/SupplierForm";
@@ -12,7 +10,9 @@ import {
   SmartSearchBarAction,
 } from "@/components/ui/SmartSearchBar";
 
-import { CostForm } from "@/components/forms/CostForm";
+import { CostFormWizard } from "@/components/forms/CostFormWizard";
+import { PricelistItemWizard } from "@/components/forms/PricelistItemWizard";
+import { usePricelist } from "@/hooks/usePricelist";
 
 import {
   Dialog,
@@ -30,6 +30,10 @@ export default function FuneralCostsPage({
   const [isDialogOpen, setIsDialogOpen] = useState<
     "costs" | "supplier" | undefined
   >(undefined);
+  const [isPricelistItemWizardOpen, setIsPricelistItemWizardOpen] =
+    useState(false);
+  const { refetch: refetchPricelist } = usePricelist();
+  const [refetchCosts, setRefetchCosts] = useState<(() => void) | null>(null);
 
   useEffect(() => {
     if (params instanceof Promise) {
@@ -40,7 +44,6 @@ export default function FuneralCostsPage({
       setId(params.id);
     }
   }, [params]);
-  const { funeral, isLoading } = useFuneral(id);
 
   const searchActions = useCallback(
     (): SmartSearchBarAction[] => [
@@ -66,41 +69,45 @@ export default function FuneralCostsPage({
 
   return (
     <>
-      {isLoading && (
-        <div className="space-y-4 w-full">
-          <Skeleton className="h-10 w-64" />
-          <Skeleton className="h-32 w-full" />
-        </div>
-      )}
-
-      {!isLoading && funeral && (
-        <div className="space-y-4 w-full">
-          <SmartSearchBar
-            onResultsChange={() => {}}
-            placeholder="Zoek in kosten..."
-            actions={searchActions()}
-            searchContext={{
-              entityTypes: ["funeral", "note", "contact"],
-              filters: {
-                funeralId: id,
-              },
-            }}
-            sticky
-          />
-          <Costs funeralId={id} />
-        </div>
-      )}
-      <Dialog
+      <div className="space-y-4 w-full">
+        <SmartSearchBar
+          onResultsChange={() => {}}
+          placeholder="Zoek in kosten..."
+          actions={searchActions()}
+          searchContext={{
+            entityTypes: ["funeral", "note", "contact"],
+            filters: {
+              funeralId: id,
+            },
+          }}
+          sticky
+        />
+        <Costs
+          funeralId={id}
+          onRefetchReady={(refetch) => setRefetchCosts(() => refetch)}
+        />
+      </div>
+      <CostFormWizard
+        funeralId={id}
         open={isDialogOpen === "costs"}
-        onOpenChange={() => setIsDialogOpen(undefined)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Voeg kosten toe</DialogTitle>
-          </DialogHeader>
-          <CostForm funeralId={id} />
-        </DialogContent>
-      </Dialog>
+        onOpenChange={(open) => setIsDialogOpen(open ? "costs" : undefined)}
+        onSuccess={() => {
+          setIsDialogOpen(undefined);
+          // Refetch costs to show newly added items
+          if (refetchCosts) {
+            refetchCosts();
+          }
+        }}
+        onRequestAddItem={() => setIsPricelistItemWizardOpen(true)}
+      />
+
+      <PricelistItemWizard
+        open={isPricelistItemWizardOpen}
+        onOpenChange={setIsPricelistItemWizardOpen}
+        onSuccess={() => {
+          refetchPricelist();
+        }}
+      />
 
       <Dialog
         open={isDialogOpen === "supplier"}

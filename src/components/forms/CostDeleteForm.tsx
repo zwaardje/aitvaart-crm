@@ -50,11 +50,7 @@ export function CostDeleteForm({ cost, onSuccess }: CostDeleteFormProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-red-600 hover:text-red-700"
-        >
+        <Button variant="outline">
           <RiDeleteBinLine className="h-4 w-4" />
         </Button>
       </DialogTrigger>
@@ -63,13 +59,11 @@ export function CostDeleteForm({ cost, onSuccess }: CostDeleteFormProps) {
           <DialogTitle>Weet je het zeker?</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-6 p-4">
           <div>
             <p className="text-sm text-gray-500 mb-2">
-              Deze actie kan niet ongedaan worden gemaakt.
-            </p>
-            <p className="text-sm text-gray-500">
-              Hiermee wordt uw item definitief verwijderd.
+              Deze actie kan niet ongedaan worden gemaakt. Hiermee wordt uw item
+              definitief verwijderd.
             </p>
           </div>
 
@@ -79,15 +73,14 @@ export function CostDeleteForm({ cost, onSuccess }: CostDeleteFormProps) {
               variant="outline"
               onClick={() => setIsOpen(false)}
               disabled={isDeleting}
-              className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
             >
               Annuleren
             </Button>
             <Button
               type="button"
+              variant="destructive"
               onClick={handleDelete}
               disabled={isDeleting}
-              className="bg-gray-900 text-white hover:bg-gray-800"
             >
               Verwijder
             </Button>

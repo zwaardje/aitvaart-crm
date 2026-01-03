@@ -98,12 +98,36 @@ export function useCreateCost() {
     }
 
     const supabase = getSupabaseBrowser();
+
+    // Get organization_id from the funeral (most reliable source)
+    // This matches the pattern used in tasks migration
+    const { data: funeral, error: funeralError } = await supabase
+      .from("funerals")
+      .select("organization_id, entrepreneur_id")
+      .eq("id", data.funeral_id)
+      .single();
+
+    if (funeralError || !funeral) {
+      throw new Error(
+        `Could not find funeral: ${funeralError?.message || "Not found"}`
+      );
+    }
+
+    if (!funeral.organization_id) {
+      throw new Error(
+        "Funeral does not have an organization_id. This should be set automatically."
+      );
+    }
+
+    const insertPayload = {
+      ...data,
+      entrepreneur_id: userId,
+      organization_id: funeral.organization_id,
+    };
+
     const { data: result, error } = await supabase
       .from("funeral_suppliers")
-      .insert({
-        ...data,
-        entrepreneur_id: userId,
-      })
+      .insert(insertPayload)
       .select(
         `
         *,

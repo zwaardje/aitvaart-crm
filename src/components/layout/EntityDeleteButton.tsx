@@ -61,6 +61,8 @@ export function EntityDeleteButton({ pathname }: EntityDeleteButtonProps) {
 
   const entityType = getEntityType();
 
+  console.log("entityType", entityType);
+
   // Get delete functions based on entity type
   // Use useGenericEntity with enabled: false to get delete function without fetching data
   // Hooks must be called unconditionally, before any early returns

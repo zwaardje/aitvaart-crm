@@ -433,6 +433,14 @@ export const schemas = {
       price_incl: z.number().min(0),
       vat_rate: z.number().optional(),
       unit: z.string().optional(),
+      category: z.string().optional(),
+      subcategory: z.string().optional(),
+      website_url: z
+        .string()
+        .url("validation.website.invalid")
+        .optional()
+        .or(z.literal("")),
+      ai_remark: z.string().optional(),
     }),
     update: z.object({
       title: z.string().min(1, "validation.required").optional(),
@@ -442,6 +450,110 @@ export const schemas = {
       price_incl: z.number().min(0).optional(),
       vat_rate: z.number().optional(),
       unit: z.string().optional(),
+      category: z.string().optional(),
+      subcategory: z.string().optional(),
+      website_url: z
+        .string()
+        .url("validation.website.invalid")
+        .optional()
+        .or(z.literal("")),
+      ai_remark: z.string().optional(),
+    }),
+    wizard: z
+      .object({
+        // Stap 1: Informatie
+        title: z.string().min(1, "validation.required"),
+        description: z.string().optional(),
+        website_url: z
+          .string()
+          .url("validation.website.invalid")
+          .optional()
+          .or(z.literal("")),
+        default_quantity: z.coerce.number().int().min(1),
+        vat_rate: z.coerce.number().min(0).max(100),
+        price_incl: z.coerce.number().min(0),
+        category: z.string().optional(),
+        subcategory: z.string().optional(),
+        ai_remark: z.string().optional(),
+        // Stap 2: Leverancier
+        supplier_id: z.string().uuid().optional(),
+        supplier_mode: z.enum(["existing", "new"]).optional(),
+        supplier: z
+          .object({
+            name: z.string().min(1, "validation.required"),
+            address: z.string().optional(),
+            postal_code: z.string().optional(),
+            city: z.string().optional(),
+            phone_number: z.string().optional(),
+            email: z
+              .string()
+              .email("validation.email.invalid")
+              .optional()
+              .or(z.literal("")),
+            website: z
+              .string()
+              .url("validation.website.invalid")
+              .optional()
+              .or(z.literal("")),
+          })
+          .optional(),
+        save_supplier: z.boolean().optional(),
+      })
+      .refine(
+        (data) => {
+          // Als supplier_mode expliciet "existing" is, skip supplier validatie volledig
+          if (data.supplier_mode === "existing") {
+            return true;
+          }
+
+          // Als er een supplier_id is (UUID format met hyphens), is het een bestaande leverancier
+          if (
+            data.supplier_id &&
+            typeof data.supplier_id === "string" &&
+            data.supplier_id.includes("-") &&
+            data.supplier_id !== "new"
+          ) {
+            return true; // Skip validatie voor bestaande leveranciers
+          }
+
+          // Alleen valideer supplier.name als er een nieuwe leverancier wordt toegevoegd
+          // Dit is het geval als supplier_mode "new" is OF als er geen supplier_id is
+          const isNewSupplierMode =
+            data.supplier_mode === "new" ||
+            (!data.supplier_id && data.supplier_mode !== "existing");
+
+          if (isNewSupplierMode) {
+            // Als er geen supplier object is, is dat ok (gebruiker is nog bezig met invullen)
+            if (!data.supplier) {
+              return true;
+            }
+            // Valideer dat name aanwezig is en niet leeg
+            return !!(
+              data.supplier.name &&
+              typeof data.supplier.name === "string" &&
+              data.supplier.name.trim().length > 0
+            );
+          }
+
+          // In alle andere gevallen, skip validatie
+          return true;
+        },
+        {
+          message: "validation.required",
+          path: ["supplier", "name"],
+        }
+      ),
+  },
+  costWizard: {
+    form: z.object({
+      selectedItems: z
+        .array(
+          z.object({
+            pricelistItemId: z.string().uuid("validation.uuid.invalid"),
+            quantity: z.number().min(0.01, "validation.quantity.min"),
+          })
+        )
+        .min(1, "Selecteer minimaal één item"),
     }),
   },
   notes: {
@@ -517,6 +629,10 @@ export type NoteFormData = z.infer<typeof schemas.notes.create>;
 export type NoteUpdateFormData = z.infer<typeof schemas.notes.update>;
 export type ScenarioFormData = z.infer<typeof schemas.scenarios.create>;
 export type ScenarioUpdateFormData = z.infer<typeof schemas.scenarios.update>;
+export type PricelistItemWizardFormData = z.infer<
+  typeof schemas.pricelistItem.wizard
+>;
+export type CostWizardFormData = z.infer<typeof schemas.costWizard.form>;
 export type CostFormData = z.infer<typeof schemas.costs.create>;
 export type CostUpdateFormData = z.infer<typeof schemas.costs.update>;
 export type IntakeFormData = z.infer<typeof intakeSchemas.form>;

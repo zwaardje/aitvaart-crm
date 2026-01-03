@@ -42,7 +42,7 @@ export function FormSelect({
   const error = getNestedError(errors, name);
 
   return (
-    <div className={cn("space-y-1", className)}>
+    <div className={cn("space-y-1 flex flex-col justify-between", className)}>
       {label && (
         <Label htmlFor={inputId} className="text-xs text-muted-foreground">
           {label}

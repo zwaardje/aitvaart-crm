@@ -11,7 +11,7 @@ interface EmptyStateAction {
 }
 
 interface EmptyStateProps {
-  icon: ReactNode;
+  icon?: ReactNode;
   title: string;
   description: string;
   action?: EmptyStateAction;
@@ -26,9 +26,11 @@ export function EmptyState({
   return (
     <Card>
       <CardContent className="flex flex-col items-center justify-center py-8">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-          {icon}
-        </div>
+        {icon && (
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+            {icon}
+          </div>
+        )}
         <h4 className="mt-4 text-lg font-medium text-gray-900">{title}</h4>
         <p className="mt-2 text-sm text-gray-500 text-center">{description}</p>
         {action && (
